@@ -6,24 +6,24 @@ on:
 jobs: 
   check-lint:
     runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-  
-        - name: Check for changes
-          uses: dorny/paths-filter@v3
-          id: changes
-          with:
-            filters: |
-              contracts_dir: 
-                - 'src/**'
-  
-        - name: Install scarb
-          if: steps.changes.outputs.contracts_dir == 'true'
-          run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
-  
-        - name: Run scarb fmt
-          if: steps.changes.outputs.contracts_dir == 'true'
-          run: scarb fmt
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            contracts_dir: 
+              - 'src/**'
+
+      - name: Install scarb
+        if: steps.changes.outputs.contracts_dir == 'true'
+        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+
+      - name: Run scarb fmt
+        if: steps.changes.outputs.contracts_dir == 'true'
+        run: scarb fmt
   
   check-contracts-changes:
     runs-on: ubuntu-latest
