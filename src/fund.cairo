@@ -14,13 +14,16 @@ trait IFund<TContractState> {
     fn getGoal(self: @TContractState) -> u64;
     fn donate(ref self: TContractState, amount: u64);
     fn getCurrentGoalState(self: @TContractState) -> u64;
-    fn setIsActive(ref self: TContractState, isActive: bool);
+    fn setIsActive(ref self: TContractState, is_active: bool);
     fn getIsActive(self: @TContractState) -> bool;
 }
 
 #[starknet::contract]
 mod Fund {
     use starknet::ContractAddress;
+    use starknet::contract_address_const;
+    use gostarkme::fundManager::IFundManagerDispatcher;
+    use gostarkme::fundManager::IFundManagerDispatcherTrait;
 
     #[storage]
     struct Storage {
@@ -28,24 +31,30 @@ mod Fund {
         owner: ContractAddress,
         name: felt252,
         reason: felt252,
-        upVotes: u32,
+        up_votes: u32,
         goal: u64,
-        currentGoalState: u64,
-        isActive: bool
+        current_goal_state: u64,
+        is_active: bool
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, id: u128, owner: ContractAddress, name: felt252, reason: felt252, goal: u64) {
+    fn constructor(
+        ref self: ContractState, owner: ContractAddress, name: felt252, reason: felt252, goal: u64
+    ) {
+        let addr: ContractAddress = contract_address_const::<0x06b156b401a420f86773ebb0e0047925438dfe6b29fcb38de82d85c3cbd95975>();
+        let manager = IFundManagerDispatcher { contract_address: addr };
+        let id = manager.getCurrentId();
         self.id.write(id);
+        manager.newFund();
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
-        self.upVotes.write(0);
+        self.up_votes.write(0);
         self.goal.write(goal);
-        self.currentGoalState.write(0);
-        self.isActive.write(true);
+        self.current_goal_state.write(0);
+        self.is_active.write(true);
     }
-
+    
     #[abi(embed_v0)]
     impl FundImpl of super::IFund<ContractState> {
         fn getId(self: @ContractState) -> u128 {
@@ -67,10 +76,10 @@ mod Fund {
             return self.reason.read();
         }
         fn sumVote(ref self: ContractState) {
-            self.upVotes.write(self.upVotes.read() + 1);
+            self.up_votes.write(self.up_votes.read() + 1);
         }
         fn getUpVotes(self: @ContractState) -> u32 {
-            return self.upVotes.read();
+            return self.up_votes.read();
         }
         fn setGoal(ref self: ContractState, goal: u64) {
             self.goal.write(goal);
@@ -79,16 +88,16 @@ mod Fund {
             return self.goal.read();
         }
         fn donate(ref self: ContractState, amount: u64) {
-            self.currentGoalState.write(self.currentGoalState.read() + amount);
+            self.current_goal_state.write(self.current_goal_state.read() + amount);
         }
         fn getCurrentGoalState(self: @ContractState) -> u64 {
-            return self.currentGoalState.read();
+            return self.current_goal_state.read();
         }
-        fn setIsActive(ref self: ContractState, isActive: bool) {
-            self.isActive.write(isActive);
+        fn setIsActive(ref self: ContractState, is_active: bool) {
+            self.is_active.write(is_active);
         }
         fn getIsActive(self: @ContractState) -> bool {
-            return self.isActive.read();
+            return self.is_active.read();
         }
     }
 }
