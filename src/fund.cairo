@@ -21,9 +21,6 @@ trait IFund<TContractState> {
 #[starknet::contract]
 mod Fund {
     use starknet::ContractAddress;
-    use starknet::contract_address_const;
-    use gostarkme::fundManager::IFundManagerDispatcher;
-    use gostarkme::fundManager::IFundManagerDispatcherTrait;
 
     #[storage]
     struct Storage {
@@ -39,13 +36,14 @@ mod Fund {
 
     #[constructor]
     fn constructor(
-        ref self: ContractState, owner: ContractAddress, name: felt252, reason: felt252, goal: u64
+        ref self: ContractState,
+        id: u128,
+        owner: ContractAddress,
+        name: felt252,
+        reason: felt252,
+        goal: u64
     ) {
-        let addr: ContractAddress = contract_address_const::<0x06b156b401a420f86773ebb0e0047925438dfe6b29fcb38de82d85c3cbd95975>();
-        let manager = IFundManagerDispatcher { contract_address: addr };
-        let id = manager.getCurrentId();
         self.id.write(id);
-        manager.newFund();
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
@@ -54,7 +52,7 @@ mod Fund {
         self.current_goal_state.write(0);
         self.is_active.write(true);
     }
-    
+
     #[abi(embed_v0)]
     impl FundImpl of super::IFund<ContractState> {
         fn getId(self: @ContractState) -> u128 {
