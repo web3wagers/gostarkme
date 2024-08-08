@@ -17,7 +17,7 @@ jobs:
             contracts_dir: 
               - 'contracts/src/**'
 
-      - run: cd 'contracts'
+      - run: cd contracts
       - name: Install scarb
         if: steps.changes.outputs.contracts_dir == 'true'
         run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
@@ -39,7 +39,7 @@ jobs:
             contracts_dir: 
               - 'contracts/src/**'
               
-      - run: cd 'contracts'
+      - run: cd contracts
       - name: Install scarb
         if: steps.changes.outputs.contracts_dir == 'true'
         run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
