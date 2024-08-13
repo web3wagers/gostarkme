@@ -15,15 +15,19 @@ jobs:
         with:
           filters: |
             contracts_dir: 
-              - 'src/**'
+              - 'contracts/src/**'
 
       - name: Install scarb
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+        run: |
+          cd contracts
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
 
       - name: Run scarb fmt
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: scarb fmt
+        run: |
+          cd contracts
+          scarb fmt
   
   check-contracts-changes:
     runs-on: ubuntu-latest
@@ -36,12 +40,16 @@ jobs:
         with:
           filters: |
             contracts_dir: 
-              - 'src/**'
-
+              - 'contracts/src/**'
+              
       - name: Install scarb
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+        run: | 
+          cd contracts
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
 
       - name: Run scarb check
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: scarb check
+        run: |
+          cd contracts
+          scarb check

@@ -10,6 +10,12 @@ Go Stark Me is a modern platform designed to make fundraising for important caus
 
 Join us on Go Stark Me and make a difference by supporting meaningful projects in a secure and efficient manner.
 
+## Our Vision for UI
+
+You can check the prototype we have in mind and suggest any improvement, if you feel capable of reproducing some of the pages please contact one of the product owners.
+
+- [Figma prototype](https://www.figma.com/design/SCiGViaoPT9UTrT7CsLbAt/Go-Stark-Me?node-id=0-1&t=FUhnIhNcXRIGkQ16-1)
+
 ## Contributors
 
 - [EmmanuelAR](https://github.com/EmmanuelAR)
