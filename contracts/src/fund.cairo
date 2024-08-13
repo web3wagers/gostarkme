@@ -12,7 +12,7 @@ trait IFund<TContractState> {
     fn getUpVotes(self: @TContractState) -> u32;
     fn setGoal(ref self: TContractState, goal: u64);
     fn getGoal(self: @TContractState) -> u64;
-    fn donate(ref self: TContractState, amount: u64);
+    fn setCurrentGoalState(self: TContractState, strks: u64);
     fn getCurrentGoalState(self: @TContractState) -> u64;
     fn setIsActive(ref self: TContractState, is_active: bool);
     fn getIsActive(self: @TContractState) -> bool;
@@ -62,12 +62,16 @@ mod Fund {
             return self.owner.read();
         }
         fn setName(ref self: ContractState, name: felt252) {
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.name.write(name);
         }
         fn getName(self: @ContractState) -> felt252 {
             return self.name.read();
         }
         fn setReason(ref self: ContractState, reason: felt252) {
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.reason.write(reason);
         }
         fn getReason(self: @ContractState) -> felt252 {
@@ -80,13 +84,16 @@ mod Fund {
             return self.up_votes.read();
         }
         fn setGoal(ref self: ContractState, goal: u64) {
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.goal.write(goal);
         }
         fn getGoal(self: @ContractState) -> u64 {
             return self.goal.read();
         }
-        fn donate(ref self: ContractState, amount: u64) {
-            self.current_goal_state.write(self.current_goal_state.read() + amount);
+        // TODO: implement the logic where user actually donates starks
+        fn setCurrentGoalState(self: ContractState, strks: u64) {
+            self.current_goal_state.write(self.current_goal_state.read() + strks);
         }
         fn getCurrentGoalState(self: @ContractState) -> u64 {
             return self.current_goal_state.read();
