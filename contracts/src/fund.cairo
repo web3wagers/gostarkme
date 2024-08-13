@@ -12,7 +12,7 @@ trait IFund<TContractState> {
     fn getUpVotes(self: @TContractState) -> u32;
     fn setGoal(ref self: TContractState, goal: u64);
     fn getGoal(self: @TContractState) -> u64;
-    fn setCurrentGoalState(self: TContractState, strks: u64);
+    fn setCurrentGoalState(ref self: TContractState, strks: u64);
     fn getCurrentGoalState(self: @TContractState) -> u64;
     fn setIsActive(ref self: TContractState, is_active: bool);
     fn getIsActive(self: @TContractState) -> bool;
@@ -21,6 +21,7 @@ trait IFund<TContractState> {
 #[starknet::contract]
 mod Fund {
     use starknet::ContractAddress;
+    use starknet::get_caller_address;
 
     #[storage]
     struct Storage {
@@ -92,7 +93,7 @@ mod Fund {
             return self.goal.read();
         }
         // TODO: implement the logic where user actually donates starks
-        fn setCurrentGoalState(self: ContractState, strks: u64) {
+        fn setCurrentGoalState(ref self: ContractState, strks: u64) {
             self.current_goal_state.write(self.current_goal_state.read() + strks);
         }
         fn getCurrentGoalState(self: @ContractState) -> u64 {
