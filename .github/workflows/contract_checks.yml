@@ -21,7 +21,7 @@ jobs:
         if: steps.changes.outputs.contracts_dir == 'true'
         run: |
           cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
 
       - name: Run scarb fmt
         if: steps.changes.outputs.contracts_dir == 'true'
@@ -46,7 +46,7 @@ jobs:
         if: steps.changes.outputs.contracts_dir == 'true'
         run: | 
           cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
 
       - name: Run scarb check
         if: steps.changes.outputs.contracts_dir == 'true'
