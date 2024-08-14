@@ -19,7 +19,7 @@ mod FundManager {
 
     // This hash will change if fund.cairo file is modified
     const FUND_CLASS_HASH: felt252 =
-        0x0208e3f31ba670ba9e81826e1166844c6a476a857e0bf2e404e2c1aa41736807;
+        0x00490122dc655dede662de63e2a507f218bcd1f0ce72cf6578396b2bba3c1835;
 
     #[storage]
     struct Storage {
