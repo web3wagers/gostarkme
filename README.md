@@ -10,6 +10,11 @@ Go Stark Me is a modern platform designed to make fundraising for important caus
 
 Join us on Go Stark Me and make a difference by supporting meaningful projects in a secure and efficient manner.
 
+## UML Diagram
+
+![UML Class Diagram](https://github.com/user-attachments/assets/479c9296-e3ac-4ad3-bf79-5f458c456a45)
+
+
 ## Our Vision for UI
 
 You can check the prototype we have in mind and suggest any improvement, if you feel capable of reproducing some of the pages please contact one of the product owners.
