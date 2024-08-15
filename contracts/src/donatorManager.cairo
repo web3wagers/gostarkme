@@ -45,7 +45,7 @@ mod DonatorManager {
     // *************************************************************************
     #[abi(embed_v0)]
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
-        fn newDonator(ref self: TContractState, owner: ContractAddress) {
+        fn newDonator(ref self: ContractState, owner: ContractAddress) {
             let mut calldata = ArrayTrait::<felt252>::new();
 
             calldata.append(get_caller_address().try_into().unwrap());
@@ -56,9 +56,7 @@ mod DonatorManager {
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), address_0);
         }
-        fn getDonatorByAddress(
-            ref self: TContractState, owner: ContractAddress
-        ) -> ContractAddress {
+        fn getDonatorByAddress(ref self: ContractState, owner: ContractAddress) -> ContractAddress {
             return self.donators.read(owner);
         }
     }

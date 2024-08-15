@@ -1,1 +1,1 @@
-pub mod error_constants;
+pub mod errors_constants;

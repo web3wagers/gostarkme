@@ -80,7 +80,7 @@ mod Fund {
         }
         fn setName(ref self: ContractState, name: felt252) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, Errors::INVALID_OWNER);
+            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
             self.name.write(name);
         }
         fn getName(self: @ContractState) -> felt252 {
@@ -88,7 +88,7 @@ mod Fund {
         }
         fn setReason(ref self: ContractState, reason: felt252) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, Errors::INVALID_OWNER);
+            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
             self.reason.write(reason);
         }
         fn getReason(self: @ContractState) -> felt252 {
@@ -108,7 +108,7 @@ mod Fund {
         }
         fn setGoal(ref self: ContractState, goal: u64) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, Errors::ALREADY_VOTED);
+            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
             self.goal.write(goal);
         }
         fn getGoal(self: @ContractState) -> u64 {

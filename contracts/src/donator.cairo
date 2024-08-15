@@ -56,14 +56,16 @@ mod Donator {
         fn getTotalStarkDonations(self: @ContractState) -> u64 {
             return self.total_stark_donations.read();
         }
-        fn getMaxStarkDonationsToNextLevel(self: @ContrascactState) -> u64 {
+        fn getMaxStarkDonationsToNextLevel(self: @ContractState) -> u64 {
             return self.max_stark_donations_to_next_level.read();
         }
         fn updateDonatorValues(ref self: ContractState, donated_starks: u64) {
-            let total_donator_pod = self.total_stark_donations + donated_starks;
-            if (total_donator_pod > max_stark_donations_to_next_level) {
-                self.level + 1;
-                self.max_stark_donations_to_next_level * 2;
+            let total_donator_pod = self.total_stark_donations.read() + donated_starks;
+            if (total_donator_pod > self.max_stark_donations_to_next_level.read()) {
+                self.level.write(self.level.read() + 1);
+                self
+                    .max_stark_donations_to_next_level
+                    .write(self.max_stark_donations_to_next_level.read() * 2);
             }
         }
     }
