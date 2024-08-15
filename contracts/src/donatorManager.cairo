@@ -2,14 +2,13 @@ use starknet::ContractAddress;
 use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
-pub trait IFundManager<TContractState> {
-    fn newFund(ref self: TContractState, name: felt252, reason: felt252, goal: u64);
-    fn getCurrentId(self: @TContractState) -> u128;
-    fn getFund(self: @TContractState, id: u128) -> ContractAddress;
+pub trait IDonatorManager<TContractState> {
+    fn newDonator(ref self: TContractState, owner: ContractAddress);
+    fn getDonatorByAddress(ref self: TContractState, owner: ContractAddress) -> ContractAddress;
 }
 
 #[starknet::contract]
-mod FundManager {
+mod DonatorManager {
     // *************************************************************************
     //                            IMPORT
     // *************************************************************************
@@ -20,18 +19,17 @@ mod FundManager {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
 
-    // This hash will change if fund.cairo file is modified
-    const FUND_CLASS_HASH: felt252 =
+    // This hash will change if donator.cairo file is modified
+    const DONATOR_CLASS_HASH: felt252 =
         0x00490122dc655dede662de63e2a507f218bcd1f0ce72cf6578396b2bba3c1835;
 
     // *************************************************************************
     //                            STORAGE
-    // *************************************************************************    
+    // *************************************************************************
     #[storage]
     struct Storage {
         owner: ContractAddress,
-        current_id: u128,
-        funds: LegacyMap::<u128, ContractAddress>,
+        donators: LegacyMap::<ContractAddress, ContractAddress>,
     }
 
     // *************************************************************************
@@ -40,33 +38,28 @@ mod FundManager {
     #[constructor]
     fn constructor(ref self: ContractState) {
         self.owner.write(get_caller_address());
-        self.current_id.write(0);
     }
 
     // *************************************************************************
     //                            EXTERNALS
     // *************************************************************************
     #[abi(embed_v0)]
-    impl FundManagerImpl of super::IFundManager<ContractState> {
-        fn newFund(ref self: ContractState, name: felt252, reason: felt252, goal: u64) {
+    impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
+        fn newDonator(ref self: TContractState, owner: ContractAddress) {
             let mut calldata = ArrayTrait::<felt252>::new();
-            calldata.append(self.current_id.read().try_into().unwrap());
+
             calldata.append(get_caller_address().try_into().unwrap());
-            calldata.append(name);
-            calldata.append(reason);
-            calldata.append(goal.try_into().unwrap());
+
             let (address_0, _) = deploy_syscall(
-                FUND_CLASS_HASH.try_into().unwrap(), 12345, calldata.span(), false
+                DONATOR_CLASS_HASH.try_into().unwrap(), 12345, calldata.span(), false
             )
                 .unwrap();
-            self.funds.write(self.current_id.read(), address_0);
-            self.current_id.write(self.current_id.read() + 1);
+            self.donators.write(get_caller_address().try_into().unwrap(), address_0);
         }
-        fn getCurrentId(self: @ContractState) -> u128 {
-            return self.current_id.read();
-        }
-        fn getFund(self: @ContractState, id: u128) -> ContractAddress {
-            return self.funds.read(id);
+        fn getDonatorByAddress(
+            ref self: TContractState, owner: ContractAddress
+        ) -> ContractAddress {
+            return self.donators.read(owner);
         }
     }
 }
