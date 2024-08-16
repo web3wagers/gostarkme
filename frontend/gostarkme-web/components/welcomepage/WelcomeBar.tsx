@@ -15,8 +15,7 @@ export const WelcomeBar = () => {
                     />
                     <h1 className="text-xl">Go Stark Me</h1>
                 </div>
-
-                <LinkButton label="Go to app" href="/" />
+                <LinkButton label="Go to app" href="/"/>
             </div>
         </nav>
     );
