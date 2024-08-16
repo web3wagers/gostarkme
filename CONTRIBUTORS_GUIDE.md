@@ -22,6 +22,9 @@ Hi, I'm [Your Name] and I'll be working on issue #[Issue Number].
 
 I estimate this will take [Time Estimate] to complete.
 
+This is how I would tackle this issue:
+[Steps to solve issue]
+
 ```
 
 2. **Estimated Time to Completion**: Approximate number of hours or days required to complete the task.
@@ -44,23 +47,11 @@ When you submit your PR (or later change that code), a CI build will automatical
 
 ## Commits
 
-We use Conventional Commits to add human and machine readable meaning to our commit messages. In particular, we use the Angular convention.
+You can do a regular commit by following the next:
 
-Don't worry if it looks complicated. In our repositories, after adding your files with git (i.e `git add`), you can just run the `commit` script in our `package.json`, and you'll be prompted to fill out any required commit fields at commit time. We use Commitizen under the hood.
+``` [type] significant message ```
 
-Each commit message consists of a header, a body and a footer. The header has a special format that includes a type, a scope and a subject:
-
-```
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
-```
-
-The header is mandatory and the scope of the header is optional.
-
-## Type
+### Type
 
 The type must be one of the following:
 
@@ -75,24 +66,6 @@ The type must be one of the following:
 - ci: Changes to CI configuration files and scripts (example scopes: travis, circle)
 - chore: Other changes that don't modify src or test files
 - revert: Reverts a previous commit
-
-### Scope
-
-The scope could be anything specifying place of the commit change. In a monorepo, it could be the name of the package or project affected.
-
-### Subject
-
-The subject contains a succinct description of the change:
-
-Use the imperative, present tense: "change" not "changed" nor "changes".
-Don't capitalize the first letter.
-No dot (.) at the end.
-Body
-Just as in the subject, use the imperative, present tense: "change" not "changed" nor "changes". The body should include the motivation for the change and contrast this with previous behaviour.
-
-### Body
-
-Just as in the subject, use the imperative, present tense: "change" not "changed" nor "changes". The body should include the motivation for the change and contrast this with previous behaviour.
 
 ## Branches
 
