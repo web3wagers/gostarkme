@@ -21,10 +21,16 @@ trait IFund<TContractState> {
 
 #[starknet::contract]
 mod Fund {
+    // *************************************************************************
+    //                            IMPORT
+    // *************************************************************************
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use gostarkme::constants::{funds::{state_constants::FundStates},};
 
+    // *************************************************************************
+    //                            STORAGE
+    // *************************************************************************
     #[storage]
     struct Storage {
         id: u128,
@@ -38,6 +44,9 @@ mod Fund {
         state: u8
     }
 
+    // *************************************************************************
+    //                            CONSTRUCTOR
+    // *************************************************************************
     #[constructor]
     fn constructor(
         ref self: ContractState,
@@ -57,6 +66,9 @@ mod Fund {
         self.state.write(FundStates::RECOLLECTING_VOTES);
     }
 
+    // *************************************************************************
+    //                            EXTERNALS
+    // *************************************************************************
     #[abi(embed_v0)]
     impl FundImpl of super::IFund<ContractState> {
         fn getId(self: @ContractState) -> u128 {
