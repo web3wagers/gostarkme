@@ -18,3 +18,7 @@ deploy-fund:
 
 ## This hash will change if fund.cairo file is modified
 ## Contract address: 0x06c8a4e17165c804c4886ac679189f67273497ce31c3330bf6aae8eb28d664be
+declare-donator-manager:
+	starkli declare ./target/dev/gostarkme_DonatorManager.contract_class.json --keystore ~/.starkli-wallets/deployer/my_keystore.json --account ~/.starkli-wallets/accounts/my_account.json --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/GG9Q64Cz4Bn1P5OY2ZIspDMSsdf_Pdl5
+deploy-donator-manager:
+	starkli deploy 0x062f476523071a4562e769981b7c3919cd980a5bf4305a42d6825706550910d9 --keystore ~/.starkli-wallets/deployer/my_keystore.json --account ~/.starkli-wallets/accounts/my_account.json --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/GG9Q64Cz4Bn1P5OY2ZIspDMSsdf_Pdl5
