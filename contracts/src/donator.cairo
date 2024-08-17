@@ -34,11 +34,11 @@ mod Donator {
     #[constructor]
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.owner.write(owner);
-        self.level.write(DonatorConstants::INICIAL_LEVEL);
+        self.level.write(DonatorConstants::INITIAL_LEVEL);
         self.total_stark_donations.write(0);
         self
             .max_stark_donations_to_next_level
-            .write(DonatorConstants::INICIAL_MAX_STARKS_DONATION_TO_NEXT_LEVEL);
+            .write(DonatorConstants::INITIAL_MAX_STARKS_DONATION_TO_NEXT_LEVEL);
     }
 
     // *************************************************************************
