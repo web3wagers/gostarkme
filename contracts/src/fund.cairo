@@ -26,8 +26,7 @@ mod Fund {
     // *************************************************************************
     use starknet::ContractAddress;
     use starknet::get_caller_address;
-    use gostarkme::constants::{funds::{state_constants::FundStates}};
-    use gostarkme::constants::{errors::{errors_constants::Errors}};
+    use gostarkme::constants::{funds::{state_constants::FundStates},};
 
     // *************************************************************************
     //                            STORAGE
@@ -80,7 +79,7 @@ mod Fund {
         }
         fn setName(ref self: ContractState, name: felt252) {
             let caller = get_caller_address();
-            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.name.write(name);
         }
         fn getName(self: @ContractState) -> felt252 {
@@ -88,15 +87,17 @@ mod Fund {
         }
         fn setReason(ref self: ContractState, reason: felt252) {
             let caller = get_caller_address();
-            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.reason.write(reason);
         }
         fn getReason(self: @ContractState) -> felt252 {
             return self.reason.read();
         }
         fn receiveVote(ref self: ContractState) {
-            assert(self.voters.read(get_caller_address()) == 0, Errors::ALREADY_VOTED);
-            assert(self.state.read() == FundStates::RECOLLECTING_VOTES, Errors::FUND_CLOSE_VOTES);
+            assert(self.voters.read(get_caller_address()) == 0, 'User already voted!');
+            assert(
+                self.state.read() == FundStates::RECOLLECTING_VOTES, 'Fund not recollecting votes!'
+            );
             self.voters.write(get_caller_address(), self.up_votes.read());
             self.up_votes.write(self.up_votes.read() + 1);
             if self.up_votes.read() >= 1 {
@@ -108,7 +109,7 @@ mod Fund {
         }
         fn setGoal(ref self: ContractState, goal: u64) {
             let caller = get_caller_address();
-            assert(self.owner.read() != caller, Errors::INVALID_OWNER);
+            assert!(self.owner.read() == caller, "You are not the owner");
             self.goal.write(goal);
         }
         fn getGoal(self: @ContractState) -> u64 {
@@ -117,7 +118,8 @@ mod Fund {
         // TODO: implement the logic where user actually donates starks
         fn receiveDonation(ref self: ContractState, strks: u64) {
             assert(
-                self.state.read() == FundStates::RECOLLECTING_DONATIONS, Errors::FUND_CLOSE_DONS
+                self.state.read() == FundStates::RECOLLECTING_DONATIONS,
+                'Fund not recollecting dons!'
             );
             self.current_goal_state.write(self.current_goal_state.read() + strks);
             if self.current_goal_state.read() >= self.goal.read() {
