@@ -3,8 +3,8 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IDonatorManager<TContractState> {
-    fn newDonator(ref self: TContractState, owner: ContractAddress);
-    fn getDonatorByAddress(ref self: TContractState, owner: ContractAddress) -> ContractAddress;
+    fn newDonator(ref self: TContractState);
+    fn getDonatorByAddress(self: @TContractState, owner: ContractAddress) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -21,7 +21,7 @@ mod DonatorManager {
 
     // This hash will change if donator.cairo file is modified
     const DONATOR_CLASS_HASH: felt252 =
-        0x00490122dc655dede662de63e2a507f218bcd1f0ce72cf6578396b2bba3c1835;
+        0x03ddcb5ac2ecf82627887217de833132e7252b146cce03a6e38374fc9b6d61b2;
 
     // *************************************************************************
     //                            STORAGE
@@ -45,7 +45,7 @@ mod DonatorManager {
     // *************************************************************************
     #[abi(embed_v0)]
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
-        fn newDonator(ref self: ContractState, owner: ContractAddress) {
+        fn newDonator(ref self: ContractState) {
             let mut calldata = ArrayTrait::<felt252>::new();
 
             calldata.append(get_caller_address().try_into().unwrap());
@@ -56,7 +56,7 @@ mod DonatorManager {
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), address_0);
         }
-        fn getDonatorByAddress(ref self: ContractState, owner: ContractAddress) -> ContractAddress {
+        fn getDonatorByAddress(self: @ContractState, owner: ContractAddress) -> ContractAddress {
             return self.donators.read(owner);
         }
     }
