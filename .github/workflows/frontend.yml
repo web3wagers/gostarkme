@@ -1,7 +1,7 @@
 name: 'Frontend CI'
 
 on:
-  push:
+  pull_request:
     
 defaults:
   run:
@@ -26,6 +26,3 @@ jobs:
       
       - name: 'Build typescript'
         run: npm run build
-
-      - name: 'Run dev'
-        run:  npm run dev
