@@ -3,11 +3,14 @@ name: 'Frontend CI'
 on:
   push:
     
+defaults:
+  run:
+    working-directory: frontend/gostarkme-web
+
 jobs:
   build-frontend:
     runs-on: ubuntu-latest
-    env:
-      working-directory: frontend/gostarkme-web
+
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
@@ -19,13 +22,10 @@ jobs:
           cache-dependency-path: frontend/gostarkme-web/package-lock.json
 
       - name: 'Install dependencies'
-        working-directory: ${{env.working-directory}}
         run: npm ci
       
       - name: 'Build typescript'
-        working-directory: ${{env.working-directory}}
         run: npm run build
 
       - name: 'Run dev'
-        working-directory: ${{env.working-directory}}
         run:  npm run dev
