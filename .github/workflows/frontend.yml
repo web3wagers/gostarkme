@@ -7,7 +7,7 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     env:
-      working-directory: ./frontend/gostarkme-web
+      working-directory: frontend/gostarkme-web
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v4
