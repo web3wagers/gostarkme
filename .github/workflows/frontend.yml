@@ -22,9 +22,7 @@ jobs:
           cache-dependency-path: frontend/gostarkme-web/package-lock.json
 
       - name: 'Install dependencies'
-        run: |
-          cd frontend/gostarkme-web 
-          npm ci
+        run: npm ci
       
       - name: 'Build typescript'
         run: npm run build
