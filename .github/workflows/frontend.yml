@@ -19,13 +19,13 @@ jobs:
           cache-dependency-path: frontend/gostarkme-web/package-lock.json
 
       - name: 'Install dependencies'
-        run: npm ci
         working-directory: ${{env.working-directory}}
+        run: npm ci
       
       - name: 'Build typescript'
-        run: npm run build
         working-directory: ${{env.working-directory}}
+        run: npm run build
 
       - name: 'Run dev'
-        run:  npm run dev
         working-directory: ${{env.working-directory}}
+        run:  npm run dev
