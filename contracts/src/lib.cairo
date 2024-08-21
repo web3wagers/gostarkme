@@ -1,2 +1,7 @@
+mod constants;
+//  FUND
 mod fund;
-pub mod fundManager;
+mod fundManager;
+//  DONATOR
+mod donatorManager;
+mod donator;
