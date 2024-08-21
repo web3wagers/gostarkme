@@ -1,2 +1,2 @@
 mod fund;
-mod fundManager;
+pub mod fundManager;
