@@ -34,8 +34,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="text-gray-600">
-            Projects with a clear idea and direction can apply to start
-            receiving funds.
+            Projects with a clear idea, direction and good work progress can apply to start receiving funds.
           </div>
           <button
             type="button"
@@ -54,7 +53,7 @@ export default function Home() {
             </h2>
           </div>
           <p className="text-gray-600">
-            Charity organizations and people in need can apply to receive funds.
+            Charity organizations and people in need with economic problems can apply to receive funds.
           </p>
           <button
             type="button"
