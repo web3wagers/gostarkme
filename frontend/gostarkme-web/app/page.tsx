@@ -24,29 +24,29 @@ export default function Home() {
         />
       </section>
 
-      <section className="flex flex-row justify-center space-x-4 p-4">
+      <section className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-1.5 p-4 m-10">
         {/* <!-- Card 1 --> */}
-        <div className="flex flex-col gap-y-10 p-12 rounded-lg shadow-md bg-gray-100 grow-0 shrink-0">
+        <div className="flex flex-col gap-y-6 p-8 md:p-12 shadow-md bg-gray-100 grow-0 shrink-0 md:basis-1/2">
           <div>
             <h3 className="text-gray-600 font-semibold">We support</h3>
             <h2 className="text-2xl font-bold text-gray-900">
               Early stage Projects
             </h2>
           </div>
-          <div className="text-gray-600 w-full">
+          <div className="text-gray-600">
             Projects with a clear idea and direction can apply to start
             receiving funds.
           </div>
           <button
             type="button"
-            className="self-center bg-darkblue text-white mt-4 px-4 py-2 rounded-md shadow hover:bg-blue-700"
+            className="self-center bg-darkblue text-white text-sm mt-4 px-4 py-2 rounded-md hover:bg-starkorange active:bg-darkblue  ease-in-out duration-500 active:duration-0 shadow-gray-400"
           >
             Learn more
           </button>
         </div>
 
         {/* <!-- Card 2 --> */}
-        <div className="flex flex-col gap-y-10 p-12 rounded-lg shadow-md bg-gray-100 grow-0 shrink-0">
+        <div className="flex flex-col gap-y-6 p-8 md:p-12 shadow-md bg-gray-100 grow-0 shrink-0 md:basis-1/2">
           <div>
             <h3 className="text-gray-600 font-semibold">We support</h3>
             <h2 className="text-2xl font-bold text-gray-900">
@@ -58,7 +58,7 @@ export default function Home() {
           </p>
           <button
             type="button"
-            className="self-center bg-darkblue text-white mt-4 px-4 py-2 rounded-md shadow hover:bg-blue-700"
+            className="self-center bg-darkblue text-white text-sm mt-4 px-4 py-2 rounded-md hover:bg-starkorange active:bg-darkblue  ease-in-out duration-500 active:duration-0 shadow-gray-400"
           >
             Learn more
           </button>
