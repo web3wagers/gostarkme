@@ -13,6 +13,8 @@ const nextConfig = {
      * @see https://nextjs.org/docs/app/api-reference/next-config-js/basePath
      */
     basePath: "/gostarkme",
+
+    assetPrefix: 'https://web3wagers.github.io/gostarkme',
   
     /**
      * Disable server-based image optimization. Next.js does not support
