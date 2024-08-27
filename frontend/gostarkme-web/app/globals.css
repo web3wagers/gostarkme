@@ -8,4 +8,9 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  ol li {
+    list-style-type: decimal;
+    display: list-item;
+  }
 }
