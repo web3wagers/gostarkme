@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait IDonator<TContractState> {
+pub trait IDonator<TContractState> {
     fn getOwner(self: @TContractState) -> ContractAddress;
     fn getLevel(self: @TContractState) -> u32;
     fn getTotalStarkDonations(self: @TContractState) -> u64;
@@ -61,6 +61,7 @@ mod Donator {
         }
         fn updateDonatorValues(ref self: ContractState, donated_starks: u64) {
             let total_donator_pod = self.total_stark_donations.read() + donated_starks;
+            self.total_stark_donations.write(total_donator_pod);
             if (total_donator_pod > self.max_stark_donations_to_next_level.read()) {
                 self.level.write(self.level.read() + 1);
                 self
