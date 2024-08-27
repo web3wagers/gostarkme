@@ -1,7 +1,7 @@
+import { LinkButton } from "@/components/ui/LinkButton";
 import { WelcomeBar } from "@/components/welcomepage/WelcomeBar";
 import { WelcomeItems } from "@/components/welcomepage/WelcomeItems";
 import Image from "next/image";
-
 export default function Home() {
   return (
     <main className="flex min-h-screen w-full flex-col items-center">
@@ -36,12 +36,10 @@ export default function Home() {
           <div className="text-gray-600">
             Projects with a clear idea, direction and good work progress can apply to start receiving funds.
           </div>
-          <button
-            type="button"
-            className="self-center bg-darkblue text-white text-sm mt-4 px-4 py-2 rounded-md hover:bg-starkorange active:bg-darkblue  ease-in-out duration-500 active:duration-0 shadow-gray-400"
-          >
-            Learn more
-          </button>
+          <LinkButton
+            label="Learn more"
+            href="/guidelines/projects"
+          />
         </div>
 
         {/* <!-- Card 2 --> */}
@@ -55,12 +53,10 @@ export default function Home() {
           <p className="text-gray-600">
             Charity organizations and people in need with economic problems can apply to receive funds.
           </p>
-          <button
-            type="button"
-            className="self-center bg-darkblue text-white text-sm mt-4 px-4 py-2 rounded-md hover:bg-starkorange active:bg-darkblue  ease-in-out duration-500 active:duration-0 shadow-gray-400"
-          >
-            Learn more
-          </button>
+          <LinkButton
+            label="Learn more"
+            href="/guidelines/charity"
+          />
         </div>
       </section>
     </main>
