@@ -10,7 +10,7 @@
    scarb build
 3. **Run gostarkme unit test ✅**
    ```bash
-   snforce test
+   snforge test      
 4. **Run code formatter 📝**
    ```bash
    scarb fmt
