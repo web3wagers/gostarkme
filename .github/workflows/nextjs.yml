@@ -24,6 +24,10 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+defaults:
+  run:
+    working-directory: frontend/gostarkme-web
+
 jobs:
   # Build job
   build:
