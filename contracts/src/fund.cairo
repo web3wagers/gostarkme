@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait IFund<TContractState> {
+pub trait IFund<TContractState> {
     fn getId(self: @TContractState) -> u128;
     fn getOwner(self: @TContractState) -> ContractAddress;
     fn setName(ref self: TContractState, name: felt252);
