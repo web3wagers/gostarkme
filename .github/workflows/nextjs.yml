@@ -1,7 +1,3 @@
-# Sample workflow for building and deploying a Next.js site to GitHub Pages
-#
-# To get started with Next.js see: https://nextjs.org/docs/getting-started
-#
 name: Deploy Next.js site to Pages
 
 on:
@@ -29,6 +25,17 @@ defaults:
     working-directory: frontend/gostarkme-web
 
 jobs:
+  create-envfile:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Make envfile
+      uses: SpicyPizza/create-envfile@v1
+      with:
+        ROOT: https://web3wagers.github.io/gostarkme/
+        file_name: frontend/gostarkme-web/.env
+
   # Build job
   build:
     runs-on: ubuntu-latest
