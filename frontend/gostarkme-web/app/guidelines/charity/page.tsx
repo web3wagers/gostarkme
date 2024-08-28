@@ -1,7 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 import { WelcomeBar } from "@/components/welcomepage/WelcomeBar";
-import { WelcomeItems } from "@/components/welcomepage/WelcomeItems";
-import Image from "next/image";
 
 export default function CharityGuidelines() {
     return (
