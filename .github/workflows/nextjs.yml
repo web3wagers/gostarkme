@@ -34,7 +34,7 @@ jobs:
       uses: SpicyPizza/create-envfile@v1
       with:
         ROOT: https://web3wagers.github.io/gostarkme/
-        file_name: frontend/gostarkme-web/.env
+        file_name: .env
 
   # Build job
   build:
