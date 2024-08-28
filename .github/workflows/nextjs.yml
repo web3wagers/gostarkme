@@ -31,9 +31,9 @@ jobs:
  
     steps:
     - name: Make envfile
-      uses: SpicyPizza/create-envfile@v1
+      uses: SpicyPizza/create-envfile@v2.0
       with:
-        envkey_ROOT: https://web3wagers.github.io/gostarkme/
+        envkey_ROOT: "https://web3wagers.github.io/gostarkme/"
         file_name: .env
 
   # Build job
