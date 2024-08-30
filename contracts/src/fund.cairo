@@ -60,7 +60,7 @@ mod Fund {
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
-        self.up_votes.write(1);
+        self.up_votes.write(0);
         self.goal.write(goal);
         self.current_goal_state.write(0);
         self.state.write(FundStates::RECOLLECTING_VOTES);
@@ -98,8 +98,9 @@ mod Fund {
             assert(
                 self.state.read() == FundStates::RECOLLECTING_VOTES, 'Fund not recollecting votes!'
             );
-            self.voters.write(get_caller_address(), self.up_votes.read());
             self.up_votes.write(self.up_votes.read() + 1);
+            self.voters.write(get_caller_address(), self.up_votes.read());
+            // TODO: Validate this
             if self.up_votes.read() >= 1 {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
@@ -129,6 +130,7 @@ mod Fund {
         fn getCurrentGoalState(self: @ContractState) -> u64 {
             return self.current_goal_state.read();
         }
+        // TODO: Validate to change method to change setState and getState
         fn setIsActive(ref self: ContractState, state: u8) {
             self.state.write(state);
         }
