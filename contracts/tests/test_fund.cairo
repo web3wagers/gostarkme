@@ -16,6 +16,9 @@ fn ID() -> u128 {
 fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER'>()
 }
+fn OTHER_USER() -> ContractAddress {
+    contract_address_const::<'USER'>()
+}
 fn NAME() -> felt252 {
     'NAME_FUND_TEST'
 }
@@ -54,7 +57,7 @@ fn test_constructor() {
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
     assert(reason == REASON(), 'Invalid reason');
-    assert(up_votes == 1, 'Invalid up votes');
+    assert(up_votes == 0, 'Invalid up votes');
     assert(goal == GOAL(), 'Invalid goal');
     assert(current_goal_state == 0, 'Invalid current goal state');
     assert(state == 1, 'Invalid state');
@@ -96,3 +99,71 @@ fn test_set_goal() {
     assert(new_goal == 123, 'Set goal method not working')
 }
 
+#[test]
+fn test_receive_vote_successful() {
+    let contract_address = __setup__();
+    let dispatcher = IFundDispatcher { contract_address };
+    dispatcher.receiveVote();
+    let me = dispatcher.getVoter();
+    // Owner vote, fund have one vote
+    assert(me == 1, 'Owner is not in the voters');
+    let votes = dispatcher.getUpVotes();
+    assert(votes == 1, 'Vote unuseccessful');
+}
+
+#[test]
+#[should_panic(expected: ('User already voted!',))]
+fn test_receive_vote_unsuccessful_double_vote() {
+    let contract_address = __setup__();
+    let dispatcher = IFundDispatcher { contract_address };
+    dispatcher.receiveVote();
+    let me = dispatcher.getVoter();
+    // Owner vote, fund have one vote
+    assert(me == 1, 'Owner is not in the voters');
+    let votes = dispatcher.getUpVotes();
+    assert(votes == 1, 'Vote unuseccessful');
+    // Owner vote, second time
+    dispatcher.receiveVote();
+}
+
+#[test]
+#[should_panic(expected: ('Fund not recollecting votes!',))]
+fn test_receive_vote_unsuccessful_wrong_state() {
+    let contract_address = __setup__();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Owner vote, fund have one vote
+    dispatcher.receiveVote();
+    // Other user vote
+    snforge_std::start_prank(CheatTarget::One(contract_address), OTHER_USER());
+    dispatcher.receiveVote();
+}
+
+#[test]
+fn test_receive_donation_successful() {
+    let contract_address = __setup__();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Put state as recollecting dons
+    dispatcher.setIsActive(2);
+    // Put 10 strks as goal, only owner
+    snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
+    dispatcher.setGoal(10);
+    // Donate 5 strks
+    dispatcher.receiveDonation(5);
+    let current_goal_state = dispatcher.getCurrentGoalState();
+    assert(current_goal_state == 5, 'Receive donation not working');
+    // Donate 5 strks, the goal is done
+    dispatcher.receiveDonation(5);
+    let state = dispatcher.getIsActive();
+    assert(state == 3, 'State should be close');
+}
+
+#[test]
+#[should_panic(expected: ('Fund not recollecting dons!',))]
+fn test_receive_donation_unsuccessful_wrong_state() {
+    let contract_address = __setup__();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Put a wrong state to receive donations
+    dispatcher.setIsActive(1);
+    // Donate 
+    dispatcher.receiveDonation(5);
+}
