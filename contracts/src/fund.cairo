@@ -27,6 +27,8 @@ mod Fund {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use gostarkme::constants::{funds::{state_constants::FundStates},};
+    use gostarkme::constants::{funds::{fund_constants::FundConstants},};
+
 
     // *************************************************************************
     //                            STORAGE
@@ -60,9 +62,9 @@ mod Fund {
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
-        self.up_votes.write(0);
+        self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
-        self.current_goal_state.write(0);
+        self.current_goal_state.write(FundConstants::INITIAL_GOAL);
         self.state.write(FundStates::RECOLLECTING_VOTES);
     }
 
@@ -100,8 +102,7 @@ mod Fund {
             );
             self.up_votes.write(self.up_votes.read() + 1);
             self.voters.write(get_caller_address(), self.up_votes.read());
-            // TODO: Validate this
-            if self.up_votes.read() >= 1 {
+            if self.up_votes.read() >= FundConstants::UP_VOTES_NEED_IT {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
         }

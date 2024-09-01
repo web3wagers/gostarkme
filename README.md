@@ -34,7 +34,11 @@ If you are interested in contributing to Go Stark Me, please follow these steps:
 2. Comment on the issue you want to participate in, detailing how you plan to address it and how long you expect it to take.
 3. Wait to be assigned to the issue.
 
+Official Discord Channel:
+- [Web3Wagers](https://discord.gg/sEpnC6JB2U)
+
 You can also contact us on Telegram:
 
 - [@adrian_vrj](https://t.me/adrian_vrj)
 - [@EmmanuelDevCr](https://t.me/EmmanuelDevCr)
+
