@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 
 #[starknet::interface]
-trait IFund<TContractState> {
+pub trait IFund<TContractState> {
     fn getId(self: @TContractState) -> u128;
     fn getOwner(self: @TContractState) -> ContractAddress;
     fn setName(ref self: TContractState, name: felt252);
@@ -27,6 +27,8 @@ mod Fund {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use gostarkme::constants::{funds::{state_constants::FundStates},};
+    use gostarkme::constants::{funds::{fund_constants::FundConstants},};
+
 
     // *************************************************************************
     //                            STORAGE
@@ -60,9 +62,9 @@ mod Fund {
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
-        self.up_votes.write(1);
+        self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
-        self.current_goal_state.write(0);
+        self.current_goal_state.write(FundConstants::INITIAL_GOAL);
         self.state.write(FundStates::RECOLLECTING_VOTES);
     }
 
@@ -98,9 +100,9 @@ mod Fund {
             assert(
                 self.state.read() == FundStates::RECOLLECTING_VOTES, 'Fund not recollecting votes!'
             );
-            self.voters.write(get_caller_address(), self.up_votes.read());
             self.up_votes.write(self.up_votes.read() + 1);
-            if self.up_votes.read() >= 1 {
+            self.voters.write(get_caller_address(), self.up_votes.read());
+            if self.up_votes.read() >= FundConstants::UP_VOTES_NEEDED {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
         }
@@ -129,6 +131,7 @@ mod Fund {
         fn getCurrentGoalState(self: @ContractState) -> u64 {
             return self.current_goal_state.read();
         }
+        // TODO: Validate to change method to change setState and getState
         fn setIsActive(ref self: ContractState, state: u8) {
             self.state.write(state);
         }
