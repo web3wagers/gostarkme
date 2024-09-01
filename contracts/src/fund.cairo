@@ -102,7 +102,7 @@ mod Fund {
             );
             self.up_votes.write(self.up_votes.read() + 1);
             self.voters.write(get_caller_address(), self.up_votes.read());
-            if self.up_votes.read() >= FundConstants::UP_VOTES_NEED_IT {
+            if self.up_votes.read() >= FundConstants::UP_VOTES_NEEDED {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
         }

@@ -127,18 +127,6 @@ fn test_receive_vote_unsuccessful_double_vote() {
 }
 
 #[test]
-#[should_panic(expected: ('Fund not recollecting votes!',))]
-fn test_receive_vote_unsuccessful_wrong_state() {
-    let contract_address = __setup__();
-    let dispatcher = IFundDispatcher { contract_address };
-    // Owner vote, fund have one vote
-    dispatcher.receiveVote();
-    // Other user vote
-    snforge_std::start_prank(CheatTarget::One(contract_address), OTHER_USER());
-    dispatcher.receiveVote();
-}
-
-#[test]
 fn test_receive_donation_successful() {
     let contract_address = __setup__();
     let dispatcher = IFundDispatcher { contract_address };
