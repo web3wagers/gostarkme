@@ -5,7 +5,9 @@ export const StardustAnimation = () => {
   
     useEffect(() => {
       const canvas = canvasRef.current;
+      if (canvas == null) return;
       const ctx = canvas.getContext('2d');
+      if (ctx == null) return;
       let animationFrameId: number;
   
       // Set canvas size
