@@ -1,25 +1,27 @@
+'use client'
 import { LinkButton } from "@/components/ui/LinkButton";
 import { WelcomeBar } from "@/components/welcomepage/WelcomeBar";
 import { WelcomeItems } from "@/components/welcomepage/WelcomeItems";
 import Image from "next/image";
-import dotenv from 'dotenv';
+import { StardustAnimation } from "@/animations/StardustAnimation";
+
 export default function Home() {
-  dotenv.config();
-  const ROOT = process.env.ROOT;
+  const ROOT = process.env.NEXT_PUBLIC_APP_ROOT;
+  
   return (
     <main className="flex min-h-screen w-full flex-col items-center">
       <WelcomeBar />
       <section className="w-full max-w-screen-2xl grid grid-cols-1 md:grid-cols-2 p-10">
         <div className="justify-self-center flex flex-col  justify-center items-center md:items-start gap-4 p-4">
           <h1 className="text-4xl font-bold">Upload your cause</h1>
-          <WelcomeItems text="Give it a name." src={ROOT + "/icons/user.png"} />
-          <WelcomeItems text="Give a good purpose." src={ROOT + "/icons/target.png"} />
-          <WelcomeItems text="Recollect Stars." src={ROOT + "/icons/star.png"} />
-          <WelcomeItems text="Receive donations." src={ROOT + "/icons/starklogo.png"} />
+          <WelcomeItems text="Give it a name." src={ROOT + "icons/user.png"} />
+          <WelcomeItems text="Give a good purpose." src={ROOT + "icons/target.png"} />
+          <WelcomeItems text="Recollect Stars." src={ROOT + "icons/star.png"} />
+          <WelcomeItems text="Receive donations." src={ROOT + "icons/starklogo.png"} />
         </div>
-
+        <StardustAnimation />
         <Image
-          src={ROOT + "/images/starcard.png"}
+          src={ROOT + "images/starcard.png"}
           alt="stark logo"
           height={771}
           width={450}
