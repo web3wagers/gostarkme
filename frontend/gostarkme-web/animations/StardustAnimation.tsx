@@ -56,5 +56,5 @@ export const StardustAnimation = () => {
       };
     }, []);
   
-    return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+    return <canvas ref={canvasRef} className="relative top-0 left-0 w-full h-full" style={{position: 'absolute'}} />;
   };
