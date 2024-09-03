@@ -53,3 +53,32 @@ jobs:
         run: |
           cd contracts
           scarb check
+    
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            contracts_dir: 
+              - 'contracts/src/**'
+
+      - name: Install scarb
+        if: steps.changes.outputs.contracts_dir == 'true'
+        run: |
+          cd contracts
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+
+      - name: Install snfoundry
+        uses: foundry-rs/setup-snfoundry@v3
+        with:
+          starknet-foundry-version: "0.20.1"
+
+      - name: Run Cairo tests
+        id: cairo_tests
+        run: bash scripts/run_tests.sh
