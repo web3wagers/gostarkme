@@ -1,6 +1,6 @@
-// *************************************************************************
+// *************************
 //                              FUND TEST
-// *************************************************************************
+// *************************
 use starknet::{ContractAddress, contract_address_const};
 
 use snforge_std::{declare, ContractClassTrait, CheatTarget};
@@ -22,28 +22,27 @@ fn OTHER_USER() -> ContractAddress {
 fn NAME() -> felt252 {
     'NAME_FUND_TEST'
 }
-fn REASON() -> felt252 {
-    'REASON_FUND_TEST'
+fn REASON() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn GOAL() -> u64 {
     1000
 }
-fn __setup__() -> ContractAddress {
+fn _setup_() -> ContractAddress {
     let contract = declare("Fund");
     let mut calldata: Array<felt252> = array![];
     calldata.append_serde(ID());
     calldata.append_serde(OWNER());
     calldata.append_serde(NAME());
-    calldata.append_serde(REASON());
     calldata.append_serde(GOAL());
     contract.deploy(@calldata).unwrap()
 }
-// *************************************************************************
+// *************************
 //                              TEST
-// *************************************************************************
+// *************************
 #[test]
 fn test_constructor() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let id = dispatcher.getId();
     let owner = dispatcher.getOwner();
@@ -56,7 +55,7 @@ fn test_constructor() {
     assert(id == ID(), 'Invalid id');
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
-    assert(reason == REASON(), 'Invalid reason');
+    assert(reason == " ", 'Invalid reason');
     assert(up_votes == 0, 'Invalid up votes');
     assert(goal == GOAL(), 'Invalid goal');
     assert(current_goal_state == 0, 'Invalid current goal state');
@@ -65,7 +64,7 @@ fn test_constructor() {
 
 #[test]
 fn test_set_name() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let name = dispatcher.getName();
     assert(name == NAME(), 'Invalid name');
@@ -77,19 +76,19 @@ fn test_set_name() {
 
 #[test]
 fn test_set_reason() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.getReason();
-    assert(reason == REASON(), 'Invalid reason');
+    assert(reason == " ", 'Invalid reason');
     snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
-    dispatcher.setReason('NEW_REASON');
+    dispatcher.setReason(REASON());
     let new_reason = dispatcher.getReason();
-    assert(new_reason == 'NEW_REASON', 'Set reason method not working')
+    assert(new_reason == REASON(), 'Set reason method not working')
 }
 
 #[test]
 fn test_set_goal() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
@@ -101,7 +100,7 @@ fn test_set_goal() {
 
 #[test]
 fn test_receive_vote_successful() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     dispatcher.receiveVote();
     let me = dispatcher.getVoter();
@@ -114,7 +113,7 @@ fn test_receive_vote_successful() {
 #[test]
 #[should_panic(expected: ('User already voted!',))]
 fn test_receive_vote_unsuccessful_double_vote() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     dispatcher.receiveVote();
     let me = dispatcher.getVoter();
@@ -128,7 +127,7 @@ fn test_receive_vote_unsuccessful_double_vote() {
 
 #[test]
 fn test_receive_donation_successful() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     // Put state as recollecting dons
     dispatcher.setIsActive(2);
@@ -148,7 +147,7 @@ fn test_receive_donation_successful() {
 #[test]
 #[should_panic(expected: ('Fund not recollecting dons!',))]
 fn test_receive_donation_unsuccessful_wrong_state() {
-    let contract_address = __setup__();
+    let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     // Put a wrong state to receive donations
     dispatcher.setIsActive(1);
