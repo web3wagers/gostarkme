@@ -1,10 +1,10 @@
 # Pull Request
 
-[] Closes #
-[] Added tests (if necessary)
-[] Run tests
-[] Run formatting
-[] Commented the code
+- [ ] Closes #
+- [ ] Added tests (if necessary)
+- [ ] Run tests
+- [ ] Run formatting
+- [ ] Commented the code
 
 ## Changes description
 
