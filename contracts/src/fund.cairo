@@ -6,8 +6,8 @@ pub trait IFund<TContractState> {
     fn getOwner(self: @TContractState) -> ContractAddress;
     fn setName(ref self: TContractState, name: felt252);
     fn getName(self: @TContractState) -> felt252;
-    fn setReason(ref self: TContractState, reason: felt252);
-    fn getReason(self: @TContractState) -> felt252;
+    fn setReason(ref self: TContractState, reason: ByteArray);
+    fn getReason(self: @TContractState) -> ByteArray;
     fn receiveVote(ref self: TContractState);
     fn getUpVotes(self: @TContractState) -> u32;
     fn setGoal(ref self: TContractState, goal: u64);
@@ -38,7 +38,7 @@ mod Fund {
         id: u128,
         owner: ContractAddress,
         name: felt252,
-        reason: felt252,
+        reason: ByteArray,
         up_votes: u32,
         voters: LegacyMap::<ContractAddress, u32>,
         goal: u64,
@@ -55,13 +55,12 @@ mod Fund {
         id: u128,
         owner: ContractAddress,
         name: felt252,
-        reason: felt252,
         goal: u64
     ) {
         self.id.write(id);
         self.owner.write(owner);
         self.name.write(name);
-        self.reason.write(reason);
+        self.reason.write("");
         self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
         self.current_goal_state.write(FundConstants::INITIAL_GOAL);
@@ -87,12 +86,12 @@ mod Fund {
         fn getName(self: @ContractState) -> felt252 {
             return self.name.read();
         }
-        fn setReason(ref self: ContractState, reason: felt252) {
+        fn setReason(ref self: ContractState, reason: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             self.reason.write(reason);
         }
-        fn getReason(self: @ContractState) -> felt252 {
+        fn getReason(self: @ContractState) -> ByteArray {
             return self.reason.read();
         }
         fn receiveVote(ref self: ContractState) {
