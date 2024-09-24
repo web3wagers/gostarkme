@@ -14,6 +14,8 @@ The best way to contribute to our projects is by opening a new issue <a href="ht
 
 # Pull Requests
 
+When assigned, please fork the repo and create a new branch to develop your issue. Once finished, open a PR and it will be reviewed by a mantainer ASAP.
+
 1. When picking up an issue give a brief presentation about yourself.
 
 ```
