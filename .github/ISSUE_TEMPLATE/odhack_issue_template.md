@@ -1,6 +1,6 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: ODHack Issue
+about: Issue that will be solved during an ODHack
 title: ''
 labels: ''
 assignees: ''
