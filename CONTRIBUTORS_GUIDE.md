@@ -41,7 +41,7 @@ This is how I would tackle this issue:
 
 7. Push to your fork and submit a pull request on our `dev` branch. Please provide us with some explanation of why you made the changes you made. For new features make sure to explain a standard use case to us.
 
-## CI (Github Actions)
+## CI (GitHub Actions)
 
 We use GitHub Actions to verify if the code of your PR passes all our checks.
 
