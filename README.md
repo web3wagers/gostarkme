@@ -14,17 +14,11 @@ Join us on Go Stark Me and make a difference by supporting meaningful projects i
 
 ![UML Class Diagram](https://github.com/user-attachments/assets/479c9296-e3ac-4ad3-bf79-5f458c456a45)
 
-
 ## Our Vision for UI
 
 You can check the prototype we have in mind and suggest any improvement, if you feel capable of reproducing some of the pages please contact one of the product owners.
 
 - [Figma prototype](https://www.figma.com/design/SCiGViaoPT9UTrT7CsLbAt/Go-Stark-Me?node-id=0-1&t=FUhnIhNcXRIGkQ16-1)
-
-## Contributors
-
-- [EmmanuelAR](https://github.com/EmmanuelAR)
-- [adrianvrj](https://github.com/adrianvrj)
 
 ## Want to Contribute?
 
@@ -35,6 +29,7 @@ If you are interested in contributing to Go Stark Me, please follow these steps:
 3. Wait to be assigned to the issue.
 
 Official Discord Channel:
+
 - [Web3Wagers](https://discord.gg/sEpnC6JB2U)
 
 You can also contact us on Telegram:
@@ -42,3 +37,18 @@ You can also contact us on Telegram:
 - [@adrian_vrj](https://t.me/adrian_vrj)
 - [@EmmanuelDevCr](https://t.me/EmmanuelDevCr)
 
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!
