@@ -12,7 +12,8 @@ export const FundVote = ({ icon }: FundVoteProps) => {
       <ProgressBar progress={34} />
       <div className="flex justify-center my-2">
         <p className="text-center mx-2">200 / 300 </p>
-        <Image src={icon || ""} alt="icon" width={24} height={24} />
+        {/* <Image src={icon || ""} alt="icon" width={24} height={24} /> */}
+        <p>&#127775;</p>
       </div>
       <LinkButton label="Vote" href="/" />
     </div>
