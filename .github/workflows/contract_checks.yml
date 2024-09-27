@@ -29,7 +29,6 @@ jobs:
       - name: Setup Scarb
         uses: software-mansion/setup-scarb@v1
         if: steps.changes.outputs.contracts_dir == 'true'
-        working-directory: contracts
         with:
           scarb-version: "2.6.5"
 
@@ -54,7 +53,6 @@ jobs:
       - name: Install scarb
         uses: software-mansion/setup-scarb@v1
         if: steps.changes.outputs.contracts_dir == 'true'
-        working-directory: contracts
         with:
           scarb-version: "2.6.5"
 
@@ -80,7 +78,6 @@ jobs:
       - name: Install Scarb
         uses: software-mansion/setup-scarb@v1
         if: steps.changes.outputs.contracts_dir == 'true'
-        working-directory: contracts
         with:
           scarb-version: "2.6.5"
 
