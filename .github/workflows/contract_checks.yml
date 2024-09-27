@@ -10,6 +10,8 @@ on:
       - dev
       - main
 
+  workflow_dispatch:
+
 jobs: 
   check-lint:
     runs-on: ubuntu-latest
