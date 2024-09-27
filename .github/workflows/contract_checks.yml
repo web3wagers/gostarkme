@@ -17,17 +17,17 @@ jobs:
             contracts_dir: 
               - 'contracts/src/**'
 
-      - name: Install scarb
+      - name: Setup Scarb
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+        working-directory: contracts
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.6.5"
 
-      - name: Run scarb fmt
+      - name: Run Scarb formatting
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          scarb fmt
+        working-directory: contracts
+        run: scarb fmt
   
   check-contracts-changes:
     runs-on: ubuntu-latest
@@ -44,15 +44,15 @@ jobs:
               
       - name: Install scarb
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: | 
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+        working-directory: contracts
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.6.5"
 
-      - name: Run scarb check
+      - name: Run Scarb check
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          scarb check
+        working-directory: contracts
+        run: scarb check
     
   run-tests:
     runs-on: ubuntu-latest
@@ -68,11 +68,13 @@ jobs:
             contracts_dir: 
               - 'contracts/src/**'
 
-      - name: Install scarb
+      - name: Install Scarb
         if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+        working-directory: contracts
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.6.5"
+
 
       - name: Install snfoundry
         uses: foundry-rs/setup-snfoundry@v3
