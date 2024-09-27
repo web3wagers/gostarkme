@@ -41,8 +41,8 @@ export const Navbar = ({
                         <span className="text-lg md:text-xl font-semibold">{title}</span>
                     </div>
                     <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 mb-4 md:mb-0">
-                        {navItems.map((item, index) => (
-                            <Link key={index} href={item.href} className="text-gray-700 hover:text-gray-900">
+                        {navItems.map((item) => (
+                            <Link key={item.href} href={item.href} className="text-gray-700 hover:text-gray-900">
                                 {item.label}
                             </Link>
                         ))}
