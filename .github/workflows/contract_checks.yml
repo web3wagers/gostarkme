@@ -28,12 +28,12 @@ jobs:
 
       - name: Setup Scarb
         uses: software-mansion/setup-scarb@v1
-        if: steps.changes.outputs.contracts_dir == 'true'
+        #if: steps.changes.outputs.contracts_dir == 'true'
         with:
           scarb-version: "2.6.5"
 
       - name: Run Scarb formatting
-        if: steps.changes.outputs.contracts_dir == 'true'
+        #if: steps.changes.outputs.contracts_dir == 'true'
         working-directory: contracts
         run: scarb fmt
   
@@ -52,12 +52,12 @@ jobs:
               
       - name: Install scarb
         uses: software-mansion/setup-scarb@v1
-        if: steps.changes.outputs.contracts_dir == 'true'
+        #if: steps.changes.outputs.contracts_dir == 'true'
         with:
           scarb-version: "2.6.5"
 
       - name: Run Scarb check
-        if: steps.changes.outputs.contracts_dir == 'true'
+        #if: steps.changes.outputs.contracts_dir == 'true'
         working-directory: contracts
         run: scarb check
     
@@ -77,7 +77,7 @@ jobs:
 
       - name: Install Scarb
         uses: software-mansion/setup-scarb@v1
-        if: steps.changes.outputs.contracts_dir == 'true'
+        #if: steps.changes.outputs.contracts_dir == 'true'
         with:
           scarb-version: "2.6.5"
 
