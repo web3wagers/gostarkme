@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Footer from "./Footer";
 
 interface BoundedProps {
   children: ReactNode;
@@ -15,8 +16,7 @@ const Bounded = ({ children, className }: BoundedProps) => {
       >
         {children}
       </main>
-      <footer>Footer</footer>
-      {/* Here could be the footer layout */}
+      <Footer />
     </div>
   );
 };
