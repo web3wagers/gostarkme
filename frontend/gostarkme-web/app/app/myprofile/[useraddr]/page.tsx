@@ -1,11 +1,22 @@
 import ProgressBar from '@/components/ui/ProgressBar';
 import Divider from '@/components/ui/Divider';
 import Image from 'next/image';
+import Footer from '@/components/ui/Footer';
+import Navbar from '@/components/ui/Navbar';
+
+const navItems = [
+  { label: 'My Profile', href: '/profile' },
+  { label: 'My funds', href: '/funds' }
+];
 
 interface UserProfilePageProps {
   params: {
     useraddr: string;
   };
+}
+
+export function generateStaticParams() {
+  return [{ useraddr: '1' }]
 }
 
 const UserProfilePage: React.FC<UserProfilePageProps> = ({ params }) => {
@@ -22,9 +33,16 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ params }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="w-full">
-        {/* TODO:The navbar can be added here in the future */}
-      </header>
+      <Navbar
+        logoSrc={process.env.NEXT_PUBLIC_APP_ROOT + "icons/starklogo.png"}
+        logoAlt="Go Stark Me logo"
+        title="Go Stark Me"
+        navItems={navItems}
+        ctaButton={{
+          label: "Connect wallet",
+          href: "/"
+        }}
+      />
 
       <main className="flex flex-grow w-full items-center justify-center bg-white p-8">
         {/* Profile Section */}
@@ -77,6 +95,7 @@ const UserProfilePage: React.FC<UserProfilePageProps> = ({ params }) => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 };
