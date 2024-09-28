@@ -16,6 +16,7 @@ const config: Config = {
       colors: {
         darkblue: "#0C0C4F",
         starkorange: "#ED796C",
+        blueGrey: '#0C0C4F9C',
       },
     },
   },
