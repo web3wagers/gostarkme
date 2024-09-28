@@ -2,6 +2,7 @@
 import { LinkButton } from "@/components/ui/LinkButton";
 import { WelcomeBar } from "@/components/welcomepage/WelcomeBar";
 import { WelcomeItems } from "@/components/welcomepage/WelcomeItems";
+import Footer from "@/components/ui/Footer";
 import Image from "next/image";
 import { StardustAnimation } from "@/animations/StardustAnimation";
 
@@ -102,6 +103,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
