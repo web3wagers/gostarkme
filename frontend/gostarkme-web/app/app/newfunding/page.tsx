@@ -1,5 +1,3 @@
-// pages/NewFundingPage.tsx
-
 "use client"; // Mark this component as a Client Component
 import Bounded from "@/components/ui/Bounded";
 import Divider from "@/components/ui/Divider";
