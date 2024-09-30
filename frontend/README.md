@@ -3,8 +3,9 @@
 
 ### Pre-requisites
 
-- Install Node/Npm (see [here](https://nodejs.org/en))
+- Install Node.js (v20.15.1) using Node Version Manager (NVM)
 
+    We recommend using  [Node Version Manager (NVM) ](https://github.com/nvm-sh/nvm) to easily manage different versions of Node.js on your system.
 
 ### Local configurations
 
