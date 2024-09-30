@@ -23,7 +23,7 @@ const FundCards = ({ fund, index }: FundCardProps) => {
       >
         <div className="flex flex-col items-start justify-between gap-4 md:gap-6">
           <p className=" text-sm md:text-base lg:text-lg text-white font-light leading-[22px] md:leading-[25px] lg:leading-[27.6px]">
-            {fund.type} {fund.type === "Project" ? "\u{1F680}" : "\u{1FAC0}"}
+            {fund.type} {fund.type === "Project" ? <span>&#x1f680;</span> : <span>&#x1FAC0;</span>}
           </p>
           <h1 className="text-xl md:text-2xl lg:text-[40px] font-bold">
             {fund.title}
