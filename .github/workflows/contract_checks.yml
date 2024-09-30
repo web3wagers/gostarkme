@@ -18,7 +18,7 @@ jobs:
     outputs:
       contracts_dir: ${{ steps.changes.outputs.contracts_dir }}
     steps:
-      - uses: actions/checkout@v2\
+      - uses: actions/checkout@v2
 
       - name: Check for changes
         uses: dorny/paths-filter@v3
