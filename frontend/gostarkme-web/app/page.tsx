@@ -5,13 +5,17 @@ import { WelcomeItems } from "@/components/welcomepage/WelcomeItems";
 import Footer from "@/components/ui/Footer";
 import Image from "next/image";
 import { StardustAnimation } from "@/animations/StardustAnimation";
+import useComponentSize from "@/hooks/useComponentSize.hook";
 
 export default function Home() {
   const ROOT = process.env.NEXT_PUBLIC_APP_ROOT;
-  
+
+  const [ref, width, height] = useComponentSize();
+
   return (
-    <main className="flex min-h-screen w-full flex-col items-center">
+    <main className="flex min-h-screen w-full flex-col items-center" >
       <WelcomeBar />
+      <div className="w-full max-w-screen-2xl relative" ref={ref}>
       <section className="w-full max-w-screen-2xl grid grid-cols-1 md:grid-cols-2 p-10">
         <div className="justify-self-center flex flex-col  justify-center items-center md:items-start gap-4 p-4">
           <h1 className="text-4xl font-bold">Upload your cause</h1>
@@ -19,8 +23,7 @@ export default function Home() {
           <WelcomeItems text="Give a good purpose." src={ROOT + "icons/target.png"} />
           <WelcomeItems text="Recollect Stars." src={ROOT + "icons/star.png"} />
           <WelcomeItems text="Receive donations." src={ROOT + "icons/starklogo.png"} />
-        </div>
-        <StardustAnimation />
+        </div>       
         <Image
           src={ROOT + "images/starcard.png"}
           alt="stark logo"
@@ -29,7 +32,8 @@ export default function Home() {
           className="self-center justify-self-center w-2/3 max-w-80 rounded-2xl"
         />
       </section>
-
+      <StardustAnimation height={height} width={width} />
+      </div>
       <section className="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-1.5 p-4 m-10">
         {/* <!-- Card 1 --> */}
         <div className="flex flex-col gap-y-6 p-8 md:p-12 shadow-md bg-gray-100 grow-0 shrink-0 md:basis-1/2">
