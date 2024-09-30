@@ -2,6 +2,10 @@ import Fund from "@/components/modules/Fund/Fund";
 import Bounded from "@/components/ui/Bounded";
 import Divider from "@/components/ui/Divider";
 
+export function generateStaticParams() {
+  return [{ fundId: '1' }]
+}
+
 const FundDetailsPage = async ({ params }: { params: { fundId: string } }) => {
   return (
     <>
