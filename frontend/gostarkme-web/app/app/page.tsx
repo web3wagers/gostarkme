@@ -1,4 +1,5 @@
 import FundCards from "@/components/dashboard/fundCard";
+import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
 import React from "react";
 
@@ -62,6 +63,7 @@ const Dashboard = () => {
           <FundCards key={index} fund={fund} index={index} />
         ))}
       </div>
+      <Footer></Footer>
     </div>
   );
 };
