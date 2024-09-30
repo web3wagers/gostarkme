@@ -86,7 +86,7 @@ jobs:
         uses: foundry-rs/setup-snfoundry@v3
         if: needs.determine-changes.outputs.contracts_dir == 'true'
         with:
-          starknet-foundry-version: "0.20.1"
+          starknet-foundry-version: "0.27.0"
 
       - name: Run Cairo tests
         if: needs.determine-changes.outputs.contracts_dir == 'true'
