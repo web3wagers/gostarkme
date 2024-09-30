@@ -48,23 +48,28 @@ fn test_constructor() {
 }
 
 
-// #[test]
-// fn test_new_donator(){
-//     start_cheat_caller_address_global(OWNER());
+#[test]
+fn test_new_donator(){
+    start_cheat_caller_address_global(OWNER());
 
-//     let donator = declare("Donator").unwrap();
-//     let mut donator_calldata: Array<felt252> = array![];
-//     donator_calldata.append_serde(OWNER());
-//     let (expected_donator_address, _)  = donator.deploy(@donator_calldata).unwrap();
-//     let donator_class_hash = get_class_hash(expected_donator_address);
+    // Deploy Donator Contract
+    let donator = declare("Donator").unwrap();
+    let mut donator_calldata: Array<felt252> = array![];
+    donator_calldata.append_serde(OWNER());
+    let (expected_donator_address, _)  = donator.deploy(@donator_calldata).unwrap();
+    let donator_class_hash = get_class_hash(expected_donator_address); // Retrieve Class Hash from the deployed contract
 
-//     let donator_manager = declare("DonatorManager").unwrap();
-//     let mut donator_manager_calldata: Array<felt252> = array![];
-//     donator_manager_calldata.append_serde(donator_class_hash);
-//     let (contract_address, _) = donator_manager.deploy(@donator_manager_calldata).unwrap();
-//     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
+    // Deploy Donator Manager Contract
+    let donator_manager = declare("DonatorManager").unwrap();
+    let mut donator_manager_calldata: Array<felt252> = array![];
+    donator_manager_calldata.append_serde(donator_class_hash);
+    let (contract_address, _) = donator_manager.deploy(@donator_manager_calldata).unwrap();
+    let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
 
-//     donator_manager_contract.newDonator();
+    donator_manager_contract.newDonator();
 
-//     assert(OWNER() == donator_manager_contract.getDonatorByAddress(OWNER()), 'Invalid donator address');
-// }
+    let expected_donator_class_hash = get_class_hash(donator_manager_contract.getDonatorByAddress(OWNER()));
+
+    // Assert that in the Donator Manager contract the deployed Donator match de expected class hash
+    assert(donator_manager_donator_class_hash == donator_class_hash, 'Invalid donator address');
+}
