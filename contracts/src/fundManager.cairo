@@ -5,7 +5,7 @@ use starknet::class_hash::ClassHash;
 pub trait IFundManager<TContractState> {
     fn newFund(ref self: TContractState, name: felt252, goal: u64);
     fn getCurrentId(self: @TContractState) -> u128;
-    fn getFund(self: @TContractState, id: u128) -> ContractAddress;
+    // fn getFund(self: @TContractState, id: u128) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -62,8 +62,8 @@ mod FundManager {
         fn getCurrentId(self: @ContractState) -> u128 {
             return self.current_id.read();
         }
-        fn getFund(self: @ContractState, id: u128) -> ContractAddress {
-            return self.funds.read(id);
-        }
+        // fn getFund(self: @ContractState, id: u128) -> ContractAddress {
+        //     return self.funds.read(id);
+        // }
     }
 }
