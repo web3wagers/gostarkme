@@ -35,7 +35,7 @@ fn _setup_() -> ContractAddress {
     calldata.append_serde(OWNER());
     calldata.append_serde(NAME());
     calldata.append_serde(GOAL());
-    let (contract_address,_) = contract.deploy(@calldata).unwrap();
+    let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
 // *************************
