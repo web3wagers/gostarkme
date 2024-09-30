@@ -73,5 +73,5 @@ fn test_new_donator() {
     );
 
     // Assert that in the Donator Manager contract the deployed Donator match de expected class hash
-    assert(donator_manager_donator_class_hash == donator_class_hash, 'Invalid donator address');
+    assert(expected_donator_class_hash == donator_class_hash, 'Invalid donator address');
 }
