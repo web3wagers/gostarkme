@@ -14,10 +14,11 @@ fn OWNER() -> ContractAddress {
 }
 
 fn __setup__() -> ContractAddress {
-    let contract = declare("Donator");
+    let contract = declare("Donator").unwrap();
     let mut calldata: Array<felt252> = array![];
     calldata.append_serde(OWNER());
-    contract.deploy(@calldata).unwrap()
+    let (address, _) = contract.deploy(@calldata).unwrap();
+    address
 }
 
 // *************************************************************************

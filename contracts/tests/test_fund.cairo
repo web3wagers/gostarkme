@@ -3,7 +3,7 @@
 // *************************
 use starknet::{ContractAddress, contract_address_const};
 
-use snforge_std::{declare, ContractClassTrait, CheatTarget};
+use snforge_std::{declare, ContractClassTrait, start_cheat_caller_address_global};
 
 use openzeppelin::utils::serde::SerializedAppend;
 
@@ -29,13 +29,14 @@ fn GOAL() -> u64 {
     1000
 }
 fn _setup_() -> ContractAddress {
-    let contract = declare("Fund");
+    let contract = declare("Fund").unwrap();
     let mut calldata: Array<felt252> = array![];
     calldata.append_serde(ID());
     calldata.append_serde(OWNER());
     calldata.append_serde(NAME());
     calldata.append_serde(GOAL());
-    contract.deploy(@calldata).unwrap()
+    let (contract_address, _) = contract.deploy(@calldata).unwrap();
+    contract_address
 }
 // *************************
 //                              TEST
@@ -68,7 +69,7 @@ fn test_set_name() {
     let dispatcher = IFundDispatcher { contract_address };
     let name = dispatcher.getName();
     assert(name == NAME(), 'Invalid name');
-    snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
+    start_cheat_caller_address_global(OWNER());
     dispatcher.setName('NEW_NAME');
     let new_name = dispatcher.getName();
     assert(new_name == 'NEW_NAME', 'Set name method not working')
@@ -80,7 +81,7 @@ fn test_set_reason() {
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.getReason();
     assert(reason == " ", 'Invalid reason');
-    snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
+    start_cheat_caller_address_global(OWNER());
     dispatcher.setReason(REASON());
     let new_reason = dispatcher.getReason();
     assert(new_reason == REASON(), 'Set reason method not working')
@@ -92,7 +93,7 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
-    snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
+    start_cheat_caller_address_global(OWNER());
     dispatcher.setGoal(123);
     let new_goal = dispatcher.getGoal();
     assert(new_goal == 123, 'Set goal method not working')
@@ -132,7 +133,7 @@ fn test_receive_donation_successful() {
     // Put state as recollecting dons
     dispatcher.setIsActive(2);
     // Put 10 strks as goal, only owner
-    snforge_std::start_prank(CheatTarget::One(contract_address), OWNER());
+    start_cheat_caller_address_global(OWNER());
     dispatcher.setGoal(10);
     // Donate 5 strks
     dispatcher.receiveDonation(5);
