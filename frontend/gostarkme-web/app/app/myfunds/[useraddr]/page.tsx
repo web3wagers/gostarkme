@@ -22,7 +22,6 @@ const MyFundsPage: React.FC<MyFundsPageProps> = ({ params }) => {
         type: "Project",
         title: "Batman's fund",
         description: "Example of card without delete button",
-        onClick: handleDeleteFund
       },
       {
         id: 2,
@@ -90,7 +89,7 @@ const MyFundsPage: React.FC<MyFundsPageProps> = ({ params }) => {
                 type={fund.type} 
                 title={fund.title} 
                 description={fund.description} 
-                onClick={fund.onClick}
+                {... fund.onClick && { onClick: () => fund.onClick(fund.id) }}
               />
             ))}
           </div>

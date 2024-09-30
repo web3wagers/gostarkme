@@ -7,7 +7,7 @@ interface FundCardProps {
     type: FundType;
     title: string;
     description: string;
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 const FundCard: React.FC<FundCardProps> = ({ type, title, description, onClick }) => {
@@ -24,12 +24,14 @@ const FundCard: React.FC<FundCardProps> = ({ type, title, description, onClick }
             <span className='text-1xl'>{type}</span>
             <span dangerouslySetInnerHTML={{ __html: fundEmoji}} className="ml-1" />
           </span>
-          <button 
-            className="bg-[#C92B25] text-white py-0.5 px-8 rounded-md hover:bg-red-700 transition-colors cursor-pointer" 
-            onClick={onClick}
-          >
-            Delete
-          </button>
+          {onClick && (
+            <button 
+              className="bg-[#C92B25] text-white py-0.5 px-8 rounded-md hover:bg-red-700 transition-colors cursor-pointer" 
+              onClick={onClick}
+            >
+              Delete
+            </button>
+          )}
         </div>
         <h1 className="text-4xl font-bold mb-5">{title}</h1>
         <div className="h-16 overflow-hidden overflow-ellipsis">
