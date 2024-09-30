@@ -25,12 +25,12 @@ const FundCards = ({ fund, index }: FundCardProps) => {
           <p className=" text-sm md:text-base lg:text-lg text-white font-light leading-[22px] md:leading-[25px] lg:leading-[27.6px]">
             {fund.type} {fund.type === "Project" ? <span>&#x1f680;</span> : <span>&#x1FAC0;</span>}
           </p>
-          <h1 className="text-xl md:text-2xl lg:text-[40px] font-bold">
+          <h1 className="text-xl md:text-xl lg:text-[40px] font-bold">
             {fund.title}
           </h1>
         </div>
         <div>
-          <p className="text-lg md:text-2xl lg:text-4xl text-white">
+          <p className="text-lg md:text-lg lg:text-4xl text-white">
             {fund.description}
           </p>
         </div>
