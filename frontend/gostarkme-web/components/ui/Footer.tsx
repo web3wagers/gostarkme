@@ -47,7 +47,7 @@ const Footer = (): React.JSX.Element => {
               />
             </svg>
           </a>
-          <a className="mx-1" href="https://discord.gg/26sQ6dbY">
+          <a className="mx-1" href="https://discord.gg/sEpnC6JB2U">
             <svg
               height="35"
               viewBox="0 0 24 24"

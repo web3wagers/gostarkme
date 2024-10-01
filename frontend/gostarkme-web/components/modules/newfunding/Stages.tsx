@@ -8,12 +8,29 @@ const Stages = () => {
   const [fundingName, setFundingName] = useState("");
   const [name, setName] = useState("");
   const [fundingDescription, setFundingDescription] = useState("");
+  const [errors, setErrors] = useState({ fundingName: "", name: "" });
 
   const handleNextStep = () => {
-    if (currentStep === 0 && (!fundingName || !name)) {
-      return;
+    // Reset errors
+    setErrors({ fundingName: "", name: "" });
+
+    // Validate fields
+    let hasErrors = false;
+    if (currentStep === 0) {
+      if (!fundingName) {
+        setErrors((prev) => ({ ...prev, fundingName: "Funding name is required." }));
+        hasErrors = true;
+      }
+      if (!name) {
+        setErrors((prev) => ({ ...prev, name: "The goal is required." }));
+        hasErrors = true;
+      }
     }
-    setCurrentStep((prev) => (prev === 1 ? 0 : prev + 1));
+
+    // If there are no errors, proceed to the next step
+    if (!hasErrors) {
+      setCurrentStep((prev) => (prev === 1 ? 0 : prev + 1));
+    }
   };
 
   const handleSubmit = () => {
@@ -35,6 +52,8 @@ const Stages = () => {
           setFundingName={setFundingName}
           name={name}
           setName={setName}
+          errors={errors} // Pass errors down
+          setErrors={setErrors} // Pass setErrors down
         />
       ) : (
         <DescriptionStep
