@@ -47,7 +47,6 @@ mod DonatorManager {
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
         fn newDonator(ref self: ContractState) {
             let mut calldata = ArrayTrait::<felt252>::new();
-
             calldata.append(get_caller_address().try_into().unwrap());
 
             let (address_0, _) = deploy_syscall(
