@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export const StardustAnimation = ({height, width}: {height: number, width: number}) => {
+export const StardustAnimation = ({height, width}: {height?: number, width?: number}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
   
     useEffect(() => {
@@ -11,8 +11,8 @@ export const StardustAnimation = ({height, width}: {height: number, width: numbe
       let animationFrameId: number;
   
       // Set canvas size
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = width ?? window.innerWidth;
+      canvas.height = height ?? window.innerHeight;
   
       // Create stars
       const stars: { x: number; y: number; size: number; speed: number; }[] = [];
