@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import FundCard from '@/components/modules/myfunds/FundCard';
+import { Button } from '@/components/ui/Button';
 
 interface UserFundsProps {
   userAddress: string;
@@ -41,9 +42,21 @@ const UserFunds: React.FC<UserFundsProps> = ({ userAddress }) => {
     alert(`Deleting fund with id: ${fundId}`);
   }
 
+  const onNewFundHandler = () => {
+    // TODO: Implement new fund action
+    alert(`Creating new fund`);
+  }
+
   return (
-    <div>
-        {funds.length === 0 ? (
+    <div className="max-w-screen-2xl mx-auto bg-white p-4 w-full">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center">
+          <h1 className="text-2xl font-bold mr-2">My Funds &#10024;</h1>
+        </div>
+        <Button className='!px-12 !py-2.5' label='New' onClick={onNewFundHandler} />
+      </div>
+
+      {funds.length === 0 ? (
         <div className="flex justify-center items-center h-64">
             <div className="text-center text-gray-500">
             No funds found for address {userAddress.slice(0, 5)}...{userAddress.slice(-4)}
