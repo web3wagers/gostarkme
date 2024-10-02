@@ -65,7 +65,7 @@ fn test_constructor() {
     let expected_fund_address = fund_manager_contract.getFundClassHash();
     let owner = fund_manager_contract.getOwner();
     assert(owner == OWNER(), 'Invalid owner');
-    assert(fund_class_hash == expected_fund_address, 'Invalid donator class hash');
+    assert(fund_class_hash == expected_fund_address, 'Invalid fund class hash');
 }
 
 #[test]
