@@ -1,6 +1,6 @@
-// ******************************************************************
+// ***************************************************************************************
 //                              FUND MANAGER TEST
-// ******************************************************************
+// ***************************************************************************************
 use starknet::{ContractAddress, contract_address_const};
 use starknet::class_hash::{ClassHash};
 use starknet::syscalls::deploy_syscall;
@@ -33,7 +33,7 @@ fn GOAL() -> u64 {
     1000
 }
 
-fn __setup__() -> (ContractAddress, ClassHash) {
+fn _setup_() -> (ContractAddress, ClassHash) {
     // Fund
     let fund = declare("Fund").unwrap();
     let mut fund_calldata: Array<felt252> = array![];
@@ -53,28 +53,31 @@ fn __setup__() -> (ContractAddress, ClassHash) {
     return (contract_address, fund_class_hash,);
 }
 
-// *************************************************************************
+// ******************************************************************************
 //                              TEST
-// *************************************************************************
+// ******************************************************************************
 
 #[test]
 fn test_constructor() {
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, fund_class_hash) = __setup__();
+    let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
+    let expected_fund_address = fund_manager_contract.getFundClassHash();
+    let owner = fund_manager_contract.getOwner();
+    assert(owner == OWNER(), 'Invalid owner');
+    assert(fund_class_hash == expected_fund_address, 'Invalid donator class hash');
 }
 
 #[test]
 fn test_new_fund(){
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, fund_class_hash) = __setup__();
+    let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
     fund_manager_contract.newFund(NAME(), GOAL());
     let expected_fund_class_hash = get_class_hash(
-        fund_manager_contract.getFund(0)
+        fund_manager_contract.getFund(1)
     );
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
     assert(current_id == 1, 'Invalid current ID');
 }
-

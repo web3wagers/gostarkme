@@ -6,13 +6,15 @@ pub trait IFundManager<TContractState> {
     fn newFund(ref self: TContractState, name: felt252, goal: u64);
     fn getCurrentId(self: @TContractState) -> u128;
     fn getFund(self: @TContractState, id: u128) -> ContractAddress;
+    fn getOwner(self: @TContractState) -> ContractAddress;
+    fn getFundClassHash(self: @TContractState) -> ClassHash;
 }
 
 #[starknet::contract]
 mod FundManager {
-    // *************************************************************************
+    // *************************
     //                            IMPORT
-    // *************************************************************************
+    // *************************
     use core::array::ArrayTrait;
     use core::traits::TryInto;
     use starknet::ContractAddress;
@@ -20,9 +22,9 @@ mod FundManager {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
 
-    // *************************************************************************
+    // *************************
     //                            STORAGE
-    // *************************************************************************
+    // *************************
     #[storage]
     struct Storage {
         owner: ContractAddress,
@@ -31,9 +33,9 @@ mod FundManager {
         fund_class_hash: ClassHash,
     }
 
-    // *************************************************************************
+    // *************************
     //                            CONSTRUCTOR
-    // *************************************************************************
+    // *************************
     #[constructor]
     fn constructor(ref self: ContractState, fund_class_hash: felt252) {
         self.owner.write(get_caller_address());
@@ -41,9 +43,9 @@ mod FundManager {
         self.current_id.write(0);
     }
 
-    // *************************************************************************
+    // *************************
     //                            EXTERNALS
-    // *************************************************************************
+    // *************************
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
         fn newFund(ref self: ContractState, name: felt252, goal: u64) {
@@ -64,6 +66,12 @@ mod FundManager {
         }
         fn getFund(self: @ContractState, id: u128) -> ContractAddress {
             return self.funds.read(id);
+        }
+        fn getOwner(self: @ContractState) -> ContractAddress {
+            return self.owner.read();
+        }
+        fn getFundClassHash(self: @ContractState) -> ClassHash {
+            return self.fund_class_hash.read();
         }
     }
 }
