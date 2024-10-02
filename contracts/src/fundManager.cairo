@@ -56,8 +56,8 @@ mod FundManager {
                 self.fund_class_hash.read(), 12345, calldata.span(), false
             )
                 .unwrap();
-            self.funds.write(self.current_id.read(), address_0);
             self.current_id.write(self.current_id.read() + 1);
+            self.funds.write(self.current_id.read(), address_0);
         }
         fn getCurrentId(self: @ContractState) -> u128 {
             return self.current_id.read();
