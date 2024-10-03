@@ -3,8 +3,8 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 
 const navItems = [
-  { label: 'My Profile', href: '/profile' },
-  { label: 'My funds', href: '/funds' }
+  { label: 'My Profile', href: '/app/myprofile/1' },
+  { label: 'My funds', href: '/app/myfunds/1' }
 ];
 interface BoundedProps {
   children: ReactNode;
