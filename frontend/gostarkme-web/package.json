@@ -9,10 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.9.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "dotenv": "^16.4.5",
+    "framer-motion": "^11.9.0",
+    "get-starknet": "^4.0.0",
     "next": "14.2.10",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "starknet": "^6.7.0",
+    "starknetkit": "^1.1.5"
   },
   "devDependencies": {
     "@types/node": "^20",
