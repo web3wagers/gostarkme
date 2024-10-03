@@ -4,11 +4,6 @@ import Image from 'next/image';
 import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
 
-const navItems = [
-  { label: 'My Profile', href: '/profile' },
-  { label: 'My funds', href: '/funds' }
-];
-
 interface UserProfilePageProps {
   params: {
     useraddr: string;
@@ -21,6 +16,11 @@ export function generateStaticParams() {
 
 const UserProfilePage: React.FC<UserProfilePageProps> = ({ params }) => {
   const { useraddr } = params;
+
+  const navItems = [
+    { label: 'My Profile', href: `/app/myprofile/${useraddr}` },
+    { label: 'My funds', href: `/app/myfunds/${useraddr}` }
+  ];
 
   // Mock data for design purposes
   const totalDonations = 20000;
