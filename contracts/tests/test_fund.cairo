@@ -1,6 +1,6 @@
-// *************************
+// ***************************************************************************************
 //                              FUND TEST
-// *************************
+// ***************************************************************************************
 use starknet::{ContractAddress, contract_address_const};
 
 use snforge_std::{declare, ContractClassTrait, start_cheat_caller_address_global};
@@ -38,9 +38,9 @@ fn _setup_() -> ContractAddress {
     let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
-// *************************
+// ***************************************************************************************
 //                              TEST
-// *************************
+// ***************************************************************************************
 #[test]
 fn test_constructor() {
     let contract_address = _setup_();
