@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from "next/image";
 import Link from 'next/link';
-import { LinkButton } from "../ui/LinkButton";
+import ConnectWallet from "../ui/ConnectWalletButton"
 
 interface NavItem {
   label: string;
@@ -50,10 +50,9 @@ export const Navbar = ({
                         ))}
                     </div>
                 </div>
-                <LinkButton
-                    label={ctaButton.label}
-                    href={ctaButton.href}
-                />
+                <div className="flex items-center space-x-4">
+                    <ConnectWallet />
+                </div>
             </div>
         </nav>
     );
