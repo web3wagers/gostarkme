@@ -1,22 +1,24 @@
-import React from 'react';
+'use client'
+
 import UserFunds from '@/components/modules/myfunds/UserFunds';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
+import { useState } from 'react';
+import { useEventListener, useLocalStorage } from 'usehooks-ts'
 
-interface MyFundsPageProps {
-  params: { useraddr: string };
-}
+const MyFundsPage = () => { 
+  const [storedAddress, setStoredAddress] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('walletAddress') : null);
 
-export function generateStaticParams() {
-  return [{ useraddr: '1' }]
-}
+  const handleWalletChange = () => {
+    const addr = localStorage.getItem("walletAddress");
+    setStoredAddress(addr);
+  } 
 
-const MyFundsPage: React.FC<MyFundsPageProps> = ({ params }) => {
-  const { useraddr } = params;
+  useEventListener("local-storage", handleWalletChange);
 
   const navItems = [
-    { label: 'My Profile', href: `/app/myprofile/${useraddr}` },
-    { label: 'My funds', href: `/app/myfunds/${useraddr}` }
+    { label: 'My Profile', href: `/app/myprofile` },
+    { label: 'My funds', href: `/app/myfunds` }
   ];
 
   return (
@@ -32,7 +34,7 @@ const MyFundsPage: React.FC<MyFundsPageProps> = ({ params }) => {
         }}
       />
       <main className="flex flex-grow w-full justify-center bg-white p-8">
-        <UserFunds userAddress={useraddr} />
+        <UserFunds userAddress={storedAddress} />
       </main>
       <Footer />
     </div>

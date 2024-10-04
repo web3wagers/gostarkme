@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { connect, disconnect } from "starknetkit";
+import { useLocalStorage } from "usehooks-ts";
 
 interface IWalletConnection {
   wallet?: any;
@@ -9,12 +10,12 @@ interface IWalletConnection {
 
 export default function WalletConnector() {
   const [walletConnection, setWalletConnection] = useState<IWalletConnection | null>(null);
-
+  const [storedAddress, setValue, removeValue] = useLocalStorage<any>('walletAddress', typeof window !== 'undefined' ? localStorage.getItem('walletAddress') : null);
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedAddress = localStorage.getItem("walletAddress");
-      if (storedAddress) {
-        setWalletConnection({ address: storedAddress });
+      const addr = localStorage.getItem("walletAddress");
+      if (addr) {
+        setWalletConnection({ address: addr });
       }
     }
   }, []);
@@ -30,7 +31,8 @@ export default function WalletConnector() {
           address: address,
         });
         localStorage.setItem("walletAddress", address || '');
-        console.log("Wallet connected:", result, "Address:", address);
+        setValue(address);
+        console.log(address);
       } else {
         console.error("No wallet found in connection result.");
       }
@@ -45,8 +47,7 @@ export default function WalletConnector() {
       await disconnect();
       setWalletConnection(null);
       localStorage.removeItem("walletAddress");
-      localStorage.removeItem("nftSrc");
-      console.log("Wallet disconnected");
+      removeValue();
     } catch (error) {
       console.error("Failed to disconnect wallet:", error);
     }
@@ -59,7 +60,7 @@ export default function WalletConnector() {
           className="self-center bg-darkblue text-white py-2 px-6 md:py-3 md:px-10 rounded-md text-xs md:text-sm shadow-xl hover:bg-starkorange active:bg-darkblue ease-in-out duration-500 active:duration-0 shadow-gray-400"
           onClick={handleDisconnect}
         >
-          {walletConnection.address.slice(0, 6)}...{walletConnection.address.slice(-4)}
+          Log Out
         </button>
       ) : (
         <button
