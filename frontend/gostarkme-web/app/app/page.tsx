@@ -5,8 +5,8 @@ import React from "react";
 
 const Dashboard = () => {
   const navItems = [
-    { label: 'My Profile', href: 'app/myprofile/1' },
-    { label: 'My funds', href: '/app/myfunds/1' }
+    { label: 'My Profile', href: 'app/myprofile' },
+    { label: 'My funds', href: '/app/myfunds' }
   ];
 
   const funds = [

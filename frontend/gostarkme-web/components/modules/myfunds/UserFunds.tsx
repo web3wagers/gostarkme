@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { LinkButton } from '@/components/ui/LinkButton';
 
 interface UserFundsProps {
-  userAddress: string;
+  userAddress: string | null;
 }
 
 const UserFunds: React.FC<UserFundsProps> = ({ userAddress }) => {
@@ -54,16 +54,28 @@ const UserFunds: React.FC<UserFundsProps> = ({ userAddress }) => {
         <div className="flex items-center">
           <h1 className="text-2xl font-bold mr-2">My Funds &#10024;</h1>
         </div>
-        <LinkButton label="New" href="/app/newfunding" />
+        {userAddress !== null ? (
+          <LinkButton label="New" href="/app/newfunding" />
+        ) : null}
       </div>
 
-      {funds.length === 0 ? (
+      {userAddress === null ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="text-center text-gray-500">
+            Please connect your wallet to see your funds.
+          </div>
+        </div>
+      ) : null}
+
+      {funds.length === 0 && userAddress !== null ? (
         <div className="flex justify-center items-center h-64">
           <div className="text-center text-gray-500">
             No funds found for address {userAddress.slice(0, 5)}...{userAddress.slice(-4)}
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {funds.length !== 0 && userAddress !== null ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
           {funds.map((fund: any, index: number) => (
             <FundCard
@@ -75,7 +87,7 @@ const UserFunds: React.FC<UserFundsProps> = ({ userAddress }) => {
             />
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
