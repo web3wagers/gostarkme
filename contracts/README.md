@@ -39,6 +39,10 @@
     To run the unit tests for the contracts, run the following command:
 
     ```bash
+    scarb test
+    ```
+    or
+    ```bash
     snforge test
     ```
 
