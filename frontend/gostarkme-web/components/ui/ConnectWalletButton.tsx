@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect, disconnect } from "starknetkit";
 
 interface IWalletConnection {
@@ -8,10 +8,16 @@ interface IWalletConnection {
 }
 
 export default function WalletConnector() {
-  const storedAddress = localStorage.getItem("walletAddress");
-  const [walletConnection, setWalletConnection] = useState<IWalletConnection | null>(
-    storedAddress ? { address: storedAddress } : null
-  );
+  const [walletConnection, setWalletConnection] = useState<IWalletConnection | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedAddress = localStorage.getItem("walletAddress");
+      if (storedAddress) {
+        setWalletConnection({ address: storedAddress });
+      }
+    }
+  }, []);
 
   const handleConnect = async (event:any) => {
     event.preventDefault();
