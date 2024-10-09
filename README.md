@@ -37,6 +37,12 @@ You can also contact us on Telegram:
 - [@adrian_vrj](https://t.me/adrian_vrj)
 - [@EmmanuelDevCr](https://t.me/EmmanuelDevCr)
 
+## Adding yourself as a contributor
+
+If you've contributed to this project, you can easily add yourself to the contributors list by commenting on any issue or pull request with: `@all-contributors please add <your-github-username> for <contribution-type>`
+
+For example: `@all-contributors please add @@adrian_vrj for code, doc, business, and ideas`
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
