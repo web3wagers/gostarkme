@@ -52,7 +52,6 @@ mod Donator {
         fn getLevel(self: @ContractState) -> u32 {
             return self.level.read();
         }
-
         fn getTotalStarkDonations(self: @ContractState) -> u64 {
             return self.total_stark_donations.read();
         }

@@ -20,6 +20,12 @@ You can check the prototype we have in mind and suggest any improvement, if you 
 
 - [Figma prototype](https://www.figma.com/design/SCiGViaoPT9UTrT7CsLbAt/Go-Stark-Me?node-id=0-1&t=FUhnIhNcXRIGkQ16-1)
 
+## Contributors
+
+- [EmmanuelAR](https://github.com/EmmanuelAR)
+- [adrianvrj](https://github.com/adrianvrj)
+- [bitfalt](https://github.com/bitfalt)
+
 ## Want to Contribute?
 
 If you are interested in contributing to Go Stark Me, please follow these steps:
@@ -58,3 +64,5 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
+
+- [@bitfalt](https://t.me/bitfalt)
