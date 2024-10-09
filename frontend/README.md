@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+
+### Pre-requisites
+
+- Install Node.js (v20.15.1) using Node Version Manager (NVM)
+
+    We recommend using  [Node Version Manager (NVM) ](https://github.com/nvm-sh/nvm) to easily manage different versions of Node.js on your system.
+
+### Local configurations
+
+
+- Rename the  `frontend/gostarkme-web/.env.example`  file to: `frontend/gostarkme-web/.env`.
+
+
+
+- Comment the content of the file `frontend/gostarkme-web/next.config.mjs`.
+
+
+## Local Deployment
+
+### Installing Dependencies
+
+First,  install the required packages:
+
+```bash
+cd gostarkme/frontend/gostarkme-web
+
+npm install
+```
+### Running the Application
+
+
+Once the dependencies are installed, start the development server:
+
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+
+
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Production Deployment
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installing Dependencies
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+First,  install the required packages:
 
-## Deploy on Vercel
+```bash
+cd gostarkme/frontend/gostarkme-web
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+npm install
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+### Build the Application
+To create an optimized production build, run:
+
+
+
+```bash
+npm run build
+```
+
+
+### Serve the build
+Start the production server:
+```bash
+npm run start
+```
+
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

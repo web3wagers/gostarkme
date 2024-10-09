@@ -2,10 +2,19 @@ name: CI
 
 on:
   pull_request:
+    branches:
+      - dev
+
+  push:
+    branches:
+      - dev
+      - main
 
 jobs: 
-  check-lint:
+  determine-changes:
     runs-on: ubuntu-latest
+    outputs:
+      contracts_dir: ${{ steps.changes.outputs.contracts_dir }}
     steps:
       - uses: actions/checkout@v2
 
@@ -14,71 +23,76 @@ jobs:
         id: changes
         with:
           filters: |
-            contracts_dir: 
+            contracts_dir:
               - 'contracts/src/**'
 
-      - name: Install scarb
-        if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+  check-lint:
+    runs-on: ubuntu-latest
+    needs: determine-changes
+    steps:
+      - uses: actions/checkout@v2
 
-      - name: Run scarb fmt
-        if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          scarb fmt
+      - name: Setup Scarb
+        uses: software-mansion/setup-scarb@v1
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
+        with:
+          scarb-version: "2.6.5"
+
+      - name: Run Scarb formatting
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
+        working-directory: contracts
+        run: scarb fmt
+      
+      - name: No changes detected in contracts directory
+        if: needs.determine-changes.outputs.contracts_dir == 'false'
+        run: echo "No linting perfomed since no changes have been detected in the contracts directory."
   
   check-contracts-changes:
     runs-on: ubuntu-latest
+    needs: determine-changes
     steps:
       - uses: actions/checkout@v2
-
-      - name: Check for changes
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            contracts_dir: 
-              - 'contracts/src/**'
               
       - name: Install scarb
-        if: steps.changes.outputs.contracts_dir == 'true'
-        run: | 
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+        uses: software-mansion/setup-scarb@v1
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
+        with:
+          scarb-version: "2.6.5"
 
-      - name: Run scarb check
-        if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          scarb check
+      - name: Run Scarb check
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
+        working-directory: contracts
+        run: scarb check
+
+      - name: No changes detected in contracts directory
+        if: needs.determine-changes.outputs.contracts_dir == 'false'
+        run: echo "No contracts checks done since no changes have been detected in the contracts directory."
     
   run-tests:
     runs-on: ubuntu-latest
+    needs: determine-changes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check for changes
-        uses: dorny/paths-filter@v3
-        id: changes
+      - name: Install Scarb
+        uses: software-mansion/setup-scarb@v1
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
         with:
-          filters: |
-            contracts_dir: 
-              - 'contracts/src/**'
+          scarb-version: "2.6.5"
 
-      - name: Install scarb
-        if: steps.changes.outputs.contracts_dir == 'true'
-        run: |
-          cd contracts
-          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
 
       - name: Install snfoundry
         uses: foundry-rs/setup-snfoundry@v3
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
         with:
-          starknet-foundry-version: "0.20.1"
+          starknet-foundry-version: "0.27.0"
 
       - name: Run Cairo tests
+        if: needs.determine-changes.outputs.contracts_dir == 'true'
         id: cairo_tests
         run: bash scripts/run_tests.sh
+      
+      - name: No changes detected in contracts directory
+        if: needs.determine-changes.outputs.contracts_dir == 'false'
+        run: echo "No tests were run since no changes have been detected in the contracts directory."

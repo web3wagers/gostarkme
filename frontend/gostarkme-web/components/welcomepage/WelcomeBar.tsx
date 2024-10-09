@@ -19,7 +19,7 @@ export const WelcomeBar = () => {
         </div>
         <LinkButton
           label="Go to app"
-          href="/"
+          href="/app"
         />
       </div>
     </nav>

@@ -4,6 +4,8 @@ use starknet::class_hash::ClassHash;
 #[starknet::interface]
 pub trait IDonatorManager<TContractState> {
     fn newDonator(ref self: TContractState);
+    fn getOwner(self: @TContractState) -> ContractAddress;
+    fn getDonatorClassHash(self: @TContractState) -> ClassHash;
     fn getDonatorByAddress(self: @TContractState, owner: ContractAddress) -> ContractAddress;
 }
 
@@ -45,7 +47,6 @@ mod DonatorManager {
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
         fn newDonator(ref self: ContractState) {
             let mut calldata = ArrayTrait::<felt252>::new();
-
             calldata.append(get_caller_address().try_into().unwrap());
 
             let (address_0, _) = deploy_syscall(
@@ -53,6 +54,12 @@ mod DonatorManager {
             )
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), address_0);
+        }
+        fn getOwner(self: @ContractState) -> ContractAddress {
+            return self.owner.read();
+        }
+        fn getDonatorClassHash(self: @ContractState) -> ClassHash {
+            return self.donator_class_hash.read();
         }
         fn getDonatorByAddress(self: @ContractState, owner: ContractAddress) -> ContractAddress {
             return self.donators.read(owner);
