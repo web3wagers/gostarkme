@@ -26,6 +26,7 @@ mod Fund {
     // *************************************************************************
     use starknet::ContractAddress;
     use starknet::get_caller_address;
+    use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use gostarkme::constants::{funds::{state_constants::FundStates},};
     use gostarkme::constants::{funds::{fund_constants::FundConstants},};
 
@@ -43,7 +44,7 @@ mod Fund {
         voters: LegacyMap::<ContractAddress, u32>,
         goal: u256,
         current_goal_state: u256,
-        state: u8
+        state: u8,
     }
 
     // *************************************************************************
