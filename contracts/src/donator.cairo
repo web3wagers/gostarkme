@@ -4,9 +4,9 @@ use starknet::ContractAddress;
 pub trait IDonator<TContractState> {
     fn getOwner(self: @TContractState) -> ContractAddress;
     fn getLevel(self: @TContractState) -> u32;
-    fn getTotalStarkDonations(self: @TContractState) -> u64;
-    fn getMaxStarkDonationsToNextLevel(self: @TContractState) -> u64;
-    fn updateDonatorValues(ref self: TContractState, donated_starks: u64);
+    fn getTotalStarkDonations(self: @TContractState) -> u256;
+    fn getMaxStarkDonationsToNextLevel(self: @TContractState) -> u256;
+    fn updateDonatorValues(ref self: TContractState, donated_starks: u256);
 }
 
 #[starknet::contract]
@@ -24,8 +24,8 @@ mod Donator {
     struct Storage {
         owner: ContractAddress,
         level: u32,
-        total_stark_donations: u64,
-        max_stark_donations_to_next_level: u64
+        total_stark_donations: u256,
+        max_stark_donations_to_next_level: u256
     }
 
     // *************************************************************************
@@ -52,13 +52,13 @@ mod Donator {
         fn getLevel(self: @ContractState) -> u32 {
             return self.level.read();
         }
-        fn getTotalStarkDonations(self: @ContractState) -> u64 {
+        fn getTotalStarkDonations(self: @ContractState) -> u256 {
             return self.total_stark_donations.read();
         }
-        fn getMaxStarkDonationsToNextLevel(self: @ContractState) -> u64 {
+        fn getMaxStarkDonationsToNextLevel(self: @ContractState) -> u256 {
             return self.max_stark_donations_to_next_level.read();
         }
-        fn updateDonatorValues(ref self: ContractState, donated_starks: u64) {
+        fn updateDonatorValues(ref self: ContractState, donated_starks: u256) {
             let total_donator_pod = self.total_stark_donations.read() + donated_starks;
             self.total_stark_donations.write(total_donator_pod);
             if (total_donator_pod > self.max_stark_donations_to_next_level.read()) {
