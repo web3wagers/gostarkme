@@ -38,6 +38,7 @@ You can also contact us on Telegram:
 
 - [@adrian_vrj](https://t.me/adrian_vrj)
 - [@EmmanuelDevCr](https://t.me/EmmanuelDevCr)
+- [@bitfalt](https://t.me/bitfalt)
 
 ## Adding yourself as a contributor
 
@@ -60,5 +61,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
-
-- [@bitfalt](https://t.me/bitfalt)
