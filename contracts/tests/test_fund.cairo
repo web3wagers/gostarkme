@@ -25,7 +25,7 @@ fn NAME() -> felt252 {
 fn REASON() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
-fn GOAL() -> u64 {
+fn GOAL() -> u256 {
     1000
 }
 fn _setup_() -> ContractAddress {
