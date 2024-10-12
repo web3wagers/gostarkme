@@ -14,9 +14,10 @@ pub trait IFund<TContractState> {
     fn getGoal(self: @TContractState) -> u256;
     fn receiveDonation(ref self: TContractState, strks: u256);
     fn getCurrentGoalState(self: @TContractState) -> u256;
-    fn setIsActive(ref self: TContractState, state: u8);
-    fn getIsActive(self: @TContractState) -> u8;
+    fn setState(ref self: TContractState, state: u8);
+    fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
+    fn withdraw(ref self: TContractState);
 }
 
 #[starknet::contract]
@@ -26,9 +27,11 @@ mod Fund {
     // *************************************************************************
     use starknet::ContractAddress;
     use starknet::get_caller_address;
+    use starknet::contract_address_const;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use gostarkme::constants::{funds::{state_constants::FundStates},};
     use gostarkme::constants::{funds::{fund_constants::FundConstants},};
+    use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
 
     // *************************************************************************
@@ -127,15 +130,30 @@ mod Fund {
         fn getCurrentGoalState(self: @ContractState) -> u256 {
             return self.current_goal_state.read();
         }
-        // TODO: Validate to change method to change setState and getState
-        fn setIsActive(ref self: ContractState, state: u8) {
+        fn setState(ref self: ContractState, state: u8) {
             self.state.write(state);
         }
-        fn getIsActive(self: @ContractState) -> u8 {
+        fn getState(self: @ContractState) -> u8 {
             return self.state.read();
         }
         fn getVoter(self: @ContractState) -> u32 {
             return self.voters.read(get_caller_address());
+        }
+        fn withdraw(ref self: ContractState) {
+            // Verifications
+            assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
+            assert(get_caller_address() != self.owner.read(), 'You are not the owner');
+            assert(self.getCurrentGoalState() > 0, 'Fund hasnt reached its goal yet');
+            // Withdraw
+            let starknet_contract_address = contract_address_const::<
+                StarknetConstants::STRK_TOKEN_ADDRESS
+            >();
+            let starknet_dispatcher = IERC20Dispatcher {
+                contract_address: starknet_contract_address
+            };
+            starknet_dispatcher.transfer(self.getOwner(), self.getCurrentGoalState());
+            assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
+            self.setState(4);
         }
     }
 }

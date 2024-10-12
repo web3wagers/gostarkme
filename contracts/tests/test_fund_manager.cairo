@@ -49,7 +49,7 @@ fn _setup_() -> (ContractAddress, ClassHash) {
     let mut fund_manager_calldata: Array<felt252> = array![];
     fund_manager_calldata.append_serde(fund_class_hash);
     let (contract_address, _) = fund_manager.deploy(@fund_manager_calldata).unwrap();
-    
+
     return (contract_address, fund_class_hash,);
 }
 
@@ -69,14 +69,12 @@ fn test_constructor() {
 }
 
 #[test]
-fn test_new_fund(){
+fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
     fund_manager_contract.newFund(NAME(), GOAL());
-    let expected_fund_class_hash = get_class_hash(
-        fund_manager_contract.getFund(1)
-    );
+    let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
     assert(current_id == 1, 'Invalid current ID');
