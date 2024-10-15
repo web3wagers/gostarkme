@@ -154,6 +154,7 @@ mod Fund {
                 contract_address: starknet_contract_address
             };
             let balance = starknet_dispatcher.balance_of(get_contract_address());
+            //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
