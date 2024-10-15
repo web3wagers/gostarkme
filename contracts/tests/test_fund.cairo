@@ -52,7 +52,7 @@ fn test_constructor() {
     let up_votes = dispatcher.getUpVotes();
     let goal = dispatcher.getGoal();
     let current_goal_state = dispatcher.getCurrentGoalState();
-    let state = dispatcher.getIsActive();
+    let state = dispatcher.getState();
     assert(id == ID(), 'Invalid id');
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
@@ -131,7 +131,7 @@ fn test_receive_donation_successful() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     // Put state as recollecting dons
-    dispatcher.setIsActive(2);
+    dispatcher.setState(2);
     // Put 10 strks as goal, only owner
     start_cheat_caller_address_global(OWNER());
     dispatcher.setGoal(10);
@@ -141,7 +141,7 @@ fn test_receive_donation_successful() {
     assert(current_goal_state == 5, 'Receive donation not working');
     // Donate 5 strks, the goal is done
     dispatcher.receiveDonation(5);
-    let state = dispatcher.getIsActive();
+    let state = dispatcher.getState();
     assert(state == 3, 'State should be close');
 }
 
@@ -151,7 +151,7 @@ fn test_receive_donation_unsuccessful_wrong_state() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     // Put a wrong state to receive donations
-    dispatcher.setIsActive(1);
+    dispatcher.setState(1);
     // Donate 
     dispatcher.receiveDonation(5);
 }
