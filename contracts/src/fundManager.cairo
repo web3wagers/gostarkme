@@ -42,7 +42,7 @@ mod FundManager {
     fn constructor(ref self: ContractState, fund_class_hash: felt252) {
         self.owner.write(get_caller_address());
         self.fund_class_hash.write(fund_class_hash.try_into().unwrap());
-        self.current_id.write(0);
+        self.current_id.write(1);
     }
 
     // ***************************************************************************************
@@ -60,8 +60,8 @@ mod FundManager {
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )
                 .unwrap();
-            self.current_id.write(self.current_id.read() + 1);
             self.funds.write(self.current_id.read(), address_0);
+            self.current_id.write(self.current_id.read() + 1);
         }
         fn getCurrentId(self: @ContractState) -> u128 {
             return self.current_id.read();

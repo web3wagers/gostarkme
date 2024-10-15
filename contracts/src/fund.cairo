@@ -28,6 +28,7 @@ mod Fund {
     use starknet::ContractAddress;
     use starknet::get_caller_address;
     use starknet::contract_address_const;
+    use starknet::get_contract_address;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use gostarkme::constants::{funds::{state_constants::FundStates},};
     use gostarkme::constants::{funds::{fund_constants::FundConstants},};
@@ -141,8 +142,9 @@ mod Fund {
         }
         fn withdraw(ref self: ContractState) {
             // Verifications
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
-            assert(get_caller_address() != self.owner.read(), 'You are not the owner');
             assert(self.getCurrentGoalState() > 0, 'Fund hasnt reached its goal yet');
             // Withdraw
             let starknet_contract_address = contract_address_const::<
@@ -151,7 +153,8 @@ mod Fund {
             let starknet_dispatcher = IERC20Dispatcher {
                 contract_address: starknet_contract_address
             };
-            starknet_dispatcher.transfer(self.getOwner(), self.getCurrentGoalState());
+            let balance = starknet_dispatcher.balance_of(get_contract_address());
+            starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
         }
