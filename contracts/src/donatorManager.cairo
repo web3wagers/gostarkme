@@ -41,6 +41,22 @@ mod DonatorManager {
     }
 
     // *************************************************************************
+    //                            EVENTS
+    // *************************************************************************
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DonatorContractDeployed: DonatorContractDeployed,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct DonatorContractDeployed {
+        new_donator: ContractAddress,
+        owner: ContractAddress
+    }
+
+
+    // *************************************************************************
     //                            EXTERNALS
     // *************************************************************************
     #[abi(embed_v0)]
@@ -54,6 +70,10 @@ mod DonatorManager {
             )
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), address_0);
+            self
+                .emit(
+                    DonatorContractDeployed { owner: get_caller_address(), new_donator: address_0 }
+                )
         }
         fn getOwner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
