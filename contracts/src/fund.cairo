@@ -45,11 +45,10 @@ mod Fund {
     }
     // Struct DonationWithdraw
     #[derive(Drop, starknet::Event)]
-    struct DonationWithdraw {
+    pub struct DonationWithdraw {
         #[key]
-        fund_contract_address: ContractAddress,
-        owner_address: ContractAddress,
-        withdrawn_amount: u256
+        pub owner_address: ContractAddress,
+        pub withdrawn_amount: u256
     }
 
     // *************************************************************************
@@ -176,7 +175,6 @@ mod Fund {
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             // Emit Event DonationWithdraw (amount=balance)
             self.emit(DonationWithdraw {
-                fund_contract_address: get_contract_address(),
                 owner_address: self.getOwner(),
                 withdrawn_amount: balance
             });
