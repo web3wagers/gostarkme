@@ -174,6 +174,12 @@ mod Fund {
             //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
+            // Emit Event DonationWithdraw (amount=balance)
+            self.emit(DonationWithdraw {
+                fund_contract_address: get_contract_address(),
+                owner_address: self.getOwner(),
+                withdrawn_amount: balance
+            });
             self.setState(4);
         }
     }
