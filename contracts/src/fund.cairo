@@ -34,6 +34,23 @@ mod Fund {
     use gostarkme::constants::{funds::{fund_constants::FundConstants},};
     use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
+    // *************************************************************************
+    //                            EVENTS
+    // *************************************************************************
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DonationWithdraw: DonationWithdraw,
+    }
+    // Struct DonationWithdraw
+    #[derive(Drop, starknet::Event)]
+    struct DonationWithdraw {
+        #[key]
+        fund_contract_address: ContractAddress,
+        owner_address: ContractAddress,
+        withdrawn_amount: u256
+    }
 
     // *************************************************************************
     //                            STORAGE
