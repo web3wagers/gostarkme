@@ -5,16 +5,11 @@ import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
 import { useState } from 'react';
 import { useEventListener, useLocalStorage } from 'usehooks-ts'
+import { useAtomValue } from 'jotai';
+import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
 
 const MyFundsPage = () => { 
-  const [storedAddress, setStoredAddress] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('walletAddress') : null);
-
-  const handleWalletChange = () => {
-    const addr = localStorage.getItem("walletAddress");
-    setStoredAddress(addr);
-  } 
-
-  useEventListener("local-storage", handleWalletChange);
+  const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
   const navItems = [
     { label: 'My Profile', href: `/app/myprofile` },
@@ -34,7 +29,7 @@ const MyFundsPage = () => {
         }}
       />
       <main className="flex flex-grow w-full justify-center bg-white p-8">
-        <UserFunds userAddress={storedAddress} />
+        <UserFunds/>
       </main>
       <Footer />
     </div>
