@@ -41,6 +41,7 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     enum Event {
         DonationWithdraw: DonationWithdraw,
+        NewVoteReceived: NewVoteReceived
     }
 
     #[derive(Drop, starknet::Event)]
@@ -51,6 +52,13 @@ mod Fund {
         pub withdrawn_amount: u256
     }
 
+    #[derive(Drop, starknet::Event)]
+    pub struct NewVoteReceived {
+        #[key]
+        pub voter: ContractAddress,
+        pub fund: ContractAddress,
+        pub votes: u32
+    }
     // *************************************************************************
     //                            STORAGE
     // *************************************************************************
@@ -121,6 +129,15 @@ mod Fund {
             if self.up_votes.read() >= FundConstants::UP_VOTES_NEEDED {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
+
+            self
+                .emit(
+                    NewVoteReceived {
+                        voter: get_caller_address(),
+                        fund: get_contract_address(),
+                        votes: self.up_votes.read()
+                    }
+                );
         }
         fn getUpVotes(self: @ContractState) -> u32 {
             return self.up_votes.read();
