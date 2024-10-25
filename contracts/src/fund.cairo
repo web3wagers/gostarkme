@@ -79,10 +79,13 @@ mod Fund {
 
     #[derive(Drop, starknet::Event)]
     pub struct NewVoteReceived {
+        #[key]
         pub voter: ContractAddress,
+        pub fund: ContractAddress,
+        pub votes: u32
     }
 
-    
+
     // *************************************************************************
     //                            EXTERNALS
     // *************************************************************************
@@ -121,7 +124,14 @@ mod Fund {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
 
-            self.emit(NewVoteReceived { voter: get_caller_address() });
+            self
+                .emit(
+                    NewVoteReceived {
+                        voter: get_caller_address(),
+                        fund: get_contract_address(),
+                        votes: self.up_votes.read()
+                    }
+                );
         }
         fn getUpVotes(self: @ContractState) -> u32 {
             return self.up_votes.read();
