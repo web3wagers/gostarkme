@@ -64,7 +64,7 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     pub struct DonationReceived {
         #[key]
-        pub donor_address: ContractAddress,
+        pub donator_address: ContractAddress,
         pub donated_strks: u256,
         pub current_balance: u256,
         pub fund_contract_address: ContractAddress,
@@ -208,8 +208,7 @@ mod Fund {
                 contract_address: starknet_contract_address
             };
             let balance = starknet_dispatcher.balance_of(get_contract_address());
-            //TODO: Calculate balance to deposit in owner address and in fund manager address (95%
-            //and 5%), also transfer the amount to fund manager address.
+            //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
