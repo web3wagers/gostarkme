@@ -65,7 +65,7 @@ fn test_new_donator() {
 }
 
 #[test]
-fn test_emit_event() {
+fn test_emit_event_donator_contract_deployed() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, _) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
