@@ -34,6 +34,23 @@ mod Fund {
     use gostarkme::constants::{funds::{fund_constants::FundConstants},};
     use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
+    // *************************************************************************
+    //                            EVENTS
+    // *************************************************************************
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DonationWithdraw: DonationWithdraw,
+    }
+    // Struct DonationWithdraw
+    #[derive(Drop, starknet::Event)]
+    pub struct DonationWithdraw {
+        #[key]
+        pub owner_address: ContractAddress,
+        pub fund_contract_address: ContractAddress,
+        pub withdrawn_amount: u256
+    }
 
     // *************************************************************************
     //                            STORAGE
@@ -158,6 +175,12 @@ mod Fund {
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
+            // Emit Event DonationWithdraw (amount=balance)
+            self.emit(DonationWithdraw {
+                owner_address: self.getOwner(),
+                fund_contract_address: get_contract_address(),
+                withdrawn_amount: balance
+            });
         }
     }
 }
