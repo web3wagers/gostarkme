@@ -56,11 +56,11 @@ mod FundManager {
             Serde::serialize(@get_caller_address(), ref call_data);
             Serde::serialize(@name, ref call_data);
             Serde::serialize(@goal, ref call_data);
-            let (address_0, _) = deploy_syscall(
+            let (new_fund_address, _) = deploy_syscall(
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )
                 .unwrap();
-            self.funds.write(self.current_id.read(), address_0);
+            self.funds.write(self.current_id.read(), new_fund_address);
             self.current_id.write(self.current_id.read() + 1);
         }
         fn getCurrentId(self: @ContractState) -> u128 {

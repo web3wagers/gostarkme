@@ -77,5 +77,5 @@ fn test_new_fund() {
     let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
-    assert(current_id == 2 , 'Invalid current ID');
+    assert(current_id == 2, 'Invalid current ID');
 }
