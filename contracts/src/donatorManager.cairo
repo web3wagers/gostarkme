@@ -41,6 +41,21 @@ mod DonatorManager {
     }
 
     // *************************************************************************
+    //                            EVENTS
+    // *************************************************************************
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DonatorContractDeployed: DonatorContractDeployed,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct DonatorContractDeployed {
+        new_donator: ContractAddress,
+        owner: ContractAddress
+    }
+
+    // *************************************************************************
     //                            EXTERNALS
     // *************************************************************************
     #[abi(embed_v0)]
@@ -49,11 +64,17 @@ mod DonatorManager {
             let mut calldata = ArrayTrait::<felt252>::new();
             calldata.append(get_caller_address().try_into().unwrap());
 
-            let (address_0, _) = deploy_syscall(
+            let (new_donator_address, _) = deploy_syscall(
                 self.donator_class_hash.read(), 12345, calldata.span(), false
             )
                 .unwrap();
-            self.donators.write(get_caller_address().try_into().unwrap(), address_0);
+            self.donators.write(get_caller_address().try_into().unwrap(), new_donator_address);
+            self
+                .emit(
+                    DonatorContractDeployed {
+                        owner: get_caller_address(), new_donator: new_donator_address
+                    }
+                )
         }
         fn getOwner(self: @ContractState) -> ContractAddress {
             return self.owner.read();

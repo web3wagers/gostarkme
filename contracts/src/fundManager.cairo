@@ -76,7 +76,7 @@ mod FundManager {
             Serde::serialize(@get_caller_address(), ref call_data);
             Serde::serialize(@name, ref call_data);
             Serde::serialize(@goal, ref call_data);
-            let (address_0, _) = deploy_syscall(
+            let (new_fund_address, _) = deploy_syscall(
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )
                 .unwrap();
