@@ -57,6 +57,18 @@ fn test_new_donator() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, donator_class_hash) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
+    donator_manager_contract.newDonator();
+    let expected_donator_class_hash = get_class_hash(
+        donator_manager_contract.getDonatorByAddress(OWNER())
+    );
+    assert(expected_donator_class_hash == donator_class_hash, 'Invalid donator address');
+}
+
+#[test]
+fn test_emit_event() {
+    start_cheat_caller_address_global(OWNER());
+    let (contract_address, _) = __setup__();
+    let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
     let mut spy = spy_events();
     donator_manager_contract.newDonator();
 
@@ -74,9 +86,4 @@ fn test_new_donator() {
                 )
             ]
         );
-
-    let expected_donator_class_hash = get_class_hash(
-        donator_manager_contract.getDonatorByAddress(OWNER())
-    );
-    assert(expected_donator_class_hash == donator_class_hash, 'Invalid donator address');
 }
