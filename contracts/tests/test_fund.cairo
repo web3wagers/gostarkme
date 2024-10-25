@@ -9,6 +9,8 @@ use openzeppelin::utils::serde::SerializedAppend;
 
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
+use gostarkme::constants::{funds::{state_constants::FundStates},};
+
 
 fn ID() -> u128 {
     1
@@ -155,3 +157,53 @@ fn test_receive_donation_unsuccessful_wrong_state() {
     // Donate 
     dispatcher.receiveDonation(5);
 }
+
+#[test]
+#[should_panic(expected: ("You are not the owner",))]
+fn test_withdraw_with_wrong_owner() {
+    let contract_address = _setup_();
+
+    // call withdraw fn with wrong owner 
+    start_cheat_caller_address_global(OTHER_USER());
+    IFundDispatcher { contract_address }.withdraw();
+}
+
+#[test]
+#[should_panic(expected: ('Fund not close goal yet.',))]
+fn test_withdraw_with_non_closed_state() {
+    let contract_address = _setup_();
+    let fund_dispatcher = IFundDispatcher { contract_address };
+
+    start_cheat_caller_address_global(OWNER()); 
+    // set goal
+    fund_dispatcher.setGoal(500_u256);
+    // withdraw funds
+    fund_dispatcher.withdraw();
+}
+
+#[test]
+#[should_panic(expected: ('Fund hasnt reached its goal yet',))]
+fn test_withdraw_when_fund_has_not_reach_goal() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.setGoal(10);
+    dispatcher.setState(3);
+
+    dispatcher.withdraw();
+}
+
+// #[test]
+// // #[should_panic(expected: ('Fund hasnt reached its goal yet',))]
+// fn test_withdraw() {
+//     let contract_address = _setup_();
+//     let fund_dispatcher = IFundDispatcher { contract_address };
+
+//     start_cheat_caller_address_global(OWNER()); 
+//     // set goal
+//     fund_dispatcher.setGoal(500_u256);
+//     // donate
+//     fund_dispatcher.receiveDonation(500_u256);
+//     // withdraw funds
+//     fund_dispatcher.withdraw();
+// }
