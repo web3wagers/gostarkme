@@ -10,7 +10,7 @@ pub trait IDonatorManager<TContractState> {
 }
 
 #[starknet::contract]
-mod DonatorManager {
+pub mod DonatorManager {
     // *************************************************************************
     //                            IMPORT
     // *************************************************************************
@@ -45,14 +45,14 @@ mod DonatorManager {
     // *************************************************************************
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         DonatorContractDeployed: DonatorContractDeployed,
     }
 
     #[derive(Drop, starknet::Event)]
-    struct DonatorContractDeployed {
-        new_donator: ContractAddress,
-        owner: ContractAddress
+    pub struct DonatorContractDeployed {
+        pub new_donator: ContractAddress,
+        pub owner: ContractAddress
     }
 
     // *************************************************************************
