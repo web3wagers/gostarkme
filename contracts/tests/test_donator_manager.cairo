@@ -6,13 +6,15 @@ use starknet::class_hash::{ClassHash};
 use starknet::syscalls::deploy_syscall;
 
 use snforge_std::{
-    ContractClass, declare, ContractClassTrait, start_cheat_caller_address_global, get_class_hash
+    ContractClass, declare, ContractClassTrait, start_cheat_caller_address_global, get_class_hash,
+    spy_events, EventSpyAssertionsTrait,
 };
 
 use openzeppelin::utils::serde::SerializedAppend;
 
-use gostarkme::donatorManager::IDonatorManagerDispatcher;
-use gostarkme::donatorManager::IDonatorManagerDispatcherTrait;
+use gostarkme::donatorManager::{
+    DonatorManager, IDonatorManagerDispatcher, IDonatorManagerDispatcherTrait
+};
 
 fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER'>()
@@ -55,7 +57,24 @@ fn test_new_donator() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, donator_class_hash) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
+    let mut spy = spy_events();
     donator_manager_contract.newDonator();
+
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    DonatorManager::Event::DonatorContractDeployed(
+                        DonatorManager::DonatorContractDeployed {
+                            new_donator: donator_manager_contract.getDonatorByAddress(OWNER()),
+                            owner: OWNER()
+                        }
+                    )
+                )
+            ]
+        );
+
     let expected_donator_class_hash = get_class_hash(
         donator_manager_contract.getDonatorByAddress(OWNER())
     );
