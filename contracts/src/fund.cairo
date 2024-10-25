@@ -41,6 +41,7 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     enum Event {
         DonationWithdraw: DonationWithdraw,
+        NewVoteReceived: NewVoteReceived
     }
 
     #[derive(Drop, starknet::Event)]
@@ -51,6 +52,13 @@ mod Fund {
         pub withdrawn_amount: u256
     }
 
+    #[derive(Drop, starknet::Event)]
+    pub struct NewVoteReceived {
+        #[key]
+        pub voter: ContractAddress,
+        pub fund: ContractAddress,
+        pub votes: u32
+    }
     // *************************************************************************
     //                            STORAGE
     // *************************************************************************
@@ -83,24 +91,6 @@ mod Fund {
         self.current_goal_state.write(FundConstants::INITIAL_GOAL);
         self.state.write(FundStates::RECOLLECTING_VOTES);
     }
-
-    // *************************************************************************
-    //                            EVENTS
-    // *************************************************************************
-    #[event]
-    #[derive(Drop, starknet::Event)]
-    enum Event {
-        NewVoteReceived: NewVoteReceived
-    }
-
-    #[derive(Drop, starknet::Event)]
-    pub struct NewVoteReceived {
-        #[key]
-        pub voter: ContractAddress,
-        pub fund: ContractAddress,
-        pub votes: u32
-    }
-
 
     // *************************************************************************
     //                            EXTERNALS
