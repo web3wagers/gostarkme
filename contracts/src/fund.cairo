@@ -41,7 +41,8 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     enum Event {
         DonationWithdraw: DonationWithdraw,
-        NewVoteReceived: NewVoteReceived
+        NewVoteReceived: NewVoteReceived,
+        DonationReceived: DonationReceived,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -58,6 +59,15 @@ mod Fund {
         pub voter: ContractAddress,
         pub fund: ContractAddress,
         pub votes: u32
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct DonationReceived {
+        #[key]
+        pub donor_address: ContractAddress,
+        pub donated_strks: u256,
+        pub current_balance: u256,
+        pub fund_contract_address: ContractAddress,
     }
     // *************************************************************************
     //                            STORAGE
@@ -160,6 +170,17 @@ mod Fund {
             if self.current_goal_state.read() >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
+
+            // Emit receiveDonation event
+            self
+                .emit(
+                    DonationReceived {
+                        donor_address: get_caller_address(),
+                        fund_contract_address: get_contract_address(),
+                        current_balance: self.current_goal_state.read(),
+                        donated_strks: strks,
+                    }
+                )
         }
         fn getCurrentGoalState(self: @ContractState) -> u256 {
             return self.current_goal_state.read();
@@ -187,7 +208,8 @@ mod Fund {
                 contract_address: starknet_contract_address
             };
             let balance = starknet_dispatcher.balance_of(get_contract_address());
-            //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
+            //TODO: Calculate balance to deposit in owner address and in fund manager address (95%
+            //and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
