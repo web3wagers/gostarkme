@@ -48,6 +48,7 @@ mod Fund {
     pub struct DonationWithdraw {
         #[key]
         pub owner_address: ContractAddress,
+        pub fund_contract_address: ContractAddress,
         pub withdrawn_amount: u256
     }
 
@@ -173,12 +174,13 @@ mod Fund {
             //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
+            self.setState(4);
             // Emit Event DonationWithdraw (amount=balance)
             self.emit(DonationWithdraw {
                 owner_address: self.getOwner(),
+                fund_contract_address: get_contract_address(),
                 withdrawn_amount: balance
             });
-            self.setState(4);
         }
     }
 }
