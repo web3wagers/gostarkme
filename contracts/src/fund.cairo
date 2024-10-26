@@ -43,7 +43,8 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     enum Event {
         DonationWithdraw: DonationWithdraw,
-        NewVoteReceived: NewVoteReceived
+        NewVoteReceived: NewVoteReceived,
+        DonationReceived: DonationReceived,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -60,6 +61,15 @@ mod Fund {
         pub voter: ContractAddress,
         pub fund: ContractAddress,
         pub votes: u32
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct DonationReceived {
+        #[key]
+        pub donator_address: ContractAddress,
+        pub current_balance: u256,
+        pub donated_strks: u256,
+        pub fund_contract_address: ContractAddress,
     }
     // *************************************************************************
     //                            STORAGE
@@ -165,6 +175,17 @@ mod Fund {
             if self.current_goal_state.read() >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
+
+            // Emit receiveDonation event
+            self
+                .emit(
+                    DonationReceived {
+                        current_balance: self.current_goal_state.read(),
+                        donated_strks: strks,
+                        donator_address: get_caller_address(),
+                        fund_contract_address: get_contract_address(),
+                    }
+                )
         }
         fn getCurrentGoalState(self: @ContractState) -> u256 {
             return self.current_goal_state.read();
