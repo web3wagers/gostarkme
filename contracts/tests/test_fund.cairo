@@ -9,6 +9,7 @@ use openzeppelin::utils::serde::SerializedAppend;
 
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
+use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants},};
 
 fn ID() -> u128 {
     1
@@ -18,6 +19,9 @@ fn OWNER() -> ContractAddress {
 }
 fn OTHER_USER() -> ContractAddress {
     contract_address_const::<'USER'>()
+}
+fn FUND_MANAGER() -> ContractAddress {
+    contract_address_const::<FundManagerConstants::FUND_MANAGER_ADDRESS>()
 }
 fn NAME() -> felt252 {
     'NAME_FUND_TEST'
@@ -93,7 +97,7 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
-    start_cheat_caller_address_global(OWNER());
+    start_cheat_caller_address_global(FUND_MANAGER()); 
     dispatcher.setGoal(123);
     let new_goal = dispatcher.getGoal();
     assert(new_goal == 123, 'Set goal method not working')
@@ -132,8 +136,8 @@ fn test_receive_donation_successful() {
     let dispatcher = IFundDispatcher { contract_address };
     // Put state as recollecting dons
     dispatcher.setState(2);
-    // Put 10 strks as goal, only owner
-    start_cheat_caller_address_global(OWNER());
+    // Put 10 strks as goal, only fund manager
+    start_cheat_caller_address_global(FUND_MANAGER());
     dispatcher.setGoal(10);
     // Donate 5 strks
     dispatcher.receiveDonation(5);
@@ -154,4 +158,13 @@ fn test_receive_donation_unsuccessful_wrong_state() {
     dispatcher.setState(1);
     // Donate 
     dispatcher.receiveDonation(5);
+}
+
+#[test]
+#[should_panic(expected: ("You are not the fund manager",))]
+fn test_set_goal_unauthorized() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Change the goal without being the fund manager
+    dispatcher.setGoal(22);
 }
