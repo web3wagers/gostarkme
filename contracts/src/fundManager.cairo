@@ -45,9 +45,29 @@ mod FundManager {
         self.current_id.write(1);
     }
 
+
+    // ***************************************************************************************
+    //                            EVENTS
+    // ***************************************************************************************
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    pub enum Event {
+        FundDeployed: FundDeployed,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct FundDeployed {
+        #[key]
+        pub owner: ContractAddress,
+        pub fund_address: ContractAddress,
+        pub fund_id: u128,
+    }
+
+
     // ***************************************************************************************
     //                            EXTERNALS
     // ***************************************************************************************
+
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
         fn newFund(ref self: ContractState, name: felt252, goal: u256) {
@@ -60,7 +80,17 @@ mod FundManager {
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )
                 .unwrap();
+
             self.funds.write(self.current_id.read(), new_fund_address);
+            self
+                .emit(
+                    FundDeployed {
+                        owner: get_caller_address(),
+                        fund_address: new_fund_address,
+                        fund_id: self.current_id.read()
+                    }
+                );
+
             self.current_id.write(self.current_id.read() + 1);
         }
         fn getCurrentId(self: @ContractState) -> u128 {

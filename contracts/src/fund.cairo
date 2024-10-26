@@ -31,7 +31,9 @@ mod Fund {
     use starknet::get_contract_address;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use gostarkme::constants::{funds::{state_constants::FundStates},};
-    use gostarkme::constants::{funds::{fund_constants::FundConstants, fund_manager_constants::FundManagerConstants},};
+    use gostarkme::constants::{
+        funds::{fund_constants::FundConstants, fund_manager_constants::FundManagerConstants},
+    };
     use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
     // *************************************************************************
