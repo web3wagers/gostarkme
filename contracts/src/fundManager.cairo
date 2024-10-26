@@ -81,12 +81,12 @@ mod FundManager {
             )
                 .unwrap();
 
-            self.funds.write(self.current_id.read(), address_0);
+            self.funds.write(self.current_id.read(), new_fund_address);
             self
                 .emit(
                     FundDeployed {
                         owner: get_caller_address(),
-                        fund_address: address_0,
+                        fund_address: new_fund_address,
                         fund_id: self.current_id.read()
                     }
                 );

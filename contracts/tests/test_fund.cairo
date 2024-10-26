@@ -97,7 +97,7 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
-    start_cheat_caller_address_global(FUND_MANAGER()); 
+    start_cheat_caller_address_global(FUND_MANAGER());
     dispatcher.setGoal(123);
     let new_goal = dispatcher.getGoal();
     assert(new_goal == 123, 'Set goal method not working')
