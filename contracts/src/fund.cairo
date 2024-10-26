@@ -178,7 +178,7 @@ mod Fund {
             self
                 .emit(
                     DonationReceived {
-                        donor_address: get_caller_address(),
+                        donator_address: get_caller_address(),
                         fund_contract_address: get_contract_address(),
                         current_balance: self.current_goal_state.read(),
                         donated_strks: strks,
