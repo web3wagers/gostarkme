@@ -7,17 +7,12 @@ import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
 import { useEventListener } from 'usehooks-ts';
 import { useState } from 'react';
+import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
+import { useAtomValue } from 'jotai';
 
 const UserProfilePage = () => {
 
-  const [storedAddress, setStoredAddress] = useState<string | null>(typeof window !== 'undefined' ? localStorage.getItem('walletAddress') : null);
-
-  const handleWalletChange = () => {
-    const addr = localStorage.getItem("walletAddress");
-    setStoredAddress(addr);
-  }
-
-  useEventListener("local-storage", handleWalletChange);
+  const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
   const navItems = [
     { label: 'My Profile', href: `/app/myprofile` },
@@ -45,14 +40,14 @@ const UserProfilePage = () => {
           href: "/"
         }}
       />
-      {storedAddress !== null ? (
+      {wallet !== null ? (
         <main className="flex flex-grow w-full items-center justify-center bg-white p-8">
           {/* Profile Section */}
           <section className="w-full max-w-6xl">
             {/* Profile Header */}
             <h2 className="text-4xl font-bold text-gray-900 mb-2">
               <span className="font-extrabold">
-                {storedAddress.slice(0, 5)}...{storedAddress.slice(-4)}
+                {wallet?.account?.address.slice(0, 5)}...{wallet?.account?.address.slice(-4)}
               </span>
               {"'s Profile "} {'\u2728'}
             </h2>
