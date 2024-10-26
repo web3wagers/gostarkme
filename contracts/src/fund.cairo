@@ -64,9 +64,9 @@ mod Fund {
     #[derive(Drop, starknet::Event)]
     pub struct DonationReceived {
         #[key]
+        pub donator_address: ContractAddress,
         pub current_balance: u256,
         pub donated_strks: u256,
-        pub donator_address: ContractAddress,
         pub fund_contract_address: ContractAddress,
     }
     // *************************************************************************
