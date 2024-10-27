@@ -1,13 +1,10 @@
+import React from "react";
 import FundCards from "@/components/dashboard/fundCard";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
-import React from "react";
+import { navItems } from "@/constants";
 
 const Dashboard = () => {
-  const navItems = [
-    { label: 'My Profile', href: 'app/myprofile' },
-    { label: 'My funds', href: '/app/myfunds' }
-  ];
 
   const funds = [
     {

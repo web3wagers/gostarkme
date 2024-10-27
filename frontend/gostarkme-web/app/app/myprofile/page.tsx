@@ -9,15 +9,12 @@ import { useEventListener } from 'usehooks-ts';
 import { useState } from 'react';
 import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
 import { useAtomValue } from 'jotai';
+import { navItems } from '@/constants';
+
 
 const UserProfilePage = () => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-
-  const navItems = [
-    { label: 'My Profile', href: `/app/myprofile` },
-    { label: 'My funds', href: `/app/myfunds` }
-  ];
 
   // Mock data for design purposes
   const totalDonations = 20000;

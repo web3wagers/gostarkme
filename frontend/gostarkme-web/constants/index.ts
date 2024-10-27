@@ -35,3 +35,8 @@ export const ARGENT_SESSION_SERVICE_BASE_URL =
 
 export const ARGENT_WEBWALLET_URL =
   process.env.NEXT_PUBLIC_ARGENT_WEBWALLET_URL || "https://web.argent.xyz"
+
+export const navItems = [
+    { label: 'My Profile', href: '/app/myprofile' },
+    { label: 'My funds', href: '/app/myfunds' }
+  ];
