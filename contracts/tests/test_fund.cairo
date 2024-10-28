@@ -6,10 +6,12 @@ use starknet::{ContractAddress, contract_address_const};
 use snforge_std::{declare, ContractClassTrait, start_cheat_caller_address_global};
 
 use openzeppelin::utils::serde::SerializedAppend;
+use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
 
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
 use gostarkme::constants::{funds::{state_constants::FundStates},};
+use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
 
 fn ID() -> u128 {
@@ -174,7 +176,7 @@ fn test_withdraw_with_non_closed_state() {
     let contract_address = _setup_();
     let fund_dispatcher = IFundDispatcher { contract_address };
 
-    start_cheat_caller_address_global(OWNER()); 
+    start_cheat_caller_address_global(OWNER());
     // set goal
     fund_dispatcher.setGoal(500_u256);
     // withdraw funds
@@ -193,17 +195,28 @@ fn test_withdraw_when_fund_has_not_reach_goal() {
     dispatcher.withdraw();
 }
 
-// #[test]
-// // #[should_panic(expected: ('Fund hasnt reached its goal yet',))]
-// fn test_withdraw() {
-//     let contract_address = _setup_();
-//     let fund_dispatcher = IFundDispatcher { contract_address };
+#[test]
+#[fork("Mainnet")]
+fn test_withdraw() {
+    let contract_address = _setup_();
+    let fund_dispatcher = IFundDispatcher { contract_address };
+    let starknet_dispatcher = IERC20Dispatcher {
+        contract_address: StarknetConstants::STRK_TOKEN_ADDRESS.try_into().unwrap()
+    };
 
-//     start_cheat_caller_address_global(OWNER()); 
-//     // set goal
-//     fund_dispatcher.setGoal(500_u256);
-//     // donate
-//     fund_dispatcher.receiveDonation(500_u256);
-//     // withdraw funds
-//     fund_dispatcher.withdraw();
-// }
+    start_cheat_caller_address_global(OWNER());
+    // set goal
+    fund_dispatcher.setGoal(500_u256);
+    fund_dispatcher.setState(2);
+
+    // donate
+    fund_dispatcher.receiveDonation(500_u256);
+
+    // withdraw funds
+    fund_dispatcher.withdraw();
+
+    let balance = starknet_dispatcher.balance_of(OWNER());
+
+    //TODO assert correct balance when logic for depositing strks is complete
+    assert(balance == 0, 'wrong balance');
+}

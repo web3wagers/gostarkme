@@ -1,2 +1,4 @@
 target
 .DS_Store
+
+contracts/.snfoundry_cache/https___starknet_mainnet_public_blastapi_io_rpc_v0_7_519354_v3.json
