@@ -31,10 +31,46 @@ mod Fund {
     use starknet::get_contract_address;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use gostarkme::constants::{funds::{state_constants::FundStates},};
-    use gostarkme::constants::{funds::{fund_constants::FundConstants},};
+    use gostarkme::constants::{
+        funds::{fund_constants::FundConstants, fund_manager_constants::FundManagerConstants},
+    };
     use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
+    // *************************************************************************
+    //                            EVENTS
+    // *************************************************************************
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        DonationWithdraw: DonationWithdraw,
+        NewVoteReceived: NewVoteReceived,
+        DonationReceived: DonationReceived,
+    }
 
+    #[derive(Drop, starknet::Event)]
+    pub struct DonationWithdraw {
+        #[key]
+        pub owner_address: ContractAddress,
+        pub fund_contract_address: ContractAddress,
+        pub withdrawn_amount: u256
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct NewVoteReceived {
+        #[key]
+        pub voter: ContractAddress,
+        pub fund: ContractAddress,
+        pub votes: u32
+    }
+
+    #[derive(Drop, starknet::Event)]
+    pub struct DonationReceived {
+        #[key]
+        pub donator_address: ContractAddress,
+        pub current_balance: u256,
+        pub donated_strks: u256,
+        pub fund_contract_address: ContractAddress,
+    }
     // *************************************************************************
     //                            STORAGE
     // *************************************************************************
@@ -105,13 +141,25 @@ mod Fund {
             if self.up_votes.read() >= FundConstants::UP_VOTES_NEEDED {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
+
+            self
+                .emit(
+                    NewVoteReceived {
+                        voter: get_caller_address(),
+                        fund: get_contract_address(),
+                        votes: self.up_votes.read()
+                    }
+                );
         }
         fn getUpVotes(self: @ContractState) -> u32 {
             return self.up_votes.read();
         }
         fn setGoal(ref self: ContractState, goal: u256) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, "You are not the owner");
+            let fund_manager_address = contract_address_const::<
+                FundManagerConstants::FUND_MANAGER_ADDRESS
+            >();
+            assert!(fund_manager_address == caller, "You are not the fund manager");
             self.goal.write(goal);
         }
         fn getGoal(self: @ContractState) -> u256 {
@@ -127,6 +175,17 @@ mod Fund {
             if self.current_goal_state.read() >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
+
+            // Emit receiveDonation event
+            self
+                .emit(
+                    DonationReceived {
+                        current_balance: self.current_goal_state.read(),
+                        donated_strks: strks,
+                        donator_address: get_caller_address(),
+                        fund_contract_address: get_contract_address(),
+                    }
+                )
         }
         fn getCurrentGoalState(self: @ContractState) -> u256 {
             return self.current_goal_state.read();
@@ -158,6 +217,14 @@ mod Fund {
             starknet_dispatcher.transfer(self.getOwner(), balance);
             assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
+            self
+                .emit(
+                    DonationWithdraw {
+                        owner_address: self.getOwner(),
+                        fund_contract_address: get_contract_address(),
+                        withdrawn_amount: balance
+                    }
+                );
         }
     }
 }

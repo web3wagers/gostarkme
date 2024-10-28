@@ -10,6 +10,7 @@ use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTr
 
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
+use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants},};
 use gostarkme::constants::{funds::{state_constants::FundStates},};
 use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
@@ -22,6 +23,9 @@ fn OWNER() -> ContractAddress {
 }
 fn OTHER_USER() -> ContractAddress {
     contract_address_const::<'USER'>()
+}
+fn FUND_MANAGER() -> ContractAddress {
+    contract_address_const::<FundManagerConstants::FUND_MANAGER_ADDRESS>()
 }
 fn NAME() -> felt252 {
     'NAME_FUND_TEST'
@@ -97,7 +101,7 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
-    start_cheat_caller_address_global(OWNER());
+    start_cheat_caller_address_global(FUND_MANAGER());
     dispatcher.setGoal(123);
     let new_goal = dispatcher.getGoal();
     assert(new_goal == 123, 'Set goal method not working')
@@ -136,8 +140,8 @@ fn test_receive_donation_successful() {
     let dispatcher = IFundDispatcher { contract_address };
     // Put state as recollecting dons
     dispatcher.setState(2);
-    // Put 10 strks as goal, only owner
-    start_cheat_caller_address_global(OWNER());
+    // Put 10 strks as goal, only fund manager
+    start_cheat_caller_address_global(FUND_MANAGER());
     dispatcher.setGoal(10);
     // Donate 5 strks
     dispatcher.receiveDonation(5);
@@ -161,6 +165,15 @@ fn test_receive_donation_unsuccessful_wrong_state() {
 }
 
 #[test]
+#[should_panic(expected: ("You are not the fund manager",))]
+fn test_set_goal_unauthorized() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Change the goal without being the fund manager
+    dispatcher.setGoal(22);
+}
+
+#[test]
 #[should_panic(expected: ("You are not the owner",))]
 fn test_withdraw_with_wrong_owner() {
     let contract_address = _setup_();
@@ -176,9 +189,11 @@ fn test_withdraw_with_non_closed_state() {
     let contract_address = _setup_();
     let fund_dispatcher = IFundDispatcher { contract_address };
 
-    start_cheat_caller_address_global(OWNER());
+    start_cheat_caller_address_global(FUND_MANAGER());
     // set goal
     fund_dispatcher.setGoal(500_u256);
+
+    start_cheat_caller_address_global(OWNER());
     // withdraw funds
     fund_dispatcher.withdraw();
 }
@@ -188,10 +203,13 @@ fn test_withdraw_with_non_closed_state() {
 fn test_withdraw_when_fund_has_not_reach_goal() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    start_cheat_caller_address_global(OWNER());
+
+    start_cheat_caller_address_global(FUND_MANAGER());
+
     dispatcher.setGoal(10);
     dispatcher.setState(3);
 
+    start_cheat_caller_address_global(OWNER());
     dispatcher.withdraw();
 }
 
@@ -204,7 +222,8 @@ fn test_withdraw() {
         contract_address: StarknetConstants::STRK_TOKEN_ADDRESS.try_into().unwrap()
     };
 
-    start_cheat_caller_address_global(OWNER());
+    start_cheat_caller_address_global(FUND_MANAGER());
+
     // set goal
     fund_dispatcher.setGoal(500_u256);
     fund_dispatcher.setState(2);
@@ -212,6 +231,7 @@ fn test_withdraw() {
     // donate
     fund_dispatcher.receiveDonation(500_u256);
 
+    start_cheat_caller_address_global(OWNER());
     // withdraw funds
     fund_dispatcher.withdraw();
 
