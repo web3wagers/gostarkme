@@ -9,12 +9,10 @@ import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { useAtomValue } from "jotai";
 import React, { useEffect, useState } from "react";
 import { byteArray, Contract, InvokeFunctionResponse } from "starknet";
+import React from "react";
+import { navItems } from "@/constants";
 
 const Dashboard = () => {
-  const navItems = [
-    { label: 'My Profile', href: 'app/myprofile' },
-    { label: 'My funds', href: '/app/myfunds' }
-  ];
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
