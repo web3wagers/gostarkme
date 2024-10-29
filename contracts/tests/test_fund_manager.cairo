@@ -14,15 +14,6 @@ use openzeppelin::utils::serde::SerializedAppend;
 use gostarkme::fundManager::IFundManagerDispatcher;
 use gostarkme::fundManager::IFundManagerDispatcherTrait;
 
-fn TOKEN_NAME() -> ByteArray {
-    "NAME"
-}
-fn TOKEN_SYMBOL() -> ByteArray {
-    "SYMBOL"
-}
-fn TOKEN_SUPPLY() -> u256 {
-    1_000_000_000
-}
 fn ID() -> u128 {
     1
 }
@@ -42,15 +33,7 @@ fn GOAL() -> u256 {
     1000
 }
 
-fn _setup_() -> (ContractAddress, ClassHash, ContractAddress) {
-    // Token
-    let token_contract = declare("Token").unwrap();
-    let mut token_calldata = array![];
-    token_calldata.append_serde(TOKEN_NAME());
-    token_calldata.append_serde(TOKEN_SYMBOL());
-    token_calldata.append_serde(TOKEN_SUPPLY());
-    token_calldata.append_serde(OWNER());
-    let (token_address, _) = token_contract.deploy(@token_calldata).unwrap();
+fn _setup_() -> (ContractAddress, ClassHash) {
     // Fund
     let fund = declare("Fund").unwrap();
     let mut fund_calldata: Array<felt252> = array![];
@@ -58,7 +41,6 @@ fn _setup_() -> (ContractAddress, ClassHash, ContractAddress) {
     fund_calldata.append_serde(OWNER());
     fund_calldata.append_serde(NAME());
     fund_calldata.append_serde(GOAL());
-    fund_calldata.append_serde(token_address);
     let (fund_contract_address, _) = fund.deploy(@fund_calldata).unwrap();
     let fund_class_hash = get_class_hash(fund_contract_address);
 
@@ -68,7 +50,7 @@ fn _setup_() -> (ContractAddress, ClassHash, ContractAddress) {
     fund_manager_calldata.append_serde(fund_class_hash);
     let (contract_address, _) = fund_manager.deploy(@fund_manager_calldata).unwrap();
 
-    return (contract_address, fund_class_hash, token_address);
+    return (contract_address, fund_class_hash);
 }
 
 // ******************************************************************************
@@ -78,7 +60,7 @@ fn _setup_() -> (ContractAddress, ClassHash, ContractAddress) {
 #[test]
 fn test_constructor() {
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, fund_class_hash, _) = _setup_();
+    let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
     let expected_fund_address = fund_manager_contract.getFundClassHash();
     let owner = fund_manager_contract.getOwner();
@@ -89,9 +71,9 @@ fn test_constructor() {
 #[test]
 fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, fund_class_hash, token_address) = _setup_();
+    let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), GOAL(), token_address);
+    fund_manager_contract.newFund(NAME(), GOAL());
     let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
