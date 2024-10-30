@@ -50,7 +50,7 @@ fn _setup_() -> (ContractAddress, ClassHash) {
     fund_manager_calldata.append_serde(fund_class_hash);
     let (contract_address, _) = fund_manager.deploy(@fund_manager_calldata).unwrap();
 
-    return (contract_address, fund_class_hash,);
+    return (contract_address, fund_class_hash);
 }
 
 // ******************************************************************************
