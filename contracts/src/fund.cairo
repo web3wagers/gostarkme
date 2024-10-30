@@ -21,7 +21,7 @@ pub trait IFund<TContractState> {
 }
 
 #[starknet::contract]
-mod Fund {
+pub mod Fund {
     // *************************************************************************
     //                            IMPORT
     // *************************************************************************
@@ -41,7 +41,7 @@ mod Fund {
     // *************************************************************************
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         DonationWithdraw: DonationWithdraw,
         NewVoteReceived: NewVoteReceived,
         DonationReceived: DonationReceived,

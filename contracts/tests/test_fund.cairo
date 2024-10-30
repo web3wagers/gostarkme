@@ -6,12 +6,14 @@ use starknet::syscalls::call_contract_syscall;
 
 use snforge_std::{
     declare, ContractClassTrait, start_cheat_caller_address_global, start_cheat_caller_address,
-    cheat_caller_address, CheatSpan
+    cheat_caller_address, CheatSpan, spy_events, EventSpyAssertionsTrait
 };
 
 use openzeppelin::utils::serde::SerializedAppend;
 use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
 
+
+use gostarkme::fund::Fund;
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
 use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants},};
@@ -188,4 +190,30 @@ fn test_set_goal_unauthorized() {
     let dispatcher = IFundDispatcher { contract_address };
     // Change the goal without being the fund manager
     dispatcher.setGoal(22);
+}
+
+
+#[test]
+fn test_new_vote_received_event_emitted_successful() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+
+    let mut spy = spy_events();
+
+    start_cheat_caller_address(contract_address, OTHER_USER());
+    dispatcher.receiveVote();
+
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::NewVoteReceived(
+                        Fund::NewVoteReceived {
+                            voter: OTHER_USER(), fund: contract_address, votes: 1
+                        }
+                    )
+                )
+            ]
+        );
 }
