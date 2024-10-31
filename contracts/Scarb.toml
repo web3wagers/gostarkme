@@ -16,7 +16,6 @@ snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v
 test = "snforge test"
 
 [[target.starknet-contract]]
-build-external-contracts = ["openzeppelin::presets::erc20::ERC20"]
 casm = true
 
 [[tool.snforge.fork]]
