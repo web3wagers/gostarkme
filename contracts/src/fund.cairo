@@ -205,13 +205,16 @@ pub mod Fund {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
-            assert(self.get_current_goal_state() > 0, 'Fund hasnt reached its goal yet');
+            assert(
+                self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
+            );
             // Withdraw
             let withdrawn_amount = self.get_current_goal_state();
             // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
             // and 5%), also transfer the amount to fund manager address.
+            self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
-            assert(self.get_current_goal_state() != 0, 'Fund hasnt reached its goal yet');
+            assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
             self.setState(4);
             self
                 .emit(
