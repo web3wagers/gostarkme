@@ -50,29 +50,28 @@ fn _setup_() -> ContractAddress {
     let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
-fn _setup_erc20_() -> ContractAddress {
-    // Declare the ERC20 contract and retrieve the class hash
-    let erc20_class_hash = declare("ERC20").unwrap();
-
-    // Define the ERC20 token's properties
-    let erc20_name: ByteArray = "Mock ERC20";
-    let erc20_symbol: ByteArray = "MMM";
-    let initial_supply: u256 = 10000;
-    let recipient: ContractAddress = OWNER();
-
-    // Initialize constructor calldata array for ERC20 deployment
-    let mut erc20_constructor_calldata: Array<felt252> = ArrayTrait::new();
-
-    // Serialize the token properties into the constructor calldata
-    erc20_name.serialize(ref erc20_constructor_calldata);
-    erc20_symbol.serialize(ref erc20_constructor_calldata);
-    initial_supply.serialize(ref erc20_constructor_calldata);
-    recipient.serialize(ref erc20_constructor_calldata);
-
-    // Deploy the ERC20 contract using the class hash and constructor calldata
-    let (erc20_contract_address, _) = erc20_class_hash.deploy(@erc20_constructor_calldata).unwrap();
-
-    erc20_contract_address
+fn setup_donation(
+    dispatcher: IFundDispatcher,
+    token_dispatcher: IERC20Dispatcher,
+    contract_address: ContractAddress,
+    token_address: ContractAddress,
+    minter_address: ContractAddress,
+    goal: u256
+) {
+    // Put state as recollecting dons
+    dispatcher.setState(2);
+    // Put 10 strks as goal, only fund manager
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+    // fund the manager with STRK token
+    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    // approve
+    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    token_dispatcher.approve(contract_address, goal);
 }
 // ***************************************************************************************
 //                              TEST
@@ -172,20 +171,12 @@ fn test_receive_donation_successful() {
     let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
     let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
     let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
-    // Put state as recollecting dons
-    dispatcher.setState(2);
-    // Put 10 strks as goal, only fund manager
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
-    dispatcher.setGoal(goal);
-    // fund the manager with STRK token
-    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-    let mut calldata = array![];
-    calldata.append_serde(FUND_MANAGER());
-    calldata.append_serde(goal);
-    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
-    // approve
-    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-    token_dispatcher.approve(contract_address, goal);
+
+    //Set up donation call
+    setup_donation(
+        dispatcher, token_dispatcher, contract_address, token_address, minter_address, goal
+    );
+
     // Donate 5 strks
     dispatcher.receiveDonation(goal / 2);
     let current_goal_state = dispatcher.get_current_goal_state();
@@ -235,6 +226,52 @@ fn test_new_vote_received_event_emitted_successful() {
                     Fund::Event::NewVoteReceived(
                         Fund::NewVoteReceived {
                             voter: OTHER_USER(), fund: contract_address, votes: 1
+                        }
+                    )
+                )
+            ]
+        );
+}
+
+
+#[test]
+#[fork("Mainnet")]
+fn test_emit_event_donation_withdraw() {
+    //Set up contract addresses
+    let contract_address = _setup_();
+    let goal: u256 = 10;
+    let strks: u256 = 11;
+
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    //Set up donation call
+    setup_donation(
+        dispatcher, token_dispatcher, contract_address, token_address, minter_address, goal
+    );
+
+    dispatcher.receiveDonation(goal);
+
+    start_cheat_caller_address_global(OWNER());
+    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+
+    // Spy on emitted events and call the withdraw function
+    let mut spy = spy_events();
+    dispatcher.withdraw();
+
+    // Verify the expected event was emitted with the correct values
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::DonationWithdraw(
+                        Fund::DonationWithdraw {
+                            owner_address: OWNER(),
+                            fund_contract_address: contract_address,
+                            withdrawn_amount: 10
                         }
                     )
                 )

@@ -17,7 +17,7 @@ pub trait IFund<TContractState> {
     fn setState(ref self: TContractState, state: u8);
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
-    fn withdraw(ref self: TContractState, token: ContractAddress);
+    fn withdraw(ref self: TContractState);
 }
 
 #[starknet::contract]
@@ -200,7 +200,7 @@ pub mod Fund {
         fn getVoter(self: @ContractState) -> u32 {
             return self.voters.read(get_caller_address());
         }
-        fn withdraw(ref self: ContractState, token: ContractAddress) {
+        fn withdraw(ref self: ContractState) {
             // Verifications
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
@@ -211,7 +211,7 @@ pub mod Fund {
             // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
             // and 5%), also transfer the amount to fund manager address.
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
-            assert(self.get_current_goal_state() != 0, 'Fund hasnt reached its goal yet');
+            assert(self.get_current_goal_state() >= 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
             self
                 .emit(
