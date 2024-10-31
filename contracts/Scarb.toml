@@ -18,3 +18,8 @@ test = "snforge test"
 [[target.starknet-contract]]
 build-external-contracts = ["openzeppelin::presets::erc20::ERC20"]
 casm = true
+
+[[tool.snforge.fork]]
+name = "Mainnet"
+url = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7"
+block_id.number = "519354"

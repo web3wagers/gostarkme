@@ -13,8 +13,7 @@ pub trait IFund<TContractState> {
     fn setGoal(ref self: TContractState, goal: u256);
     fn getGoal(self: @TContractState) -> u256;
     fn receiveDonation(ref self: TContractState, strks: u256);
-    fn setCurrentGoalState(ref self: TContractState, current_goal_state: u256);
-    fn getCurrentGoalState(self: @TContractState) -> u256;
+    fn get_current_goal_state(self: @TContractState) -> u256;
     fn setState(ref self: TContractState, state: u8);
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
@@ -84,7 +83,6 @@ pub mod Fund {
         up_votes: u32,
         voters: LegacyMap::<ContractAddress, u32>,
         goal: u256,
-        current_goal_state: u256,
         state: u8,
     }
 
@@ -101,7 +99,6 @@ pub mod Fund {
         self.reason.write(" ");
         self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
-        self.current_goal_state.write(FundConstants::INITIAL_GOAL);
         self.state.write(FundStates::RECOLLECTING_VOTES);
     }
 
@@ -172,8 +169,11 @@ pub mod Fund {
                 self.state.read() == FundStates::RECOLLECTING_DONATIONS,
                 'Fund not recollecting dons!'
             );
-            self.current_goal_state.write(self.current_goal_state.read() + strks);
-            if self.current_goal_state.read() >= self.goal.read() {
+            self
+                .token_dispatcher()
+                .transfer_from(get_caller_address(), get_contract_address(), strks);
+            let current_balance = self.get_current_goal_state();
+            if current_balance >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
 
@@ -181,18 +181,15 @@ pub mod Fund {
             self
                 .emit(
                     DonationReceived {
-                        current_balance: self.current_goal_state.read(),
+                        current_balance,
                         donated_strks: strks,
                         donator_address: get_caller_address(),
                         fund_contract_address: get_contract_address(),
                     }
                 )
         }
-        fn setCurrentGoalState(ref self: ContractState, current_goal_state: u256) {
-            self.current_goal_state.write(current_goal_state);
-        }
-        fn getCurrentGoalState(self: @ContractState) -> u256 {
-            return self.current_goal_state.read();
+        fn get_current_goal_state(self: @ContractState) -> u256 {
+            self.token_dispatcher().balance_of(get_contract_address())
         }
         fn setState(ref self: ContractState, state: u8) {
             self.state.write(state);
@@ -208,22 +205,33 @@ pub mod Fund {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
-            assert(self.getCurrentGoalState() > 0, 'Fund hasnt reached its goal yet');
+            assert(self.get_current_goal_state() > 0, 'Fund hasnt reached its goal yet');
             // Withdraw
-            let starknet_dispatcher = IERC20Dispatcher { contract_address: token };
-            let balance = starknet_dispatcher.balance_of(get_contract_address());
-            //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
-            starknet_dispatcher.transfer(self.getOwner(), balance);
-            assert(self.getCurrentGoalState() != 0, 'Fund hasnt reached its goal yet');
+            let withdrawn_amount = self.get_current_goal_state();
+            // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
+            // and 5%), also transfer the amount to fund manager address.
+            self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
+            assert(self.get_current_goal_state() != 0, 'Fund hasnt reached its goal yet');
             self.setState(4);
             self
                 .emit(
                     DonationWithdraw {
                         owner_address: self.getOwner(),
                         fund_contract_address: get_contract_address(),
-                        withdrawn_amount: balance
+                        withdrawn_amount
                     }
                 );
+        }
+    }
+    // *************************************************************************
+    //                            INTERNALS
+    // *************************************************************************
+    #[generate_trait]
+    impl InternalImpl of InternalTrait {
+        fn token_dispatcher(self: @ContractState) -> IERC20Dispatcher {
+            IERC20Dispatcher {
+                contract_address: contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>()
+            }
         }
     }
 }

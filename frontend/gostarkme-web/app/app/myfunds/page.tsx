@@ -7,14 +7,10 @@ import { useState } from 'react';
 import { useEventListener, useLocalStorage } from 'usehooks-ts'
 import { useAtomValue } from 'jotai';
 import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
+import { navItems } from '@/constants';
 
 const MyFundsPage = () => { 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-
-  const navItems = [
-    { label: 'My Profile', href: `/app/myprofile` },
-    { label: 'My funds', href: `/app/myfunds` }
-  ];
 
   return (
     <div className="min-h-screen flex flex-col">
