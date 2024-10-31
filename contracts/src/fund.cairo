@@ -13,15 +13,16 @@ pub trait IFund<TContractState> {
     fn setGoal(ref self: TContractState, goal: u256);
     fn getGoal(self: @TContractState) -> u256;
     fn receiveDonation(ref self: TContractState, strks: u256);
+    fn setCurrentGoalState(ref self: TContractState, current_goal_state: u256);
     fn getCurrentGoalState(self: @TContractState) -> u256;
     fn setState(ref self: TContractState, state: u8);
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
-    fn withdraw(ref self: TContractState);
+    fn withdraw(ref self: TContractState, token: ContractAddress);
 }
 
 #[starknet::contract]
-mod Fund {
+pub mod Fund {
     // *************************************************************************
     //                            IMPORT
     // *************************************************************************
@@ -41,7 +42,7 @@ mod Fund {
     // *************************************************************************
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         DonationWithdraw: DonationWithdraw,
         NewVoteReceived: NewVoteReceived,
         DonationReceived: DonationReceived,
@@ -187,6 +188,9 @@ mod Fund {
                     }
                 )
         }
+        fn setCurrentGoalState(ref self: ContractState, current_goal_state: u256) {
+            self.current_goal_state.write(current_goal_state);
+        }
         fn getCurrentGoalState(self: @ContractState) -> u256 {
             return self.current_goal_state.read();
         }
@@ -199,19 +203,14 @@ mod Fund {
         fn getVoter(self: @ContractState) -> u32 {
             return self.voters.read(get_caller_address());
         }
-        fn withdraw(ref self: ContractState) {
+        fn withdraw(ref self: ContractState, token: ContractAddress) {
             // Verifications
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
             assert(self.getCurrentGoalState() > 0, 'Fund hasnt reached its goal yet');
             // Withdraw
-            let starknet_contract_address = contract_address_const::<
-                StarknetConstants::STRK_TOKEN_ADDRESS
-            >();
-            let starknet_dispatcher = IERC20Dispatcher {
-                contract_address: starknet_contract_address
-            };
+            let starknet_dispatcher = IERC20Dispatcher { contract_address: token };
             let balance = starknet_dispatcher.balance_of(get_contract_address());
             //TODO: Calculate balance to deposit in owner address and in fund manager address (95% and 5%), also transfer the amount to fund manager address.
             starknet_dispatcher.transfer(self.getOwner(), balance);
