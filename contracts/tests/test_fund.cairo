@@ -217,3 +217,57 @@ fn test_new_vote_received_event_emitted_successful() {
             ]
         );
 }
+
+#[test]
+#[fork("Mainnet")]
+fn test_emit_event_donation_withdraw() {
+    //Set up contract addresses
+    let contract_address = _setup_();
+    let goal: u256 = 10;
+
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    //Set up donation call
+    dispatcher.setState(2);
+    // Put 10 strks as goal, only fund manager
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+    // fund the manager with STRK token
+    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    // approve
+    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    token_dispatcher.approve(contract_address, goal);
+
+    dispatcher.receiveDonation(goal);
+
+    start_cheat_caller_address_global(OWNER());
+    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+
+    // Spy on emitted events and call the withdraw function
+    let mut spy = spy_events();
+    dispatcher.withdraw();
+
+    // Verify the expected event was emitted with the correct values
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::DonationWithdraw(
+                        Fund::DonationWithdraw {
+                            owner_address: OWNER(),
+                            fund_contract_address: contract_address,
+                            withdrawn_amount: 10
+                        }
+                    )
+                )
+            ]
+        );
+}
