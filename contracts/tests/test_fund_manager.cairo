@@ -82,7 +82,18 @@ fn test_new_fund() {
     assert(current_id == 2, 'Invalid current ID');
 }
 
-
+/// Test function `test_fund_deployed_event` verifies the correct emission of the `FundDeployed` event upon deploying a new fund.
+///
+/// - This function begins by setting up the initial environment and obtaining the contract address for the Fund Manager.
+/// - A dispatcher instance `fund_manager_contract` is created to interact with the `IFundManager` contract at the specified `contract_address`.
+/// - The caller address is set to `OWNER()` using `start_cheat_caller_address_global`, allowing the function to execute as the designated owner.
+/// - A spy is initialized with `spy_events()` to capture and analyze emitted events for later verification.
+/// - The `current_id` of the fund is retrieved before deploying a new fund.
+/// - The `newFund` function is called with `NAME()` and `GOAL()` to deploy a new fund.
+/// - `expected_fund_class_hash` is retrieved to obtain the expected address for the newly created fund.
+/// - Finally, the `spy.assert_emitted` function verifies that the `FundDeployed` event was emitted with the expected `contract_address`, `fund_address`, `fund_id`, and `owner`.
+///
+/// This test ensures that all event attributes are correct and that the fund deployment event is emitted as expected.
 #[test]
 fn test_fund_deployed_event() {
     let (contract_address, _) = _setup_();
