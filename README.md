@@ -16,7 +16,7 @@ You can check the prototype we have in mind and suggest any improvement, if you 
 
 - [Figma prototype](https://www.figma.com/design/SCiGViaoPT9UTrT7CsLbAt/Go-Stark-Me?node-id=0-1&t=FUhnIhNcXRIGkQ16-1)
 
-## Contributors
+## Owners
 
 - [EmmanuelAR](https://github.com/EmmanuelAR)
 - [adrianvrj](https://github.com/adrianvrj)
