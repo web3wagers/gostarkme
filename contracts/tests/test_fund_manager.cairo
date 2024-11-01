@@ -6,13 +6,15 @@ use starknet::class_hash::{ClassHash};
 use starknet::syscalls::deploy_syscall;
 
 use snforge_std::{
-    ContractClass, declare, ContractClassTrait, start_cheat_caller_address_global, get_class_hash
+    ContractClass, declare, ContractClassTrait, start_cheat_caller_address_global, get_class_hash,
+    spy_events, EventSpyAssertionsTrait
 };
 
 use openzeppelin::utils::serde::SerializedAppend;
 
 use gostarkme::fundManager::IFundManagerDispatcher;
 use gostarkme::fundManager::IFundManagerDispatcherTrait;
+use gostarkme::fundManager::FundManager;
 
 fn ID() -> u128 {
     1
@@ -79,3 +81,36 @@ fn test_new_fund() {
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
     assert(current_id == 2, 'Invalid current ID');
 }
+
+
+#[test]
+fn test_fund_deployed_event() {
+    let (contract_address, _) = _setup_();
+    let fund_manager_contract = IFundManagerDispatcher { contract_address };
+
+    start_cheat_caller_address_global(OWNER());
+
+    let mut spy = spy_events();
+
+    let current_id = fund_manager_contract.getCurrentId();
+    fund_manager_contract.newFund(NAME(), GOAL());
+
+    let expected_fund_class_hash = fund_manager_contract.getFund(1);
+
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    FundManager::Event::FundDeployed(
+                        FundManager::FundDeployed {
+                            fund_address: expected_fund_class_hash,
+                            fund_id: current_id,
+                            owner: OWNER(),
+                        }
+                    )
+                )
+            ]
+        );
+}
+
