@@ -68,9 +68,16 @@ mod FundManager {
     //                            EXTERNALS
     // ***************************************************************************************
 
+    //new constant
+const MINIMUM_GOAL: u256 = 500_u256;
+
+
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
         fn newFund(ref self: ContractState, name: felt252, goal: u256) {
+
+            assert(goal >= MINIMUM_GOAL, "Goal must be at least 500");
+
             let mut call_data: Array<felt252> = array![];
             Serde::serialize(@self.current_id.read(), ref call_data);
             Serde::serialize(@get_caller_address(), ref call_data);
