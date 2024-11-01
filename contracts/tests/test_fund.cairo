@@ -300,44 +300,45 @@ fn test_withdraw_with_non_closed_state() {
 }
 
 #[test]
-#[should_panic(expected: ('Fund hasnt reached its goal yet',))]
-fn test_withdraw_when_fund_has_not_reach_goal() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
-
-    start_cheat_caller_address_global(FUND_MANAGER());
-
-    dispatcher.setGoal(10);
-    dispatcher.setState(3);
-
-    start_cheat_caller_address_global(OWNER());
-    dispatcher.withdraw();
-}
-
-#[test]
 #[fork("Mainnet")]
 fn test_withdraw() {
     let contract_address = _setup_();
-    let fund_dispatcher = IFundDispatcher { contract_address };
-    let starknet_dispatcher = IERC20Dispatcher {
-        contract_address: StarknetConstants::STRK_TOKEN_ADDRESS.try_into().unwrap()
-    };
+    let goal: u256 = 500;
 
-    start_cheat_caller_address_global(FUND_MANAGER());
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
 
-    // set goal
-    fund_dispatcher.setGoal(500_u256);
-    fund_dispatcher.setState(2);
+    //Set donation state
+    dispatcher.setState(2);
 
-    // donate
-    fund_dispatcher.receiveDonation(500_u256);
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+
+    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+
+    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    token_dispatcher.approve(contract_address, goal);
+
+    dispatcher.receiveDonation(goal);
 
     start_cheat_caller_address_global(OWNER());
-    // withdraw funds
-    fund_dispatcher.withdraw();
+    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
 
-    let balance = starknet_dispatcher.balance_of(OWNER());
+    let owner_balance_before = token_dispatcher.balance_of(OWNER());
+    let fund_balance_before = token_dispatcher.balance_of(contract_address);
 
-    //TODO assert correct balance when logic for depositing strks is complete
-    assert(balance == 0, 'wrong balance');
+    // withdraw
+    dispatcher.withdraw();
+
+    let owner_balance_after = token_dispatcher.balance_of(OWNER());
+    let fund_balance_after = token_dispatcher.balance_of(contract_address);
+
+    assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
+    assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
 }
