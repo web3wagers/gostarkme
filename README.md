@@ -44,15 +44,14 @@ You can also contact us on Telegram:
 
 If you've contributed to this project, you can easily add yourself to the contributors list by commenting on any issue or pull request with: `@all-contributors please add <your-github-username> for <contribution-type>`
 
-For example: `@all-contributors please add @@adrian_vrj for code, doc, business, and ideas`
+For example: `@all-contributors please add @adrian_vrj for code, doc, business, and ideas`
 
-## Contributors ✨
-
-Thanks goes to these wonderful people 1:
+## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
