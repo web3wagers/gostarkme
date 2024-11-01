@@ -17,7 +17,9 @@ use gostarkme::fund::Fund;
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
 use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants},};
+use gostarkme::constants::{funds::{state_constants::FundStates},};
 use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
+
 
 fn ID() -> u128 {
     1
@@ -270,4 +272,73 @@ fn test_emit_event_donation_withdraw() {
                 )
             ]
         );
+}
+
+#[test]
+#[should_panic(expected: ("You are not the owner",))]
+fn test_withdraw_with_wrong_owner() {
+    let contract_address = _setup_();
+
+    // call withdraw fn with wrong owner 
+    start_cheat_caller_address_global(OTHER_USER());
+    IFundDispatcher { contract_address }.withdraw();
+}
+
+#[test]
+#[should_panic(expected: ('Fund not close goal yet.',))]
+fn test_withdraw_with_non_closed_state() {
+    let contract_address = _setup_();
+    let fund_dispatcher = IFundDispatcher { contract_address };
+
+    start_cheat_caller_address_global(FUND_MANAGER());
+    // set goal
+    fund_dispatcher.setGoal(500_u256);
+
+    start_cheat_caller_address_global(OWNER());
+    // withdraw funds
+    fund_dispatcher.withdraw();
+}
+
+#[test]
+#[fork("Mainnet")]
+fn test_withdraw() {
+    let contract_address = _setup_();
+    let goal: u256 = 500;
+
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    //Set donation state
+    dispatcher.setState(2);
+
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+
+    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+
+    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    token_dispatcher.approve(contract_address, goal);
+
+    dispatcher.receiveDonation(goal);
+
+    start_cheat_caller_address_global(OWNER());
+    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+
+    let owner_balance_before = token_dispatcher.balance_of(OWNER());
+    let fund_balance_before = token_dispatcher.balance_of(contract_address);
+
+    // withdraw
+    dispatcher.withdraw();
+
+    let owner_balance_after = token_dispatcher.balance_of(OWNER());
+    let fund_balance_after = token_dispatcher.balance_of(contract_address);
+
+    assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
+    assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
 }
