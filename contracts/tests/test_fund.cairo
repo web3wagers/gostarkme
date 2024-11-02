@@ -342,3 +342,55 @@ fn test_withdraw() {
     assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
     assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
 }
+
+#[test]
+#[fork("Mainnet")]
+fn test_emit_event_donation_received() {
+    //Initial configuration of contract addresses and donation targets
+    let contract_address = _setup_();
+    let goal: u256 = 10;
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    //Donation target configuration in the dispatcher
+    dispatcher.setState(2);
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+
+    //Provision of STRK token to the fund manager
+    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+
+    //Approve
+    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    token_dispatcher.approve(contract_address, goal);
+    let mut spy = spy_events();
+
+    //Receipt of the donation at the dispatcher
+    dispatcher.receiveDonation(goal);
+    start_cheat_caller_address_global(FUND_MANAGER());
+
+    //Verification of the current balance and issuance of the expected event
+    let current_balance = dispatcher.get_current_goal_state();
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::DonationReceived(
+                        Fund::DonationReceived {
+                            current_balance,
+                            donated_strks: goal,
+                            donator_address: FUND_MANAGER(),
+                            fund_contract_address: contract_address,
+                        }
+                    )
+                )
+            ]
+        );
+}
