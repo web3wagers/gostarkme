@@ -1,4 +1,4 @@
-export const fund = [
+export const fundAbi = [
     {
       "type": "impl",
       "name": "FundImpl",
