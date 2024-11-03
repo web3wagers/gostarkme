@@ -22,6 +22,7 @@ pub mod FundManager {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
     use openzeppelin::utils::serde::SerializedAppend;
+    use gostarkme::constants::{ funds::{fund_constants::FundConstants}, };
 
 
     // ***************************************************************************************
@@ -71,6 +72,7 @@ pub mod FundManager {
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
         fn newFund(ref self: ContractState, name: felt252, goal: u256) {
+            assert(goal >= FundConstants::MINIMUM_GOAL, 'Goal must be at least 500');
             let mut call_data: Array<felt252> = array![];
             Serde::serialize(@self.current_id.read(), ref call_data);
             Serde::serialize(@get_caller_address(), ref call_data);
