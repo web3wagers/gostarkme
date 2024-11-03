@@ -22,9 +22,7 @@ pub mod FundManager {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
     use openzeppelin::utils::serde::SerializedAppend;
-    use gostarkme::constants::{
-        funds::{fund_constants::FundConstants, fund_manager_constants::FundManagerConstants},
-    };
+    use gostarkme::constants::{ funds::{fund_constants::FundConstants}, };
 
 
     // ***************************************************************************************
