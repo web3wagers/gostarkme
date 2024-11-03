@@ -3,7 +3,7 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IFundManager<TContractState> {
-    fn newFund(ref self: TContractState, name: felt252, goal: u256);
+    fn newFund(ref self: TContractState, name: ByteArray, goal: u256);
     fn getCurrentId(self: @TContractState) -> u128;
     fn getFund(self: @TContractState, id: u128) -> ContractAddress;
     fn getOwner(self: @TContractState) -> ContractAddress;
@@ -70,7 +70,7 @@ pub mod FundManager {
 
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
-        fn newFund(ref self: ContractState, name: felt252, goal: u256) {
+        fn newFund(ref self: ContractState, name: ByteArray, goal: u256) {
             let mut call_data: Array<felt252> = array![];
             Serde::serialize(@self.current_id.read(), ref call_data);
             Serde::serialize(@get_caller_address(), ref call_data);

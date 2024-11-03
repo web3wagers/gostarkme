@@ -25,8 +25,8 @@ fn OWNER() -> ContractAddress {
 fn OTHER_USER() -> ContractAddress {
     contract_address_const::<'USER'>()
 }
-fn NAME() -> felt252 {
-    'NAME_FUND_TEST'
+fn NAME() -> ByteArray {
+    "NAME_FUND_TEST"
 }
 fn REASON() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"

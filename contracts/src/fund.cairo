@@ -4,8 +4,8 @@ use starknet::ContractAddress;
 pub trait IFund<TContractState> {
     fn getId(self: @TContractState) -> u128;
     fn getOwner(self: @TContractState) -> ContractAddress;
-    fn setName(ref self: TContractState, name: felt252);
-    fn getName(self: @TContractState) -> felt252;
+    fn setName(ref self: TContractState, name: ByteArray);
+    fn getName(self: @TContractState) -> ByteArray;
     fn setReason(ref self: TContractState, reason: ByteArray);
     fn getReason(self: @TContractState) -> ByteArray;
     fn receiveVote(ref self: TContractState);
@@ -18,6 +18,10 @@ pub trait IFund<TContractState> {
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
     fn withdraw(ref self: TContractState);
+    fn set_evidence_link(ref self: TContractState, evidence: ByteArray);
+    fn get_evidence_link(self: @TContractState) -> ByteArray;
+    fn set_contact_handle(ref self: TContractState, contact_handle: ByteArray);
+    fn get_contact_handle(self: @TContractState) -> ByteArray;
 }
 
 #[starknet::contract]
@@ -78,12 +82,14 @@ pub mod Fund {
     struct Storage {
         id: u128,
         owner: ContractAddress,
-        name: felt252,
+        name: ByteArray,
         reason: ByteArray,
         up_votes: u32,
         voters: LegacyMap::<ContractAddress, u32>,
         goal: u256,
         state: u8,
+        evidence_link: ByteArray,
+        contact_handle: ByteArray
     }
 
     // *************************************************************************
@@ -91,7 +97,7 @@ pub mod Fund {
     // *************************************************************************
     #[constructor]
     fn constructor(
-        ref self: ContractState, id: u128, owner: ContractAddress, name: felt252, goal: u256
+        ref self: ContractState, id: u128, owner: ContractAddress, name: ByteArray, goal: u256
     ) {
         self.id.write(id);
         self.owner.write(owner);
@@ -100,6 +106,8 @@ pub mod Fund {
         self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
         self.state.write(FundStates::RECOLLECTING_VOTES);
+        self.evidence_link.write(" ");
+        self.contact_handle.write(" ");
     }
 
     // *************************************************************************
@@ -113,12 +121,12 @@ pub mod Fund {
         fn getOwner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
         }
-        fn setName(ref self: ContractState, name: felt252) {
+        fn setName(ref self: ContractState, name: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             self.name.write(name);
         }
-        fn getName(self: @ContractState) -> felt252 {
+        fn getName(self: @ContractState) -> ByteArray {
             return self.name.read();
         }
         fn setReason(ref self: ContractState, reason: ByteArray) {
@@ -224,6 +232,22 @@ pub mod Fund {
                         withdrawn_amount
                     }
                 );
+        }
+        fn set_evidence_link(ref self: ContractState, evidence: ByteArray) {
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
+            self.evidence_link.write(evidence);
+        }
+        fn get_evidence_link(self: @ContractState) -> ByteArray {
+            return self.evidence_link.read();
+        }
+        fn set_contact_handle(ref self: ContractState, contact_handle: ByteArray) {
+            let caller = get_caller_address();
+            assert!(self.owner.read() == caller, "You are not the owner");
+            self.contact_handle.write(contact_handle);
+        }
+        fn get_contact_handle(self: @ContractState) -> ByteArray {
+            return self.contact_handle.read();
         }
     }
     // *************************************************************************
