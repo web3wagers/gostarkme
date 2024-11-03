@@ -3,7 +3,13 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IFundManager<TContractState> {
-    fn newFund(ref self: TContractState, name: ByteArray, goal: u256);
+    fn newFund(
+        ref self: TContractState,
+        name: ByteArray,
+        goal: u256,
+        evidence_link: ByteArray,
+        contact_handle: ByteArray
+    );
     fn getCurrentId(self: @TContractState) -> u128;
     fn getFund(self: @TContractState, id: u128) -> ContractAddress;
     fn getOwner(self: @TContractState) -> ContractAddress;
@@ -22,7 +28,7 @@ pub mod FundManager {
     use starknet::class_hash::ClassHash;
     use starknet::get_caller_address;
     use openzeppelin::utils::serde::SerializedAppend;
-    use gostarkme::constants::{ funds::{fund_constants::FundConstants}, };
+    use gostarkme::constants::{funds::{fund_constants::FundConstants},};
 
 
     // ***************************************************************************************
@@ -71,13 +77,21 @@ pub mod FundManager {
 
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
-        fn newFund(ref self: ContractState, name: ByteArray, goal: u256) {
+        fn newFund(
+            ref self: ContractState,
+            name: ByteArray,
+            goal: u256,
+            evidence_link: ByteArray,
+            contact_handle: ByteArray
+        ) {
             assert(goal >= FundConstants::MINIMUM_GOAL, 'Goal must be at least 500');
             let mut call_data: Array<felt252> = array![];
             Serde::serialize(@self.current_id.read(), ref call_data);
             Serde::serialize(@get_caller_address(), ref call_data);
             Serde::serialize(@name, ref call_data);
             Serde::serialize(@goal, ref call_data);
+            Serde::serialize(@evidence_link, ref call_data);
+            Serde::serialize(@contact_handle, ref call_data);
             let (new_fund_address, _) = deploy_syscall(
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )

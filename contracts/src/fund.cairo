@@ -97,7 +97,13 @@ pub mod Fund {
     // *************************************************************************
     #[constructor]
     fn constructor(
-        ref self: ContractState, id: u128, owner: ContractAddress, name: ByteArray, goal: u256
+        ref self: ContractState,
+        id: u128,
+        owner: ContractAddress,
+        name: ByteArray,
+        goal: u256,
+        evidence_link: ByteArray,
+        contact_handle: ByteArray
     ) {
         self.id.write(id);
         self.owner.write(owner);
@@ -106,8 +112,8 @@ pub mod Fund {
         self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
         self.state.write(FundStates::RECOLLECTING_VOTES);
-        self.evidence_link.write(" ");
-        self.contact_handle.write(" ");
+        self.evidence_link.write(evidence_link);
+        self.contact_handle.write(contact_handle);
     }
 
     // *************************************************************************
