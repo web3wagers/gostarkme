@@ -43,3 +43,5 @@ export const navItems = [
     { label: 'My Profile', href: '/app/myprofile' },
     { label: 'My funds', href: '/app/myfunds' }
   ];
+
+ export const upVotesNeeded = 100;
