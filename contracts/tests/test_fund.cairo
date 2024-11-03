@@ -33,14 +33,26 @@ fn OTHER_USER() -> ContractAddress {
 fn FUND_MANAGER() -> ContractAddress {
     contract_address_const::<FundManagerConstants::FUND_MANAGER_ADDRESS>()
 }
-fn NAME() -> felt252 {
-    'NAME_FUND_TEST'
+fn NAME() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn REASON() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn GOAL() -> u256 {
     1000
+}
+fn EVIDENCE_LINK_1() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
+fn EVIDENCE_LINK_2() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
+fn CONTACT_HANDLE_1() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
+fn CONTACT_HANDLE_2() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn _setup_() -> ContractAddress {
     let contract = declare("Fund").unwrap();
@@ -49,6 +61,8 @@ fn _setup_() -> ContractAddress {
     calldata.append_serde(OWNER());
     calldata.append_serde(NAME());
     calldata.append_serde(GOAL());
+    calldata.append_serde(EVIDENCE_LINK_1());
+    calldata.append_serde(CONTACT_HANDLE_1());
     let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
@@ -85,9 +99,9 @@ fn test_set_name() {
     let name = dispatcher.getName();
     assert(name == NAME(), 'Invalid name');
     start_cheat_caller_address_global(OWNER());
-    dispatcher.setName('NEW_NAME');
+    dispatcher.setName("NEW_NAME");
     let new_name = dispatcher.getName();
-    assert(new_name == 'NEW_NAME', 'Set name method not working')
+    assert(new_name == "NEW_NAME", 'Set name method not working')
 }
 
 #[test]
@@ -393,4 +407,48 @@ fn test_emit_event_donation_received() {
                 )
             ]
         );
+}
+
+#[test]
+fn test_set_evidence_link() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let evidence_link = dispatcher.get_evidence_link();
+    assert(evidence_link == EVIDENCE_LINK_1(), 'Invalid evidence_link');
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.set_evidence_link(EVIDENCE_LINK_2());
+    let new_evidence_link = dispatcher.get_evidence_link();
+    assert(new_evidence_link == EVIDENCE_LINK_2(), 'Set evidence method not working')
+}
+
+#[test]
+#[should_panic(expected: ("You are not the owner",))]
+fn test_set_evidence_link_wrong_owner() {
+    let contract_address = _setup_();
+
+    // call set_evidence_link fn with wrong owner 
+    start_cheat_caller_address_global(OTHER_USER());
+    IFundDispatcher { contract_address }.set_evidence_link(EVIDENCE_LINK_2());
+}
+
+#[test]
+fn test_set_contact_handle() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+}
+
+#[test]
+#[should_panic(expected: ("You are not the owner",))]
+fn test_set_contact_handle_wrong_owner() {
+    let contract_address = _setup_();
+
+    // call set_contact_handle fn with wrong owner 
+    start_cheat_caller_address_global(OTHER_USER());
+    IFundDispatcher { contract_address }.set_contact_handle(CONTACT_HANDLE_2());
 }

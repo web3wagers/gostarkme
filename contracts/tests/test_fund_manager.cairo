@@ -25,8 +25,8 @@ fn OWNER() -> ContractAddress {
 fn OTHER_USER() -> ContractAddress {
     contract_address_const::<'USER'>()
 }
-fn NAME() -> felt252 {
-    'NAME_FUND_TEST'
+fn NAME() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn REASON() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
@@ -36,7 +36,13 @@ fn GOAL() -> u256 {
 }
 fn BAD_GOAL() -> u256 {
     400
- }
+}
+fn EVIDENCE_LINK() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
+fn CONTACT_HANDLE() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
 
 fn _setup_() -> (ContractAddress, ClassHash) {
     // Fund
@@ -46,6 +52,9 @@ fn _setup_() -> (ContractAddress, ClassHash) {
     fund_calldata.append_serde(OWNER());
     fund_calldata.append_serde(NAME());
     fund_calldata.append_serde(GOAL());
+    fund_calldata.append_serde(EVIDENCE_LINK());
+    fund_calldata.append_serde(CONTACT_HANDLE());
+
     let (fund_contract_address, _) = fund.deploy(@fund_calldata).unwrap();
     let fund_class_hash = get_class_hash(fund_contract_address);
 
@@ -78,7 +87,7 @@ fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), GOAL());
+    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
     let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
@@ -91,7 +100,7 @@ fn test_new_fund_bad_goal() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, _) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), BAD_GOAL());
+    fund_manager_contract.newFund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
 }
 
 #[test]
@@ -104,7 +113,7 @@ fn test_fund_deployed_event() {
     let mut spy = spy_events();
 
     let current_id = fund_manager_contract.getCurrentId();
-    fund_manager_contract.newFund(NAME(), GOAL());
+    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
 
     let expected_fund_class_hash = fund_manager_contract.getFund(1);
 
