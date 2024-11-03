@@ -6,7 +6,7 @@ import { FUND_MANAGER_ADDR } from "@/constants";
 import { fundAbi } from "@/contracts/abis/fund";
 import { fundManager } from "@/contracts/abis/fundManager";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { byteArray, Contract, InvokeFunctionResponse } from "starknet";
 import { navItems } from "@/constants";

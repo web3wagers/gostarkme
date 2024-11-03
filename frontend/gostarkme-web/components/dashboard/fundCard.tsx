@@ -2,6 +2,8 @@
 
 import { StardustAnimation } from "@/animations/StardustAnimation";
 import useComponentSize from "@/hooks/useComponentSize.hook";
+import { clickedFundState } from "@/state/nFunds";
+import { useSetAtom } from "jotai";
 import Link from "next/link";
 import React from "react";
 
@@ -17,9 +19,16 @@ interface FundCardProps {
 
 const FundCards = ({ fund, index }: FundCardProps) => {
   const [ref, width, height] = useComponentSize();
+
+  const setClickedFund = useSetAtom(clickedFundState);
+
+  function handleNav() {
+    setClickedFund(Number(fund.fund_id));
+  }
+
   return (
     <div className="relative" ref={ref}>
-      <Link href={"/app/fund/" + fund.fund_id}>
+      <Link onClick={handleNav} href={"/app/fund"}>
         <div
           key={index}
           className="min-w-[30rem] bg-gray-950 shadow-[0px_4px_4px_0px_#00000040] text-white rounded-[10px] py-[32px] md:py-[48px] md:px-[48px] lg:py-[64px] lg:px-[72px] gap-8 md:gap-10 lg:gap-14 flex flex-col items-start justify-between"
