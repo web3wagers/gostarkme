@@ -34,6 +34,9 @@ fn REASON() -> ByteArray {
 fn GOAL() -> u256 {
     1000
 }
+fn BAD_GOAL() -> u256 {
+    400
+ }
 
 fn _setup_() -> (ContractAddress, ClassHash) {
     // Fund
@@ -82,6 +85,14 @@ fn test_new_fund() {
     assert(current_id == 2, 'Invalid current ID');
 }
 
+#[test]
+#[should_panic(expected: 'Goal must be at least 500')]
+fn test_new_fund_bad_goal() {
+    start_cheat_caller_address_global(OWNER());
+    let (contract_address, _) = _setup_();
+    let fund_manager_contract = IFundManagerDispatcher { contract_address };
+    fund_manager_contract.newFund(NAME(), BAD_GOAL());
+}
 
 #[test]
 fn test_fund_deployed_event() {
