@@ -5,7 +5,6 @@ import useComponentSize from "@/hooks/useComponentSize.hook";
 import { clickedFundState } from "@/state/nFunds";
 import { useSetAtom } from "jotai";
 import Link from "next/link";
-import React from "react";
 
 interface FundCardProps {
   fund: {

@@ -1,7 +1,6 @@
-import React from 'react';
 import Image from "next/image";
 import Link from 'next/link';
-import ConnectWallet from "../ui/ConnectWalletButton"
+import ConnectWallet from "../ui/ConnectWalletButton";
 
 interface NavItem {
   label: string;

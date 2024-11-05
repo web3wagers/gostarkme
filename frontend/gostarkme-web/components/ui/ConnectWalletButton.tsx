@@ -1,10 +1,8 @@
 "use client";
 import { ARGENT_WEBWALLET_URL, CHAIN_ID, provider } from "@/constants";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtom, useSetAtom } from "jotai";
-import React, { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 import { connect, disconnect } from "starknetkit";
-import { useLocalStorage } from "usehooks-ts";
 
 interface IWalletConnection {
   wallet?: any;

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import FundCard from '@/components/modules/myfunds/FundCard';
-import { Button } from '@/components/ui/Button';
 import { LinkButton } from '@/components/ui/LinkButton';
 import { useAtomValue } from 'jotai';
 import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
