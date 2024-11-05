@@ -64,17 +64,13 @@ const Dashboard = () => {
           href: "/"
         }}
       />
-      <h1 className="text-3xl font-bold ml-30 mb-6 flex items-center self-start m-10 ml-28">
-        Latest Funds
-        <span className="ml-2 text-yellow-400">&#x2728;</span>
-      </h1>
 
-      {loading && <div className="text-center text-gray-500">
+      {loading && <div className="text-center text-gray-500 mt-12">
         Loading funds ...
       </div>}
 
       {funds.length !== 0 && !loading &&
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 md:gap-x-[138px] md:gap-y-[84px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 md:gap-x-[138px] md:gap-y-[84px] mt-10 lg:mt-12">
           {funds.map((fund: { type: string; title: string; description: string; fund_id: string }, index: number) => (
             <FundCards key={index} fund={fund} index={index} />
           ))}
