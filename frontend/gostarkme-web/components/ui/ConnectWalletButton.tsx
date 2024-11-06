@@ -4,11 +4,6 @@ import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { useAtom } from "jotai";
 import { connect, disconnect } from "starknetkit";
 
-interface IWalletConnection {
-  wallet?: any;
-  address?: string;
-}
-
 export default function WalletConnector() {
   const [wallet, setWallet] = useAtom(walletStarknetkitLatestAtom)
 
@@ -37,7 +32,7 @@ export default function WalletConnector() {
     event.preventDefault();
     try {
       await disconnect();
-      setWallet(null);
+      setWallet(undefined);
     } catch (error) {
       console.error("Failed to disconnect wallet:", error);
     }

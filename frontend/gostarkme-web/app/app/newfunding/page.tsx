@@ -3,7 +3,7 @@ import Bounded from "@/components/ui/Bounded";
 import Divider from "@/components/ui/Divider";
 import Stages from "@/components/modules/newfunding/Stages";
 
-const NewFundingPage = ({ params }: { params: { fundId: string } }) => {
+const NewFundingPage = () => {
   return (
     <>
       <Bounded className="px-60 text-lg">
