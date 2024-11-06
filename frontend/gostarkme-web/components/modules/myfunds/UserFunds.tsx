@@ -42,23 +42,18 @@ const UserFunds = () => {
     alert(`Deleting fund with id: ${fundId}`);
   }
 
-  const onNewFundHandler = () => {
-    // TODO: Implement new fund action
-    alert(`Creating new fund`);
-  }
-
   return (
     <div className="max-w-screen-2xl mx-auto bg-white p-4 w-full">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold mr-2">My Funds &#10024;</h1>
         </div>
-        {wallet !== null ? (
+        {wallet !== undefined ? (
           <LinkButton label="New" href="/app/newfunding" />
         ) : null}
       </div>
 
-      {wallet === null ? (
+      {wallet === undefined ? (
         <div className="flex justify-center items-center h-64">
           <div className="text-center text-gray-500">
             Please connect your wallet to see your funds.
@@ -74,7 +69,7 @@ const UserFunds = () => {
         </div>
       ) : null}
 
-      {funds.length !== 0 && wallet !== null ? (
+      {funds.length !== 0 && wallet !== undefined ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16">
           {funds.map((fund: any, index: number) => (
             <FundCard

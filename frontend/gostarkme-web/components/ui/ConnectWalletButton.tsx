@@ -37,7 +37,7 @@ export default function WalletConnector() {
     event.preventDefault();
     try {
       await disconnect();
-      setWallet(null);
+      setWallet(undefined);
     } catch (error) {
       console.error("Failed to disconnect wallet:", error);
     }

@@ -6,11 +6,11 @@ import { FUND_MANAGER_ADDR } from "@/constants";
 import { fundAbi } from "@/contracts/abis/fund";
 import { fundManager } from "@/contracts/abis/fundManager";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import React, { useEffect, useState } from "react";
-import { byteArray, Contract, InvokeFunctionResponse } from "starknet";
+import { Contract } from "starknet";
 import { navItems } from "@/constants";
-import hex2ascii from "../utils";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const Dashboard = () => {
 
@@ -65,7 +65,10 @@ const Dashboard = () => {
       />
 
       {loading && <div className="text-center text-gray-500 mt-12">
-        Loading funds ...
+        <LoadingSpinner />
+        <div className="text-center text-gray-500">
+          Loading funds...
+        </div>
       </div>}
 
       {funds.length !== 0 && !loading &&

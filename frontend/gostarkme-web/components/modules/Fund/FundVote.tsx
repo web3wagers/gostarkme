@@ -10,20 +10,23 @@ interface FundVoteProps {
   upVotes: number,
   upVotesNeeded: number,
   addr: string,
+  setLoading: (load: boolean) => void,
+  getDetails: () => void,
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr }: FundVoteProps) => {
+export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails }: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
   const progress = calculatePorcentage(upVotes, upVotesNeeded);
 
   function vote() {
+    setLoading(true);
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
     const myCall = fundContract.populate("receiveVote", []);
     wallet?.account?.execute(myCall)
       .then(async (resp: InvokeFunctionResponse) => {
-        console.log("increaseBalance txH =", resp.transaction_hash);
+        getDetails();
       })
       .catch((e: any) => { console.log("error increase balance =", e) });
   }

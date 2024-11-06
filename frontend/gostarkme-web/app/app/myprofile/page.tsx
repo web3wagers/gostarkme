@@ -37,7 +37,7 @@ const UserProfilePage = () => {
           href: "/"
         }}
       />
-      {wallet !== null ? (
+      {wallet !== undefined ? (
         <main className="flex flex-grow w-full items-center justify-center bg-white p-8">
           {/* Profile Section */}
           <section className="w-full max-w-6xl">
