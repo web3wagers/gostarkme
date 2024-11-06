@@ -103,12 +103,13 @@ pub mod Fund {
         name: ByteArray,
         goal: u256,
         evidence_link: ByteArray,
-        contact_handle: ByteArray
+        contact_handle: ByteArray,
+        reason: ByteArray
     ) {
         self.id.write(id);
         self.owner.write(owner);
         self.name.write(name);
-        self.reason.write(" ");
+        self.reason.write(reason);
         self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
         self.state.write(FundStates::RECOLLECTING_VOTES);

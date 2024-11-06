@@ -2,17 +2,26 @@ import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import FundingStep from "./FundingStep";
 import DescriptionStep from "./DescriptionStep";
+import { Contract, wallet, InvokeFunctionResponse, shortString } from "starknet";
+import { fundManager } from "@/contracts/abis/fundManager";
+import { FUND_MANAGER_ADDR } from "@/constants";
+import { useAtomValue } from "jotai";
+import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
+ 
 
 const Stages = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [fundingName, setFundingName] = useState("");
-  const [name, setName] = useState("");
+  const [goal, setGoal] = useState("");
   const [fundingDescription, setFundingDescription] = useState("");
-  const [errors, setErrors] = useState({ fundingName: "", name: "" });
+  const [errors, setErrors] = useState({ fundingName: "", goal: "",evidenceLink: "",contactHandle: "" });
+  const [evidenceLink, setEvidenceLink] = useState("");
+  const [contactHandle, setContactHandle] = useState("");
+  const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
   const handleNextStep = () => {
     // Reset errors
-    setErrors({ fundingName: "", name: "" });
+    setErrors({ fundingName: "", goal: "", evidenceLink: "", contactHandle: ""});
 
     // Validate fields
     let hasErrors = false;
@@ -21,8 +30,16 @@ const Stages = () => {
         setErrors((prev) => ({ ...prev, fundingName: "Funding name is required." }));
         hasErrors = true;
       }
-      if (!name) {
-        setErrors((prev) => ({ ...prev, name: "The goal is required." }));
+      if (!goal) {
+        setErrors((prev) => ({ ...prev, goal: "The goal is required." }));
+        hasErrors = true;
+      }
+      if (!evidenceLink) {
+        setErrors((prev) => ({ ...prev, evidenceLink: "The evidence link is required." }));
+        hasErrors = true;
+      }
+      if (!contactHandle) {
+        setErrors((prev) => ({ ...prev, contactHandle: "The contact handle is required." }));
         hasErrors = true;
       }
     }
@@ -38,10 +55,19 @@ const Stages = () => {
       alert("Please enter a description.");
       return;
     }
-    console.log("Funding Name:", fundingName);
-    console.log("Name:", name);
-    console.log("Description:", fundingDescription);
+    newFund();
   };
+
+  function newFund() {
+    const fundNameSplited = shortString.splitLongString(fundingName);
+    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
+    const myCall = fundManagerContract.newFund(fundingName,goal,evidenceLink,contactHandle,fundingDescription);
+    wallet?.account?.execute(myCall)
+      .then(async (resp: InvokeFunctionResponse) => {
+        console.log("increaseBalance txH =", resp.transaction_hash);
+      })
+      .catch((e: any) => { console.log("error increase balance =", e) });
+  }
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
@@ -50,10 +76,14 @@ const Stages = () => {
         <FundingStep
           fundingName={fundingName}
           setFundingName={setFundingName}
-          name={name}
-          setName={setName}
+          goal={goal}
+          setGoal={setGoal}
+          evidenceLink={evidenceLink}
+          setEvidenceLink={setEvidenceLink}
+          contactHandle={contactHandle}
+          setContactHandle={setContactHandle}
           errors={errors} // Pass errors down
-          setErrors={setErrors} // Pass setErrors down
+          setErrors={setErrors} // Pass setErrors down,
         />
       ) : (
         <DescriptionStep

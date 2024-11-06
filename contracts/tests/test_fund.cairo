@@ -36,7 +36,10 @@ fn FUND_MANAGER() -> ContractAddress {
 fn NAME() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
-fn REASON() -> ByteArray {
+fn REASON_1() -> ByteArray {
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+}
+fn REASON_2() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn GOAL() -> u256 {
@@ -63,6 +66,7 @@ fn _setup_() -> ContractAddress {
     calldata.append_serde(GOAL());
     calldata.append_serde(EVIDENCE_LINK_1());
     calldata.append_serde(CONTACT_HANDLE_1());
+    calldata.append_serde(REASON_1());
     let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
@@ -85,7 +89,7 @@ fn test_constructor() {
     assert(id == ID(), 'Invalid id');
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
-    assert(reason == " ", 'Invalid reason');
+    assert(reason == REASON_1(), 'Invalid reason');
     assert(up_votes == 0, 'Invalid up votes');
     assert(goal == GOAL(), 'Invalid goal');
     assert(current_goal_state == 0, 'Invalid current goal state');
@@ -109,11 +113,11 @@ fn test_set_reason() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.getReason();
-    assert(reason == " ", 'Invalid reason');
+    assert(reason == REASON_1(), 'Invalid reason');
     start_cheat_caller_address_global(OWNER());
-    dispatcher.setReason(REASON());
+    dispatcher.setReason(REASON_2());
     let new_reason = dispatcher.getReason();
-    assert(new_reason == REASON(), 'Set reason method not working')
+    assert(new_reason == REASON_2(), 'Set reason method not working')
 }
 
 #[test]
