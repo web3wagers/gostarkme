@@ -5,8 +5,6 @@ import Divider from '@/components/ui/Divider';
 import Image from 'next/image';
 import Footer from '@/components/ui/Footer';
 import Navbar from '@/components/ui/Navbar';
-import { useEventListener } from 'usehooks-ts';
-import { useState } from 'react';
 import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
 import { useAtomValue } from 'jotai';
 import { navItems } from '@/constants';
