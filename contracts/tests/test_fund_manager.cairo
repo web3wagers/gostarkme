@@ -43,7 +43,6 @@ fn EVIDENCE_LINK() -> ByteArray {
 fn CONTACT_HANDLE() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
-
 fn _setup_() -> (ContractAddress, ClassHash) {
     // Fund
     let fund = declare("Fund").unwrap();
@@ -54,6 +53,7 @@ fn _setup_() -> (ContractAddress, ClassHash) {
     fund_calldata.append_serde(GOAL());
     fund_calldata.append_serde(EVIDENCE_LINK());
     fund_calldata.append_serde(CONTACT_HANDLE());
+    fund_calldata.append_serde(REASON());
 
     let (fund_contract_address, _) = fund.deploy(@fund_calldata).unwrap();
     let fund_class_hash = get_class_hash(fund_contract_address);
@@ -87,7 +87,7 @@ fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
+    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
     let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
     let current_id = fund_manager_contract.getCurrentId();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
@@ -100,7 +100,7 @@ fn test_new_fund_bad_goal() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, _) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
+    fund_manager_contract.newFund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn test_fund_deployed_event() {
     let mut spy = spy_events();
 
     let current_id = fund_manager_contract.getCurrentId();
-    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE());
+    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
 
     let expected_fund_class_hash = fund_manager_contract.getFund(1);
 
