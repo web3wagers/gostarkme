@@ -32,7 +32,6 @@ const Dashboard = () => {
       const fundContract = new Contract(fundAbi, fundaddr, wallet?.account);
       // GET FUND NAME
       let name = await fundContract.getName();
-      name = hex2ascii(name.toString(16));
       // GET FUND DESCRIPTION
       let desc = await fundContract.getReason();
       // GET FUND ID

@@ -3,17 +3,25 @@ import React from 'react';
 interface FundingStepProps {
   fundingName: string;
   setFundingName: (name: string) => void;
-  name: string;
-  setName: (name: string) => void;
-  errors: { fundingName: string; name: string }; // Expecting errors as props
-  setErrors: React.Dispatch<React.SetStateAction<{ fundingName: string; name: string }>>; // Specify the type for setErrors
+  goal: string;
+  setGoal: (name: string) => void;
+  evidenceLink: string;
+  setEvidenceLink: (name: string) => void;
+  contactHandle: string;
+  setContactHandle: (name: string) => void;
+  errors: { fundingName: string; goal: string ;evidenceLink: string; contactHandle: string }; // Expecting errors as props
+  setErrors: React.Dispatch<React.SetStateAction<{ fundingName: string; goal: string ;evidenceLink: string; contactHandle: string }>>; // Specify the type for setErrors
 }
 
 const FundingStep: React.FC<FundingStepProps> = ({
   fundingName,
   setFundingName,
-  name,
-  setName,
+  goal,
+  setGoal,
+  evidenceLink,
+  setEvidenceLink,
+  contactHandle,
+  setContactHandle,
   errors,
   setErrors,
 }) => {
@@ -22,10 +30,10 @@ const FundingStep: React.FC<FundingStepProps> = ({
 
     // Check if the input is empty or a valid non-negative number
     if (newValue === '' || (Number(newValue) >= 0 && !isNaN(Number(newValue)))) {
-      setName(newValue);
-      setErrors((prev) => ({ ...prev, name: '' })); 
+      setGoal(newValue);
+      setErrors((prev) => ({ ...prev, goal : '' })); 
     } else {
-      setErrors((prev) => ({ ...prev, name: 'The goal must be a non-negative number.' }));
+      setErrors((prev) => ({ ...prev, goal: 'The goal must be a non-negative number.' }));
     }
   };
 
@@ -45,6 +53,26 @@ const FundingStep: React.FC<FundingStepProps> = ({
     }
   };
 
+  const handleEvidenceLink = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setEvidenceLink(newValue);
+    if (!newValue) {
+      setErrors((prev) => ({ ...prev, evidenceLink: 'Evidence link is required.' }));
+    } else {
+      setErrors((prev) => ({ ...prev, evidenceLink: '' })); 
+    }
+  };
+
+  const handleContactHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setContactHandle(newValue);
+    if (!newValue) {
+      setErrors((prev) => ({ ...prev, evidenceLink: 'Contact handle is required.' }));
+    } else {
+      setErrors((prev) => ({ ...prev, evidenceLink: '' })); 
+    }
+  };
+
   return (
     <div className="text-center w-11/12 md:w-3/3 lg:w-1/1">
       <input
@@ -58,19 +86,41 @@ const FundingStep: React.FC<FundingStepProps> = ({
       <input
         type="number"
         placeholder="Set your goal in STRKs"
-        value={name}
+        value={goal}
         onChange={handleGoal}
-        className={`mt-4 p-2 pl-4 border rounded w-full placeholder:text-base ${errors.name ? 'border-red-500' : 'border-black'}`}
+        className={`mt-4 p-2 pl-4 border rounded w-full placeholder:text-base ${errors.goal ? 'border-red-500' : 'border-black'}`}
         required
         min={0} 
+      />
+      <input
+        type="text"
+        placeholder="Set a link to the repo or evidence"
+        value={evidenceLink}
+        onChange={handleEvidenceLink}
+        className={`mt-4 p-2 pl-4 border rounded w-full placeholder:text-base ${errors.evidenceLink ? 'border-red-500' : 'border-black'}`}
+        required
+      />
+      <input
+        type="text"
+        placeholder="Set a contact handle"
+        value={contactHandle}
+        onChange={handleContactHandle}
+        className={`mt-4 p-2 pl-4 border rounded w-full placeholder:text-base ${errors.contactHandle ? 'border-red-500' : 'border-black'}`}
+        required
       />
 
       {/* Error Messages */}
       {errors.fundingName && (
         <p className="mt-5 text-red-500 text-center mb-4">{errors.fundingName}</p>
       )}
-      {errors.name && (
-        <p className="mt-5 text-red-500 text-center mb-4">{errors.name}</p>
+      {errors.goal && (
+        <p className="mt-5 text-red-500 text-center mb-4">{errors.goal}</p>
+      )}
+      {errors.evidenceLink && (
+        <p className="mt-5 text-red-500 text-center mb-4">{errors.evidenceLink}</p>
+      )}
+      {errors.contactHandle && (
+        <p className="mt-5 text-red-500 text-center mb-4">{errors.contactHandle}</p>
       )}
     </div>
   );

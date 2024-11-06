@@ -31,15 +31,15 @@ const Fund = () => {
 
     // GET FUND NAME
     let name = await fundContract.getName();
-    name = hex2ascii(name.toString(16));
     // GET FUND DESCRIPTION
+    
     let desc = await fundContract.getReason();
     if (desc == " ") {
       desc = "No description provided";
     }
     let state = await fundContract.getState();
 
-    let currentBalance = await fundContract.getCurrentGoalState();
+    let currentBalance = await fundContract.get_current_goal_state();
 
     let goal = await fundContract.getGoal();
 
