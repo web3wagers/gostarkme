@@ -3,8 +3,6 @@
 import UserFunds from '@/components/modules/myfunds/UserFunds';
 import Navbar from '@/components/ui/Navbar';
 import Footer from '@/components/ui/Footer';
-import { useAtomValue } from 'jotai';
-import { walletStarknetkitLatestAtom } from '@/state/connectedWallet';
 import { navItems } from '@/constants';
 
 const MyFundsPage = () => { 
