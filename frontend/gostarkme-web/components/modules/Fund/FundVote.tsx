@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/Button";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { fundAbi } from "@/contracts/abis/fund";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtomValue } from "jotai";
+import { latestTxAtom } from "@/state/latestTx";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
+import { useRouter } from "next/navigation";
 
 interface FundVoteProps {
   upVotes: number,
@@ -20,15 +22,19 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
 
   const progress = calculatePorcentage(upVotes, upVotesNeeded);
 
-  function vote() {
+  const setLatestTx = useSetAtom(latestTxAtom);
+
+  const router = useRouter();
+
+  async function vote() {
     setLoading(true);
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
-    const myCall = fundContract.populate("receiveVote", []);
-    wallet?.account?.execute(myCall)
+    fundContract.receiveVote()
       .then(async (resp: InvokeFunctionResponse) => {
-        getDetails();
+        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+        router.push("/app/confirmation");
       })
-      .catch((e: any) => { console.log("error increase balance =", e) });
+      .catch((e: any) => { getDetails() });
   }
 
   return (
