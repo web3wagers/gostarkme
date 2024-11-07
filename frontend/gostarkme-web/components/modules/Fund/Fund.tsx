@@ -43,6 +43,8 @@ const Fund = () => {
 
     let currentBalance = await fundContract.get_current_goal_state();
 
+    currentBalance = BigInt(currentBalance) / BigInt(10 ** 18);
+
     let goal = await fundContract.getGoal();
 
     let upVotes = await fundContract.getUpVotes();
@@ -101,7 +103,7 @@ const Fund = () => {
           <a href={fund.contactHandle} target="_blank">{fund.contactHandle}</a>
           {Number(fund.state) === 0 && <p>Fund is currently innactive.</p>}
           {Number(fund.state) === 1 && <FundVote upVotes={fund.upVotes} upVotesNeeded={upVotesNeeded} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
-          {Number(fund.state) === 2 && <FundDonate icon={starknetlogo} />}
+          {Number(fund.state) === 2 && <FundDonate currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} icon={starknetlogo} />}
           {Number(fund.state) === 3 && <p>Fund is currently closed.</p>}
           {Number(fund.state) === 4 && <p>Fund was already withdrawed.</p>}
         </section>

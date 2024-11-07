@@ -59,7 +59,6 @@ const Stages = () => {
   };
 
   function newFund() {
-    const fundNameSplited = shortString.splitLongString(fundingName);
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
     const myCall = fundManagerContract.newFund(fundingName,goal,evidenceLink,contactHandle,fundingDescription);
     wallet?.account?.execute(myCall)
