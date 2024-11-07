@@ -14,7 +14,42 @@
 
 
 
-- Comment the content of the file `frontend/gostarkme-web/next.config.mjs`.
+- Comment the content of the file `frontend/gostarkme-web/next.config.mjs`. Adding only one element to the ```nextConfig``` object like this:
+
+```
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    /**
+     * Enable static exports for the App Router.
+     *
+     * @see https://nextjs.org/docs/app/building-your-application/deploying/static-exports
+     */
+    // output: "export",
+  
+    /**
+     * Set base path. This is the slug of your GitHub repository.
+     *
+     * @see https://nextjs.org/docs/app/api-reference/next-config-js/basePath
+     */
+    // basePath: "/gostarkme",
+
+    // assetPrefix: 'https://web3wagers.github.io/gostarkme',
+  
+    /**
+     * Disable server-based image optimization. Next.js does not support
+     * dynamic features with static exports.
+     *
+     * @see https://nextjs.org/docs/app/api-reference/components/image#unoptimized
+     */
+    // images: {
+    //   unoptimized: true,
+    // },
+
+    reactStrictMode: false,
+  };
+  
+  export default nextConfig;
+```
 
 
 ## Local Deployment

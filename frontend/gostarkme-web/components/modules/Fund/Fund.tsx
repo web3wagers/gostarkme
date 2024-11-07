@@ -27,7 +27,7 @@ const Fund = () => {
   const clickedFund = useAtomValue(clickedFundState);
 
   async function getDetails() {
-    let addr = await fundManagerContract.getFund(clickedFund);
+    let addr = await fundManagerContract.getFund(clickedFund?.id);
     addr = "0x" + addr.toString(16);
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
 
@@ -51,15 +51,7 @@ const Fund = () => {
 
     let evidenceLink = await fundContract.get_evidence_link();
 
-    if (evidenceLink.indexOf('https') <= 0) {
-      evidenceLink = "https://" + evidenceLink;
-    }
-
     let contactHandle = await fundContract.get_contact_handle();
-
-    if (contactHandle.indexOf('https') <= 0) {
-      contactHandle = "https://" + contactHandle;
-    }
 
     setFund({
       name: name,
@@ -97,10 +89,10 @@ const Fund = () => {
           <p>{fund.desc}</p>
           <Divider />
           <h2 className="text-xl">Evidence</h2>
-          <a href={fund.evidenceLink} target="_blank">{fund.evidenceLink}</a>
+          <a href={fund.evidenceLink} className="text-blue-600" target="_blank">{fund.evidenceLink}</a>
           <Divider />
           <h2 className="text-xl">Contact handle</h2>
-          <a href={fund.contactHandle} target="_blank">{fund.contactHandle}</a>
+          <a href={fund.contactHandle} className="text-blue-600" target="_blank">{fund.contactHandle}</a>
           {Number(fund.state) === 0 && <p>Fund is currently innactive.</p>}
           {Number(fund.state) === 1 && <FundVote upVotes={fund.upVotes} upVotesNeeded={upVotesNeeded} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
           {Number(fund.state) === 2 && <FundDonate currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} icon={starknetlogo} />}

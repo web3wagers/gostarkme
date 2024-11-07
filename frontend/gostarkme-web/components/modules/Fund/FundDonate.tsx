@@ -3,14 +3,15 @@
 import { calculatePorcentage } from "@/app/utils";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { provider } from "@/constants";
-import { fundAbi } from "@/contracts/abis/fund";
 import { strkAbi } from "@/contracts/abis/strk";
 import { addrSTRK } from "@/contracts/addresses";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
 import { Contract, InvokeFunctionResponse } from "starknet";
+import { useRouter } from "next/navigation";
+import { latestTxAtom } from "@/state/latestTx";
 
 interface FundDonateProps {
   currentBalance: number;
@@ -22,8 +23,10 @@ interface FundDonateProps {
 const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
   const [amount, setAmount] = useState<number | "">("");
   const [error, setError] = useState<string>("");
+  const setLatestTx = useSetAtom(latestTxAtom);
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
   const progress = calculatePorcentage(currentBalance, goal);
+  const router = useRouter();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : Number(e.target.value);
@@ -46,7 +49,8 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
       });
       wallet?.account?.execute(transferCall)
         .then(async (resp: InvokeFunctionResponse) => {
-          console.log("DONE!");
+          setLatestTx({ txHash: resp.transaction_hash, type: "donation" });
+          router.push("/app/confirmation");
         })
         .catch((e: any) => { console.log("error increase balance =", e) });
     }
