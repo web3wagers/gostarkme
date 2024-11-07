@@ -49,7 +49,7 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
             disabled={true}
           />
           <p className="text-sm text-gray-500 mt-2">
-          Connect your wallet to be able to vote
+          Connect your wallet to vote
           </p>
         </div>
       )}
