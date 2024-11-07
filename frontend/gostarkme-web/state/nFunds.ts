@@ -1,5 +1,10 @@
 import { atomWithReset } from "jotai/utils"
 
+interface fundInfo {
+  id: Number;
+  name: String
+}
+
 export const clickedFundState = atomWithReset<
-  Number | null | undefined
+  fundInfo | null | undefined
 >(undefined)

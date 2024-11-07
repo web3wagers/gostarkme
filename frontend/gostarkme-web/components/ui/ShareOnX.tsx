@@ -2,14 +2,16 @@ import React from 'react';
 
 
 interface ShareXButtonProps {
-    txHash: String;
+    message: String;
 }  
 
-const ShareXButton : React.FC<ShareXButtonProps>  = ({txHash}) => {
+const ShareXButton : React.FC<ShareXButtonProps>  = ({message}) => {
+  const tweetText = encodeURIComponent(message.toString());
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
   return (
     <button
       className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
-      onClick={() => window.open('https://x.com/share', '_blank')}
+      onClick={() => window.open(tweetUrl, '_blank')}
     >
       <svg
         viewBox="0 0 24 24"

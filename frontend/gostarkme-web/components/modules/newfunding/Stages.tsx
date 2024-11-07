@@ -5,10 +5,11 @@ import DescriptionStep from "./DescriptionStep";
 import { Contract, wallet, InvokeFunctionResponse, shortString } from "starknet";
 import { fundManager } from "@/contracts/abis/fundManager";
 import { FUND_MANAGER_ADDR } from "@/constants";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { latestTxAtom } from "@/state/latestTx";
 import { useRouter } from "next/navigation";
+import { clickedFundState } from "@/state/nFunds";
 
 const Stages = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -18,7 +19,9 @@ const Stages = () => {
   const [errors, setErrors] = useState({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" });
   const [evidenceLink, setEvidenceLink] = useState("");
   const [contactHandle, setContactHandle] = useState("");
-  const [latestTx, setLatesTx] = useAtom(latestTxAtom);
+  const setLatesTx = useSetAtom(latestTxAtom);
+  const setActualFund = useSetAtom(clickedFundState);
+
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
   const router = useRouter();
 
@@ -66,6 +69,7 @@ const Stages = () => {
     fundManagerContract.newFund(fundingName, goal, evidenceLink, contactHandle, fundingDescription)
       .then(async (resp: InvokeFunctionResponse) => {
         setLatesTx({ txHash: resp.transaction_hash, type: "newfund" });
+        setActualFund({id: 0, name: fundingName});
         router.push("/app/confirmation");
       })
       .catch((e: any) => { console.log(e) });
