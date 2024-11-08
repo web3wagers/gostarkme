@@ -1,21 +1,21 @@
 
-//** @type {import('next').NextConfig} */
-//const nextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
     /**
      * Enable static exports for the App Router.
      *
      * @see https://nextjs.org/docs/app/building-your-application/deploying/static-exports
      */
-    //output: "export",
+    output: "export",
   
     /**
      * Set base path. This is the slug of your GitHub repository.
      *
      * @see https://nextjs.org/docs/app/api-reference/next-config-js/basePath
      */
-    //basePath: "/gostarkme",
+    basePath: "/gostarkme",
 
-    //assetPrefix: 'https://web3wagers.github.io/gostarkme',
+    assetPrefix: 'https://web3wagers.github.io/gostarkme',
   
     /**
      * Disable server-based image optimization. Next.js does not support
@@ -23,9 +23,9 @@
      *
      * @see https://nextjs.org/docs/app/api-reference/components/image#unoptimized
      */
-    //images: {
-    //  unoptimized: true,
-    //},
-  //};
+    images: {
+      unoptimized: true,
+    },
+  };
   
-  //export default nextConfig;
+  export default nextConfig;
