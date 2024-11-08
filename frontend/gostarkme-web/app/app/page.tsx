@@ -29,6 +29,11 @@ const Dashboard = () => {
       let fundaddr = await fundManagerContract.getFund(i);
       fundaddr = "0x" + fundaddr.toString(16);
       const fundContract = new Contract(fundAbi, fundaddr, wallet?.account);
+      // GET FUND STATE
+      let state = await fundContract.getState();
+      if (state == 4 || state == 0) {
+        continue;
+      }
       // GET FUND NAME
       let name = await fundContract.getName();
       // GET FUND DESCRIPTION
