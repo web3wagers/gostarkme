@@ -13,9 +13,9 @@ import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 const Confirmation = () => {
     const tx = useAtomValue(latestTxAtom);
     const actualFund = useAtomValue(clickedFundState);
-    const voteMessage = ` 🗳️ Just cast my vote for an amazing cause called ${actualFund?.name} on Go Stark Me! This fund needs more votes to start raising funds—every vote counts! Let’s support projects that make a difference at https://web3wagers.github.io/gostarkme/ @web3_wagers 🙌💫 #GoStarkMe #Starknet #CommunityPower`;
-    const donationMessage = `🙌 Proud to support ${actualFund?.name} on Go Stark Me! Donations make a difference. 💪 Go ahead and donate at https://web3wagers.github.io/gostarkme/ @web3_wagers #Starknet #GoStarkMe #Web3Wagers`;
-    const newFundMessage = `🚀 Just launched a new fund on Go Stark Me called ${actualFund?.name}! I’m raising support for an important cause, and every contribution makes a difference. Join me in making an impact at https://web3wagers.github.io/gostarkme/! 💪🌍 Check it out on @web3_wagers #GoStarkMe #Starknet #BlockchainForGood`;
+    const voteMessage = ` 🗳️ Just cast my vote for an amazing cause called ${actualFund?.name} on Go Stark Me! This fund needs more votes to start raising funds—every vote counts! Let’s support projects that make a difference at https://web3wagers.github.io/gostarkme/ @undefined_org_ 🙌💫 #GoStarkMe #Starknet #CommunityPower`;
+    const donationMessage = `🙌 Proud to support ${actualFund?.name} on Go Stark Me! Donations make a difference. 💪 Go ahead and donate at https://web3wagers.github.io/gostarkme/ @undefined_org_ #Starknet #GoStarkMe #Web3Wagers`;
+    const newFundMessage = `🚀 Just launched a new fund on Go Stark Me called ${actualFund?.name}! I’m raising support for an important cause, and every contribution makes a difference. Join me in making an impact at https://web3wagers.github.io/gostarkme/! 💪🌍 Check it out on @undefined_org_ #GoStarkMe #Starknet #BlockchainForGood`;
 
     return (
         <>

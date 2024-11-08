@@ -59,7 +59,7 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
           }),
         },
       ]).then(async (resp: InvokeFunctionResponse) => {
-        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+        setLatestTx({ txHash: resp.transaction_hash, type: "donation" });
         router.push("/app/confirmation");
       })
       .catch((e: any) => {  });
