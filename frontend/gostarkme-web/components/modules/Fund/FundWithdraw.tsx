@@ -31,7 +31,7 @@ export const FundWithdraw = ({ currentBalance, goal, addr, setLoading, getDetail
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
     fundContract.withdraw()
       .then(async (resp: InvokeFunctionResponse) => {
-        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+        setLatestTx({ txHash: resp.transaction_hash, type: "withdrawn" });
         router.push("/app/confirmation");
       })
       .catch((e: any) => { getDetails() });

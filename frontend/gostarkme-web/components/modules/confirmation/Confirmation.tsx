@@ -9,6 +9,7 @@ import Navbar from "@/components/ui/Navbar";
 import { navItems } from "@/constants";
 import { clickedFundState } from "@/state/nFunds";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
+import WithdrawConfirmation from "./WithdrawConfirmation";
 
 const Confirmation = () => {
     const tx = useAtomValue(latestTxAtom);
@@ -16,6 +17,7 @@ const Confirmation = () => {
     const voteMessage = ` 🗳️ Just cast my vote for an amazing cause called ${actualFund?.name} on Go Stark Me! This fund needs more votes to start raising funds—every vote counts! Let’s support projects that make a difference at https://web3wagers.github.io/gostarkme/ @undefined_org_ 🙌💫 #GoStarkMe #Starknet #CommunityPower`;
     const donationMessage = `🙌 Proud to support ${actualFund?.name} on Go Stark Me! Donations make a difference. 💪 Go ahead and donate at https://web3wagers.github.io/gostarkme/ @undefined_org_ #Starknet #GoStarkMe #Web3Wagers`;
     const newFundMessage = `🚀 Just launched a new fund on Go Stark Me called ${actualFund?.name}! I’m raising support for an important cause, and every contribution makes a difference. Join me in making an impact at https://web3wagers.github.io/gostarkme/! 💪🌍 Check it out on @undefined_org_ #GoStarkMe #Starknet #BlockchainForGood`;
+    const withdrawnMessage = `🎉 We did it! The goal for ${actualFund?.name} on Go Stark Me has been reached, and funds have been successfully withdrawn! 🙌 Huge thanks to everyone who contributed and made this possible. Let’s keep making an impact! 🌍💪 Check it out at https://web3wagers.github.io/gostarkme/ #GoStarkMe #Starknet #CommunitySuccess`;
 
     return (
         <>
@@ -48,6 +50,10 @@ const Confirmation = () => {
 
                     {tx?.type === "donation" &&
                         <DonationConfirmation message={donationMessage} txHash={tx.txHash} />
+                    }
+
+                    {tx?.type === "withdrawn" &&
+                        <WithdrawConfirmation message={withdrawnMessage} txHash={tx.txHash} />
                     }
                 </div>
             }
