@@ -28,11 +28,11 @@ export const ARGENT_WEBWALLET_URL =
   process.env.NEXT_PUBLIC_ARGENT_WEBWALLET_URL || "https://web.argent.xyz"
 
 export const FUND_MANAGER_ADDR = 
-  "0x044658b1431b41f8d2d942d263c0fe1fdf066eff4404a8fd6ca2d8baa146f750"
+  "0x05c1701879e0322024c174f074cd4a279ed5b536ecaa2447240cec1958f8f8e2"
 
 export const navItems = [
-    { label: 'My Profile', href: '/app/myprofile' },
-    { label: 'My funds', href: '/app/myfunds' }
+    // { label: 'My Profile', href: '/app/myprofile' },
+    // { label: 'My funds', href: '/app/myfunds' }
   ];
 
  export const upVotesNeeded = 50;
