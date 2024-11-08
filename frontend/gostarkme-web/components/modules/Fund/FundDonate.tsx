@@ -9,7 +9,7 @@ import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { useAtomValue, useSetAtom } from "jotai";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
-import { Contract, InvokeFunctionResponse } from "starknet";
+import { CallData, Contract, InvokeFunctionResponse, cairo } from "starknet";
 import { useRouter } from "next/navigation";
 import { latestTxAtom } from "@/state/latestTx";
 
@@ -42,17 +42,27 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
       setError("The amount cannot be negative.");
     } else {
       setError("");
-      const erc20 = new Contract(strkAbi, addrSTRK, provider);
-      const transferCall = erc20.populate('transfer', {
-        recipient: addr,
-        amount: BigInt(amount * 10 ** 18)
-      });
-      wallet?.account?.execute(transferCall)
-        .then(async (resp: InvokeFunctionResponse) => {
-          setLatestTx({ txHash: resp.transaction_hash, type: "donation" });
-          router.push("/app/confirmation");
-        })
-        .catch((e: any) => { console.log("error increase balance =", e) });
+      await wallet?.account.execute([
+        {
+          contractAddress: addrSTRK,
+          entrypoint: 'transfer',
+          calldata: CallData.compile({
+            recipient: addr,
+            amount: cairo.uint256(amount * 10 ** 18 )
+          }),
+        },
+        {
+          contractAddress: addr,
+          entrypoint: 'update_receive_donation',
+          calldata: CallData.compile({
+            strks: cairo.uint256(amount * 10 ** 18 )
+          }),
+        },
+      ]).then(async (resp: InvokeFunctionResponse) => {
+        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+        router.push("/app/confirmation");
+      })
+      .catch((e: any) => {  });
     }
   };
 
