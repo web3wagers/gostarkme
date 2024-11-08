@@ -213,12 +213,10 @@ pub mod Fund {
             assert(
                 self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
-            let valid_address = contract_address_const::<
-                FundManagerConstants::VALID_ADDRESS_1
-            >();
+            let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             // Withdraw
             let withdrawn_amount = self.get_current_goal_state() * 95 / 100;
-            let fund_manager_amount = self.get_current_goal_state() * 5 /100;
+            let fund_manager_amount = self.get_current_goal_state() * 5 / 100;
             // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
             // and 5%), also transfer the amount to fund manager address.
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
