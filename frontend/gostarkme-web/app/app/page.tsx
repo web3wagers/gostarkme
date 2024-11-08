@@ -38,6 +38,10 @@ const Dashboard = () => {
       let name = await fundContract.getName();
       // GET FUND DESCRIPTION
       let desc = await fundContract.getReason();
+      let desclen = desc.length;
+      if (desclen > 50) {
+        desc = desc.substring(0, 50) + "...";
+      }
       // GET FUND ID
       let fund_id = await fundContract.getId();
       fundings.push({
