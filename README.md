@@ -10,11 +10,6 @@ Go Stark Me is a modern platform designed to make fundraising for important caus
 
 Join us on Go Stark Me and make a difference by supporting meaningful projects in a secure and efficient manner.
 
-## UML Diagram
-
-![UML Class Diagram](https://github.com/user-attachments/assets/479c9296-e3ac-4ad3-bf79-5f458c456a45)
-
-
 ## Our Vision for UI
 
 You can check the prototype we have in mind and suggest any improvement, if you feel capable of reproducing some of the pages please contact one of the product owners.
@@ -25,6 +20,7 @@ You can check the prototype we have in mind and suggest any improvement, if you 
 
 - [EmmanuelAR](https://github.com/EmmanuelAR)
 - [adrianvrj](https://github.com/adrianvrj)
+- [bitfalt](https://github.com/bitfalt)
 
 ## Want to Contribute?
 
@@ -35,10 +31,33 @@ If you are interested in contributing to Go Stark Me, please follow these steps:
 3. Wait to be assigned to the issue.
 
 Official Discord Channel:
+
 - [Web3Wagers](https://discord.gg/sEpnC6JB2U)
 
 You can also contact us on Telegram:
 
 - [@adrian_vrj](https://t.me/adrian_vrj)
 - [@EmmanuelDevCr](https://t.me/EmmanuelDevCr)
+- [@bitfalt](https://t.me/bitfalt)
 
+## Adding yourself as a contributor
+
+If you've contributed to this project, you can easily add yourself to the contributors list by commenting on any issue or pull request with: `@all-contributors please add <your-github-username> for <contribution-type>`
+
+For example: `@all-contributors please add @@adrian_vrj for code, doc, business, and ideas`
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+Contributions of any kind welcome!
