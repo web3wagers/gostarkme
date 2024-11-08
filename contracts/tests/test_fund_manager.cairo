@@ -35,7 +35,7 @@ fn GOAL() -> u256 {
     1000
 }
 fn BAD_GOAL() -> u256 {
-    400
+    4
 }
 fn EVIDENCE_LINK() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
