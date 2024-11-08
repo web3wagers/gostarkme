@@ -12,7 +12,7 @@ pub trait IFund<TContractState> {
     fn getUpVotes(self: @TContractState) -> u32;
     fn setGoal(ref self: TContractState, goal: u256);
     fn getGoal(self: @TContractState) -> u256;
-    fn receiveDonation(ref self: TContractState, strks: u256);
+    fn update_receive_donation(ref self: TContractState, strks: u256);
     fn get_current_goal_state(self: @TContractState) -> u256;
     fn setState(ref self: TContractState, state: u8);
     fn getState(self: @TContractState) -> u8;
@@ -178,21 +178,11 @@ pub mod Fund {
         fn getGoal(self: @ContractState) -> u256 {
             return self.goal.read();
         }
-        // TODO: implement the logic where user actually donates starks
-        fn receiveDonation(ref self: ContractState, strks: u256) {
-            assert(
-                self.state.read() == FundStates::RECOLLECTING_DONATIONS,
-                'Fund not recollecting dons!'
-            );
-            self
-                .token_dispatcher()
-                .transfer_from(get_caller_address(), get_contract_address(), strks);
+        fn update_receive_donation(ref self: ContractState, strks: u256) {
             let current_balance = self.get_current_goal_state();
             if current_balance >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
-
-            // Emit receiveDonation event
             self
                 .emit(
                     DonationReceived {
@@ -223,12 +213,16 @@ pub mod Fund {
             assert(
                 self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
+            let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             // Withdraw
-            let withdrawn_amount = self.get_current_goal_state();
+            let withdrawn_amount = self.get_current_goal_state() * 95 / 100;
+            let fund_manager_amount = self.get_current_goal_state() * 5 / 100;
             // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
             // and 5%), also transfer the amount to fund manager address.
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
+            self.token_dispatcher().approve(valid_address, fund_manager_amount);
+            self.token_dispatcher().transfer(valid_address, fund_manager_amount);
             assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
             self.setState(4);
             self

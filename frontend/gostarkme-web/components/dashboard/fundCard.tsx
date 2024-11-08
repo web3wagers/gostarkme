@@ -22,7 +22,7 @@ const FundCards = ({ fund, index }: FundCardProps) => {
   const setClickedFund = useSetAtom(clickedFundState);
 
   function handleNav() {
-    setClickedFund(Number(fund.fund_id));
+    setClickedFund({id: Number(fund.fund_id), name: fund.title});
   }
 
   return (

@@ -2,26 +2,32 @@ import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import FundingStep from "./FundingStep";
 import DescriptionStep from "./DescriptionStep";
-import { Contract, wallet, InvokeFunctionResponse, shortString } from "starknet";
+import { Contract, wallet, InvokeFunctionResponse, shortString, cairo } from "starknet";
 import { fundManager } from "@/contracts/abis/fundManager";
 import { FUND_MANAGER_ADDR } from "@/constants";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
- 
+import { latestTxAtom } from "@/state/latestTx";
+import { useRouter } from "next/navigation";
+import { clickedFundState } from "@/state/nFunds";
 
 const Stages = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [fundingName, setFundingName] = useState("");
   const [goal, setGoal] = useState("");
   const [fundingDescription, setFundingDescription] = useState("");
-  const [errors, setErrors] = useState({ fundingName: "", goal: "",evidenceLink: "",contactHandle: "" });
+  const [errors, setErrors] = useState({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" });
   const [evidenceLink, setEvidenceLink] = useState("");
   const [contactHandle, setContactHandle] = useState("");
+  const setLatesTx = useSetAtom(latestTxAtom);
+  const setActualFund = useSetAtom(clickedFundState);
+
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
+  const router = useRouter();
 
   const handleNextStep = () => {
     // Reset errors
-    setErrors({ fundingName: "", goal: "", evidenceLink: "", contactHandle: ""});
+    setErrors({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" });
 
     // Validate fields
     let hasErrors = false;
@@ -58,15 +64,15 @@ const Stages = () => {
     newFund();
   };
 
-  function newFund() {
-    const fundNameSplited = shortString.splitLongString(fundingName);
+  async function newFund() {
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
-    const myCall = fundManagerContract.newFund(fundingName,goal,evidenceLink,contactHandle,fundingDescription);
-    wallet?.account?.execute(myCall)
+    fundManagerContract.newFund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription)
       .then(async (resp: InvokeFunctionResponse) => {
-        console.log("increaseBalance txH =", resp.transaction_hash);
+        setLatesTx({ txHash: resp.transaction_hash, type: "newfund" });
+        setActualFund({id: 0, name: fundingName});
+        router.push("/app/confirmation");
       })
-      .catch((e: any) => { console.log("error increase balance =", e) });
+      .catch((e: any) => { console.log(e) });
   }
 
   return (
@@ -97,9 +103,8 @@ const Stages = () => {
         {[0, 1].map((_, index) => (
           <span
             key={index}
-            className={`h-3 w-3 rounded-full cursor-pointer ${
-              currentStep === index ? "bg-blueGrey" : "bg-gray-300"
-            }`}
+            className={`h-3 w-3 rounded-full cursor-pointer ${currentStep === index ? "bg-blueGrey" : "bg-gray-300"
+              }`}
             onClick={() => setCurrentStep(index)}
           />
         ))}

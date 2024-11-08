@@ -8,28 +8,28 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
 
-interface FundVoteProps {
-  upVotes: number,
-  upVotesNeeded: number,
+interface FundWithdrawProps {
   addr: string,
   setLoading: (load: boolean) => void,
   getDetails: () => void,
+  currentBalance: number;
+  goal: number;
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails }: FundVoteProps) => {
+export const FundWithdraw = ({ currentBalance, goal, addr, setLoading, getDetails }: FundWithdrawProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
-  const progress = calculatePorcentage(upVotes, upVotesNeeded);
+  const progress = calculatePorcentage(currentBalance, goal);
 
   const setLatestTx = useSetAtom(latestTxAtom);
 
   const router = useRouter();
 
-  async function vote() {
+  async function withdraw() {
     setLoading(true);
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
-    fundContract.receiveVote()
+    fundContract.withdraw()
       .then(async (resp: InvokeFunctionResponse) => {
         setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
         router.push("/app/confirmation");
@@ -41,24 +41,10 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
     <div className="flex flex-col">
       <ProgressBar progress={progress} />
       <div className="flex justify-center my-2">
-        <p className="text-center mx-2">{upVotes.toString()} / {upVotesNeeded.toString()} </p>
+        <p className="text-center mx-2">{currentBalance.toString()} / {goal.toString()} </p>
         <p>&#127775;</p>
       </div>
-      {wallet ? ( // Check if a wallet is connected by evaluating 'wallet' condition
-        <Button label="Vote" onClick={vote} /> // If the wallet is connected, render a button that allows voting
-      ) : ( // If the wallet is not connected, render a disabled vote button with instructions
-        <div className="text-center"> 
-          <Button 
-            label="Vote" 
-            onClick={() => {}} 
-            className="opacity-50 cursor-not-allowed"
-            disabled={true}
-          />
-          <p className="text-sm text-gray-500 mt-2">
-          Connect your wallet to vote
-          </p>
-        </div>
-      )}
+      <Button label="Withdraw" onClick={withdraw}></Button>
     </div>
   );
 };

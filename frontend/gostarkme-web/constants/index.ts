@@ -14,19 +14,10 @@ export const CHAIN_ID =
     ? constants.NetworkName.SN_MAIN
     : constants.NetworkName.SN_SEPOLIA
 
-const NODE_URL =
-  process.env.NEXT_PUBLIC_CHAIN_ID === constants.NetworkName.SN_MAIN
-    ? "https://starknet-mainnet.public.blastapi.io"
-    : "https://starknet-sepolia.public.blastapi.io/rpc/v0_7"
-
-const STARKNET_CHAIN_ID =
-  process.env.NEXT_PUBLIC_CHAIN_ID === constants.NetworkName.SN_MAIN
-    ? constants.StarknetChainId.SN_MAIN
-    : constants.StarknetChainId.SN_SEPOLIA
+const NODE_URL = "https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/2qi3kpZwfw6DlnjQmzL8vUh5PlqZ0Dpv";
 
 export const provider = new RpcProvider({
   nodeUrl: NODE_URL,
-  chainId: STARKNET_CHAIN_ID,
 })
 
 export const ARGENT_SESSION_SERVICE_BASE_URL =
@@ -37,11 +28,11 @@ export const ARGENT_WEBWALLET_URL =
   process.env.NEXT_PUBLIC_ARGENT_WEBWALLET_URL || "https://web.argent.xyz"
 
 export const FUND_MANAGER_ADDR = 
-  "0x029875ea72f9b0ad21be7fe8defcfc5f2355a748015aefdd8b0477857a236d96"
+  "0x044658b1431b41f8d2d942d263c0fe1fdf066eff4404a8fd6ca2d8baa146f750"
 
 export const navItems = [
     { label: 'My Profile', href: '/app/myprofile' },
     { label: 'My funds', href: '/app/myfunds' }
   ];
 
- export const upVotesNeeded = 100;
+ export const upVotesNeeded = 50;
