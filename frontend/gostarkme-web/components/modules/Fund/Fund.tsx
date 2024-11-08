@@ -3,6 +3,7 @@
 import FundDonate from "./FundDonate";
 import starknetlogo from "@/public/icons/starklogo.png";
 import { FundVote } from "./FundVote";
+
 import { useEffect, useState } from "react";
 import { FUND_MANAGER_ADDR, upVotesNeeded } from "@/constants";
 import Divider from "@/components/ui/Divider";
@@ -13,6 +14,7 @@ import { useAtomValue } from "jotai";
 import { Contract } from "starknet";
 import { clickedFundState } from "@/state/nFunds";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { FundWithdraw } from "./FundWithdraw";
 
 const Fund = () => {
 
@@ -46,7 +48,8 @@ const Fund = () => {
     currentBalance = BigInt(currentBalance) / BigInt(10 ** 18);
 
     let goal = await fundContract.getGoal();
-
+    goal = BigInt(goal) / BigInt(10 ** 18);
+    
     let upVotes = await fundContract.getUpVotes();
 
     let evidenceLink = await fundContract.get_evidence_link();
@@ -96,7 +99,7 @@ const Fund = () => {
           {Number(fund.state) === 0 && <p>Fund is currently innactive.</p>}
           {Number(fund.state) === 1 && <FundVote upVotes={fund.upVotes} upVotesNeeded={upVotesNeeded} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
           {Number(fund.state) === 2 && <FundDonate currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} icon={starknetlogo} />}
-          {Number(fund.state) === 3 && <p>Fund is currently closed.</p>}
+          {Number(fund.state) === 3 && <FundWithdraw currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
           {Number(fund.state) === 4 && <p>Fund was already withdrawed.</p>}
         </section>
       }

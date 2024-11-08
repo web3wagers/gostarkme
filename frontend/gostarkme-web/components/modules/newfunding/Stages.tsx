@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import FundingStep from "./FundingStep";
 import DescriptionStep from "./DescriptionStep";
-import { Contract, wallet, InvokeFunctionResponse, shortString } from "starknet";
+import { Contract, wallet, InvokeFunctionResponse, shortString, cairo } from "starknet";
 import { fundManager } from "@/contracts/abis/fundManager";
 import { FUND_MANAGER_ADDR } from "@/constants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -66,7 +66,7 @@ const Stages = () => {
 
   async function newFund() {
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
-    fundManagerContract.newFund(fundingName, goal, evidenceLink, contactHandle, fundingDescription)
+    fundManagerContract.newFund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription)
       .then(async (resp: InvokeFunctionResponse) => {
         setLatesTx({ txHash: resp.transaction_hash, type: "newfund" });
         setActualFund({id: 0, name: fundingName});

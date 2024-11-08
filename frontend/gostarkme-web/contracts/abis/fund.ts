@@ -151,7 +151,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "receiveDonation",
+        "name": "update_receive_donation",
         "inputs": [
           {
             "name": "strks",
