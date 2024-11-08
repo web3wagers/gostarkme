@@ -32,7 +32,7 @@ const Footer = (): React.JSX.Element => {
               </g>
             </svg>
           </a>
-          <a className="mx-1" href="https://x.com/web3_wagers">
+          <a className="mx-1" href="https://x.com/undefined_org_">
             <svg
               height="35"
               viewBox="0 0 24 24"

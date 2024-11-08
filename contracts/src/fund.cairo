@@ -197,6 +197,10 @@ pub mod Fund {
             self.token_dispatcher().balance_of(get_contract_address())
         }
         fn setState(ref self: ContractState, state: u8) {
+            let caller = get_caller_address();
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+            assert!(valid_address_1 == caller || valid_address_2 == caller, "Only Admins can change the fund state.");
             self.state.write(state);
         }
         fn getState(self: @ContractState) -> u8 {
@@ -206,7 +210,6 @@ pub mod Fund {
             return self.voters.read(get_caller_address());
         }
         fn withdraw(ref self: ContractState) {
-            // Verifications
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
@@ -214,11 +217,8 @@ pub mod Fund {
                 self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
             let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
-            // Withdraw
             let withdrawn_amount = self.get_current_goal_state() * 95 / 100;
             let fund_manager_amount = self.get_current_goal_state() * 5 / 100;
-            // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
-            // and 5%), also transfer the amount to fund manager address.
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().approve(valid_address, fund_manager_amount);

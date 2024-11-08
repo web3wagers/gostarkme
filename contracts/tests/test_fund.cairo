@@ -57,6 +57,9 @@ fn CONTACT_HANDLE_1() -> ByteArray {
 fn CONTACT_HANDLE_2() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
+fn VALID_ADDRESS_1() -> ContractAddress {
+    contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>()
+}
 fn _setup_() -> ContractAddress {
     let contract = declare("Fund").unwrap();
     let mut calldata: Array<felt252> = array![];
@@ -362,6 +365,7 @@ fn test_emit_event_donation_received() {
     let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
 
     //Donation target configuration in the dispatcher
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.setState(2);
     start_cheat_caller_address(contract_address, FUND_MANAGER());
     dispatcher.setGoal(goal);
