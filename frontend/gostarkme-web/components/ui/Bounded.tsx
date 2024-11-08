@@ -1,11 +1,8 @@
 import { ReactNode } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import { navItems } from "@/constants";
 
-const navItems = [
-  { label: 'My Profile', href: '/app/myprofile/' },
-  { label: 'My funds', href: '/app/myfunds/' }
-];
 interface BoundedProps {
   children: ReactNode;
   className?: string;
