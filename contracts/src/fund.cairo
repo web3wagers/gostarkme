@@ -200,7 +200,10 @@ pub mod Fund {
             let caller = get_caller_address();
             let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
-            assert!(valid_address_1 == caller || valid_address_2 == caller, "Only Admins can change the fund state.");
+            assert!(
+                valid_address_1 == caller || valid_address_2 == caller,
+                "Only Admins can change the fund state."
+            );
             self.state.write(state);
         }
         fn getState(self: @ContractState) -> u8 {
@@ -228,7 +231,8 @@ pub mod Fund {
             self.token_dispatcher().transfer(valid_address, fund_manager_amount);
             
             assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
-            self.setState(4);
+            self.state.write(FundStates::WITHDRAW);
+
             self
                 .emit(
                     DonationWithdraw {

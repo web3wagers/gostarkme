@@ -342,7 +342,7 @@ fn test_withdraw() {
     token_dispatcher.transfer(contract_address, goal);
     stop_cheat_caller_address(token_address);
 
-    assert!(token_dispatcher.balance_of(contract_address) == goal, "invalid allowance");
+    assert!(token_dispatcher.balance_of(contract_address) == goal, "transfer failed");
 
     start_cheat_caller_address(contract_address, FUND_MANAGER());
     dispatcher.update_receive_donation(goal);
@@ -353,17 +353,21 @@ fn test_withdraw() {
 
     start_cheat_caller_address(contract_address, OWNER());
 
+    let withdrawn_amount = (goal * 95) / 100;
+    let fund_manager_amount = (goal * 5) / 100;
+
     let owner_balance_before = token_dispatcher.balance_of(OWNER());
     let fund_balance_before = token_dispatcher.balance_of(contract_address);
 
     // withdraw
     dispatcher.withdraw();
 
-    // let owner_balance_after = token_dispatcher.balance_of(OWNER());
-    // let fund_balance_after = token_dispatcher.balance_of(contract_address);
+    let owner_balance_after = token_dispatcher.balance_of(OWNER());
+    let fund_balance_after = token_dispatcher.balance_of(contract_address);
 
-    // assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
-    // assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
+    assert(owner_balance_after == (owner_balance_before + withdrawn_amount), 'wrong owner balance');
+    assert((fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after, 'wrong fund balance');
+    assert(token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong owner balance');
 }
 
 #[test]
