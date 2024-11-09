@@ -136,6 +136,46 @@ fn test_set_goal() {
 }
 
 #[test]
+fn test_update_receive_donation() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+
+    // Mock values
+    let goal: u256 = 500;
+    let donation_amount: u256 = 100;
+
+    // Initialize spy to capture events
+    let mut spy = spy_events();
+
+    // Set the goal by the fund manager
+    start_cheat_caller_address_global(FUND_MANAGER());
+    dispatcher.setGoal(goal);
+    assert_eq!(dispatcher.getGoal(), goal, "Goal not set correctly");
+
+    // Simulate a donation received
+    start_cheat_caller_address_global(OTHER_USER());
+    dispatcher.update_receive_donation(donation_amount);
+    
+    // Assert that the goal state is updated correctly after donation
+    assert_eq!(dispatcher.get_current_goal_state(), donation_amount, "Donation not recorded correctly");
+
+    // Assert the DonationReceived event is emitted
+    spy.assert_emitted(@array![
+        (
+            contract_address,
+            Fund::Event::DonationReceived(
+                Fund::DonationReceived {
+                    current_balance: donation_amount,
+                    donated_strks: donation_amount,
+                    donator_address: OTHER_USER(),
+                    fund_contract_address: contract_address,
+                }
+            )
+        )
+    ]);
+}
+
+#[test]
 fn test_receive_vote_successful() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
