@@ -366,8 +366,13 @@ fn test_withdraw() {
     let fund_balance_after = token_dispatcher.balance_of(contract_address);
 
     assert(owner_balance_after == (owner_balance_before + withdrawn_amount), 'wrong owner balance');
-    assert((fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after, 'wrong fund balance');
-    assert(token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong owner balance');
+    assert(
+        (fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after,
+        'wrong fund balance'
+    );
+    assert(
+        token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong owner balance'
+    );
 }
 
 #[test]

@@ -226,10 +226,10 @@ pub mod Fund {
 
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
-            
+
             self.token_dispatcher().approve(valid_address, fund_manager_amount);
             self.token_dispatcher().transfer(valid_address, fund_manager_amount);
-            
+
             assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
             self.state.write(FundStates::WITHDRAW);
 
