@@ -20,7 +20,7 @@ use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants}
 use gostarkme::constants::{funds::{state_constants::FundStates},};
 use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
-
+const ONE_E18: u256 = 1000000000000000000_u256;
 fn ID() -> u128 {
     1
 }
@@ -313,7 +313,7 @@ fn test_withdraw_with_non_closed_state() {
 #[fork("Mainnet")]
 fn test_withdraw() {
     let contract_address = _setup_();
-    let goal: u256 = 500;
+    let goal: u256 = 500 * ONE_E18;
 
     let dispatcher = IFundDispatcher { contract_address };
     let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
@@ -349,14 +349,15 @@ fn test_withdraw() {
     stop_cheat_caller_address(contract_address);
 
     assert!(dispatcher.getState() == FundStates::CLOSED, "state is not closed");
+    assert!(dispatcher.get_current_goal_state() == goal, "goal not reached");
 
-    start_cheat_caller_address_global(OWNER());
+    start_cheat_caller_address(contract_address, OWNER());
 
     let owner_balance_before = token_dispatcher.balance_of(OWNER());
     let fund_balance_before = token_dispatcher.balance_of(contract_address);
 
     // withdraw
-    // dispatcher.withdraw();
+    dispatcher.withdraw();
 
     // let owner_balance_after = token_dispatcher.balance_of(OWNER());
     // let fund_balance_after = token_dispatcher.balance_of(contract_address);
