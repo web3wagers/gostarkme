@@ -219,13 +219,17 @@ pub mod Fund {
             assert(
                 self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
+
             let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
-            let withdrawn_amount = self.get_current_goal_state() * 95 / 100;
-            let fund_manager_amount = self.get_current_goal_state() * 5 / 100;
+            let withdrawn_amount = (self.get_current_goal_state() * 95) / 100;
+            let fund_manager_amount = (self.get_current_goal_state() * 5) / 100;
+
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
+
             self.token_dispatcher().approve(valid_address, fund_manager_amount);
             self.token_dispatcher().transfer(valid_address, fund_manager_amount);
+
             assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
             self.state.write(FundStates::WITHDRAW);
 

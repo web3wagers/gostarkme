@@ -6,7 +6,7 @@ use starknet::syscalls::call_contract_syscall;
 
 use snforge_std::{
     declare, ContractClassTrait, start_cheat_caller_address_global, start_cheat_caller_address,
-    cheat_caller_address, CheatSpan, spy_events, EventSpyAssertionsTrait
+    stop_cheat_caller_address, cheat_caller_address, CheatSpan, spy_events, EventSpyAssertionsTrait
 };
 
 use openzeppelin::utils::serde::SerializedAppend;
@@ -20,7 +20,7 @@ use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants}
 use gostarkme::constants::{funds::{state_constants::FundStates},};
 use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
 
-
+const ONE_E18: u256 = 1000000000000000000_u256;
 fn ID() -> u128 {
     1
 }
@@ -309,49 +309,72 @@ fn test_withdraw_with_non_closed_state() {
     fund_dispatcher.withdraw();
 }
 
-// #[test]
-// #[fork("Mainnet")]
-// fn test_withdraw() {
-//     let contract_address = _setup_();
-//     let goal: u256 = 500;
+#[test]
+#[fork("Mainnet")]
+fn test_withdraw() {
+    let contract_address = _setup_();
+    let goal: u256 = 500 * ONE_E18;
 
-//     let dispatcher = IFundDispatcher { contract_address };
-//     let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
-//     let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
-//     let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
 
-//     //Set donation state
-//     dispatcher.setState(2);
+    //Set donation state
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
+    dispatcher.setState(2);
+    stop_cheat_caller_address(contract_address);
 
-//     start_cheat_caller_address(contract_address, FUND_MANAGER());
-//     dispatcher.setGoal(goal);
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.setGoal(goal);
+    stop_cheat_caller_address(contract_address);
 
-//     cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-//     let mut calldata = array![];
-//     calldata.append_serde(FUND_MANAGER());
-//     calldata.append_serde(goal);
-//     call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    start_cheat_caller_address(token_address, minter_address);
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    stop_cheat_caller_address(token_address);
 
-//     cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-//     token_dispatcher.approve(contract_address, goal);
+    assert(token_dispatcher.balance_of(FUND_MANAGER()) == goal, 'invalid balance');
 
-//     dispatcher.update_receive_donation(goal);
+    start_cheat_caller_address(token_address, FUND_MANAGER());
+    token_dispatcher.transfer(contract_address, goal);
+    stop_cheat_caller_address(token_address);
 
-//     start_cheat_caller_address_global(OWNER());
-//     cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+    assert(token_dispatcher.balance_of(contract_address) == goal, 'transfer failed');
 
-//     let owner_balance_before = token_dispatcher.balance_of(OWNER());
-//     let fund_balance_before = token_dispatcher.balance_of(contract_address);
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.update_receive_donation(goal);
+    stop_cheat_caller_address(contract_address);
 
-//     // withdraw
-//     dispatcher.withdraw();
+    assert(dispatcher.getState() == FundStates::CLOSED, 'state is not closed');
+    assert(dispatcher.get_current_goal_state() == goal, 'goal not reached');
 
-//     let owner_balance_after = token_dispatcher.balance_of(OWNER());
-//     let fund_balance_after = token_dispatcher.balance_of(contract_address);
+    start_cheat_caller_address(contract_address, OWNER());
 
-//     assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
-//     assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
-// }
+    let withdrawn_amount = (goal * 95) / 100;
+    let fund_manager_amount = (goal * 5) / 100;
+
+    let owner_balance_before = token_dispatcher.balance_of(OWNER());
+    let fund_balance_before = token_dispatcher.balance_of(contract_address);
+
+    // withdraw
+    dispatcher.withdraw();
+
+    let owner_balance_after = token_dispatcher.balance_of(OWNER());
+    let fund_balance_after = token_dispatcher.balance_of(contract_address);
+
+    assert(
+        owner_balance_after == (owner_balance_before + withdrawn_amount),
+        'wrong owner balance after'
+    );
+    assert(
+        (fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after,
+        'wrong fund balance'
+    );
+    assert(token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong balance');
+}
 
 #[test]
 #[fork("Mainnet")]
