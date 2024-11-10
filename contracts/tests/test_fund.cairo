@@ -336,20 +336,20 @@ fn test_withdraw() {
     call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
     stop_cheat_caller_address(token_address);
 
-    assert!(token_dispatcher.balance_of(FUND_MANAGER()) == goal, "invalid balance");
+    assert(token_dispatcher.balance_of(FUND_MANAGER()) == goal, 'invalid balance');
 
     start_cheat_caller_address(token_address, FUND_MANAGER());
     token_dispatcher.transfer(contract_address, goal);
     stop_cheat_caller_address(token_address);
 
-    assert!(token_dispatcher.balance_of(contract_address) == goal, "transfer failed");
+    assert(token_dispatcher.balance_of(contract_address) == goal, 'transfer failed');
 
     start_cheat_caller_address(contract_address, FUND_MANAGER());
     dispatcher.update_receive_donation(goal);
     stop_cheat_caller_address(contract_address);
 
-    assert!(dispatcher.getState() == FundStates::CLOSED, "state is not closed");
-    assert!(dispatcher.get_current_goal_state() == goal, "goal not reached");
+    assert(dispatcher.getState() == FundStates::CLOSED, 'state is not closed');
+    assert(dispatcher.get_current_goal_state() == goal, 'goal not reached');
 
     start_cheat_caller_address(contract_address, OWNER());
 
@@ -365,18 +365,15 @@ fn test_withdraw() {
     let owner_balance_after = token_dispatcher.balance_of(OWNER());
     let fund_balance_after = token_dispatcher.balance_of(contract_address);
 
-    assert!(
+    assert(
         owner_balance_after == (owner_balance_before + withdrawn_amount),
-        "wrong owner balance after"
+        'wrong owner balance after'
     );
-    assert!(
+    assert(
         (fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after,
-        "wrong fund balance"
+        'wrong fund balance'
     );
-    assert!(
-        token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount,
-        "wrong balance of VALID_ADDRESS_1"
-    );
+    assert(token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong balance');
 }
 
 #[test]
