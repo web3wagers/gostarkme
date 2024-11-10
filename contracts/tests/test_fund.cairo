@@ -365,13 +365,17 @@ fn test_withdraw() {
     let owner_balance_after = token_dispatcher.balance_of(OWNER());
     let fund_balance_after = token_dispatcher.balance_of(contract_address);
 
-    assert(owner_balance_after == (owner_balance_before + withdrawn_amount), 'wrong owner balance');
-    assert(
-        (fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after,
-        'wrong fund balance'
+    assert!(
+        owner_balance_after == (owner_balance_before + withdrawn_amount),
+        "wrong owner balance after"
     );
-    assert(
-        token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount, 'wrong owner balance'
+    assert!(
+        (fund_balance_before - (withdrawn_amount + fund_manager_amount)) == fund_balance_after,
+        "wrong fund balance"
+    );
+    assert!(
+        token_dispatcher.balance_of(VALID_ADDRESS_1()) == fund_manager_amount,
+        "wrong balance of VALID_ADDRESS_1"
     );
 }
 
