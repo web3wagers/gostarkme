@@ -28,16 +28,16 @@ pub mod DonatorManager {
     struct Storage {
         owner: ContractAddress,
         donators: LegacyMap::<ContractAddress, ContractAddress>,
-        donator_class_hash: ClassHash,
+        donatorClassHash: ClassHash,
     }
 
     // *************************************************************************
     //                            CONSTRUCTOR
     // *************************************************************************
     #[constructor]
-    fn constructor(ref self: ContractState, donator_class_hash: felt252) {
+    fn constructor(ref self: ContractState, donatorClassHash: felt252) {
         self.owner.write(get_caller_address());
-        self.donator_class_hash.write(donator_class_hash.try_into().unwrap());
+        self.donatorClassHash.write(donatorClassHash.try_into().unwrap());
     }
 
     // *************************************************************************
@@ -51,7 +51,7 @@ pub mod DonatorManager {
 
     #[derive(Drop, starknet::Event)]
     pub struct DonatorContractDeployed {
-        pub new_donator: ContractAddress,
+        pub newDonator: ContractAddress,
         pub owner: ContractAddress
     }
 
@@ -61,18 +61,18 @@ pub mod DonatorManager {
     #[abi(embed_v0)]
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
         fn newDonator(ref self: ContractState) {
-            let mut calldata = ArrayTrait::<felt252>::new();
-            calldata.append(get_caller_address().try_into().unwrap());
+            let mut callData = ArrayTrait::<felt252>::new();
+            callData.append(get_caller_address().try_into().unwrap());
 
-            let (new_donator_address, _) = deploy_syscall(
-                self.donator_class_hash.read(), 12345, calldata.span(), false
+            let (newDonatorAddress, _) = deploy_syscall(
+                self.donatorClassHash.read(), 12345, callData.span(), false
             )
                 .unwrap();
-            self.donators.write(get_caller_address().try_into().unwrap(), new_donator_address);
+            self.donators.write(get_caller_address().try_into().unwrap(), newDonatorAddress);
             self
                 .emit(
                     DonatorContractDeployed {
-                        owner: get_caller_address(), new_donator: new_donator_address
+                        owner: get_caller_address(), newDonator: newDonatorAddress
                     }
                 )
         }
@@ -80,7 +80,7 @@ pub mod DonatorManager {
             return self.owner.read();
         }
         fn getDonatorClassHash(self: @ContractState) -> ClassHash {
-            return self.donator_class_hash.read();
+            return self.donatorClassHash.read();
         }
         fn getDonatorByAddress(self: @ContractState, owner: ContractAddress) -> ContractAddress {
             return self.donators.read(owner);

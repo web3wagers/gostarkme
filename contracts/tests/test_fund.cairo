@@ -27,6 +27,7 @@ fn ID() -> u128 {
 fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER'>()
 }
+otherUser
 fn OTHER_USER() -> ContractAddress {
     contract_address_const::<'USER'>()
 }
@@ -59,15 +60,15 @@ fn CONTACT_HANDLE_2() -> ByteArray {
 }
 fn _setup_() -> ContractAddress {
     let contract = declare("Fund").unwrap();
-    let mut calldata: Array<felt252> = array![];
-    calldata.append_serde(ID());
-    calldata.append_serde(OWNER());
-    calldata.append_serde(NAME());
-    calldata.append_serde(GOAL());
-    calldata.append_serde(EVIDENCE_LINK_1());
-    calldata.append_serde(CONTACT_HANDLE_1());
-    calldata.append_serde(REASON_1());
-    let (contract_address, _) = contract.deploy(@calldata).unwrap();
+    let mut callData: Array<felt252> = array![];
+    callData.append_serde(ID());
+    callData.append_serde(OWNER());
+    callData.append_serde(NAME());
+    callData.append_serde(GOAL());
+    callData.append_serde(EVIDENCE_LINK_1());
+    callData.append_serde(CONTACT_HANDLE_1());
+    callData.append_serde(REASON_1());
+    let (contract_address, _) = contract.deploy(@callData).unwrap();
     contract_address
 }
 // ***************************************************************************************
@@ -75,67 +76,67 @@ fn _setup_() -> ContractAddress {
 // ***************************************************************************************
 #[test]
 #[fork("Mainnet")]
-fn test_constructor() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testConstructor() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     let id = dispatcher.getId();
     let owner = dispatcher.getOwner();
     let name = dispatcher.getName();
     let reason = dispatcher.getReason();
-    let up_votes = dispatcher.getUpVotes();
+    let upVotes = dispatcher.getUpVotes();
     let goal = dispatcher.getGoal();
-    let current_goal_state = dispatcher.get_current_goal_state();
+    let currentGoalState = dispatcher.get_current_goal_state();
     let state = dispatcher.getState();
     assert(id == ID(), 'Invalid id');
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
     assert(reason == REASON_1(), 'Invalid reason');
-    assert(up_votes == 0, 'Invalid up votes');
+    assert(upVotes == 0, 'Invalid up votes');
     assert(goal == GOAL(), 'Invalid goal');
-    assert(current_goal_state == 0, 'Invalid current goal state');
+    assert(currentGoalState == 0, 'Invalid current goal state');
     assert(state == 1, 'Invalid state');
 }
 
 #[test]
-fn test_set_name() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testSetName() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     let name = dispatcher.getName();
     assert(name == NAME(), 'Invalid name');
     start_cheat_caller_address_global(OWNER());
     dispatcher.setName("NEW_NAME");
-    let new_name = dispatcher.getName();
-    assert(new_name == "NEW_NAME", 'Set name method not working')
+    let newName = dispatcher.getName();
+    assert(newName  == "NEW_NAME", 'Set name method not working')
 }
 
 #[test]
-fn test_set_reason() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testSetReason() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     let reason = dispatcher.getReason();
     assert(reason == REASON_1(), 'Invalid reason');
     start_cheat_caller_address_global(OWNER());
     dispatcher.setReason(REASON_2());
-    let new_reason = dispatcher.getReason();
-    assert(new_reason == REASON_2(), 'Set reason method not working')
+    let newReason = dispatcher.getReason();
+    assert(newReason == REASON_2(), 'Set reason method not working')
 }
 
 #[test]
-fn test_set_goal() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testSetGoal() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     let goal = dispatcher.getGoal();
     assert(goal == GOAL(), 'Invalid goal');
     start_cheat_caller_address_global(FUND_MANAGER());
     dispatcher.setGoal(123);
-    let new_goal = dispatcher.getGoal();
-    assert(new_goal == 123, 'Set goal method not working')
+    let newGoal = dispatcher.getGoal();
+    assert(newGoal == 123, 'Set goal method not working')
 }
 
 #[test]
-fn test_receive_vote_successful() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testReceiveVoteSuccessful() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher {contractAddress };
     dispatcher.receiveVote();
     let me = dispatcher.getVoter();
     // Owner vote, fund have one vote
@@ -146,9 +147,9 @@ fn test_receive_vote_successful() {
 
 #[test]
 #[should_panic(expected: ('User already voted!',))]
-fn test_receive_vote_unsuccessful_double_vote() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testReceiveVoteUnsuccessfulDoubleVote() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress  };
     dispatcher.receiveVote();
     let me = dispatcher.getVoter();
     // Owner vote, fund have one vote
@@ -161,31 +162,31 @@ fn test_receive_vote_unsuccessful_double_vote() {
 
 #[test]
 #[fork("Mainnet")]
-fn test_receive_donation_successful() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testReceiveDonationSuccessful() {
+    let contractAddress  = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress  };
     let goal: u256 = 10;
-    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
-    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
-    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    let minterAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let tokenAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let tokenDispatcher = IERC20Dispatcher { contractAddress: tokenAddress };
     // Put state as recollecting dons
     dispatcher.setState(2);
     // Put 10 strks as goal, only fund manager
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contractAddress, FUND_MANAGER());
     dispatcher.setGoal(goal);
-    // fund the manager with STRK token
-    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-    let mut calldata = array![];
-    calldata.append_serde(FUND_MANAGER());
-    calldata.append_serde(goal);
-    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    // fund the manager with STRK token 
+    cheat_caller_address(tokenAddress, minterAddress , CheatSpan::TargetCalls(1));
+    let mut callData = array![];
+    callData .append_serde(FUND_MANAGER());
+    callData.append_serde(goal);
+    call_contract_syscall(tokenAddress, selector!("permissioned_mint"),  callData.span()).unwrap();
     // approve
-    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-    token_dispatcher.approve(contract_address, goal);
+    cheat_caller_address(tokenAddress, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    tokenDispatcher.approve(contractAddress, goal);
     // Donate 5 strks
     dispatcher.receiveDonation(goal / 2);
-    let current_goal_state = dispatcher.get_current_goal_state();
-    assert(current_goal_state == goal / 2, 'Receive donation not working');
+    let currentGoalState = dispatcher.get_current_goal_state();
+    assert(currentGoalState == goal / 2, 'Receive donation not working');
     // Donate 5 strks, the goal is done
     dispatcher.receiveDonation(goal / 2);
     let state = dispatcher.getState();
@@ -194,9 +195,9 @@ fn test_receive_donation_successful() {
 
 #[test]
 #[should_panic(expected: ('Fund not recollecting dons!',))]
-fn test_receive_donation_unsuccessful_wrong_state() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testReceiveDonationUnsuccessfulWrongState() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     // Put a wrong state to receive donations
     dispatcher.setState(1);
     // Donate
@@ -205,32 +206,32 @@ fn test_receive_donation_unsuccessful_wrong_state() {
 
 #[test]
 #[should_panic(expected: ("You are not the fund manager",))]
-fn test_set_goal_unauthorized() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testSetGoalUnauthorized() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
     // Change the goal without being the fund manager
     dispatcher.setGoal(22);
 }
 
 
 #[test]
-fn test_new_vote_received_event_emitted_successful() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
+fn testNewVoteReceivedEventEmittedSuccessful() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
 
     let mut spy = spy_events();
 
-    start_cheat_caller_address(contract_address, OTHER_USER());
+    start_cheat_caller_address(contractAddress, OTHER_USER());
     dispatcher.receiveVote();
 
     spy
         .assert_emitted(
             @array![
                 (
-                    contract_address,
+                    contractAddress,
                     Fund::Event::NewVoteReceived(
                         Fund::NewVoteReceived {
-                            voter: OTHER_USER(), fund: contract_address, votes: 1
+                            voter: OTHER_USER(), fund: contractAddress, votes: 1
                         }
                     )
                 )
@@ -240,35 +241,35 @@ fn test_new_vote_received_event_emitted_successful() {
 
 #[test]
 #[fork("Mainnet")]
-fn test_emit_event_donation_withdraw() {
+fn testEmitEventDonationWithdraw() {
     //Set up contract addresses
-    let contract_address = _setup_();
+    let contractAddress = _setup_();
     let goal: u256 = 10;
 
-    let dispatcher = IFundDispatcher { contract_address };
-    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
-    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
-    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    let dispatcher = IFundDispatcher { contractAddress };
+    let minterAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let tokenAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let tokenDispatcher = IERC20Dispatcher { contractAddress: tokenAddress };
 
     //Set up donation call
     dispatcher.setState(2);
     // Put 10 strks as goal, only fund manager
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contractAddress, FUND_MANAGER());
     dispatcher.setGoal(goal);
     // fund the manager with STRK token
-    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-    let mut calldata = array![];
-    calldata.append_serde(FUND_MANAGER());
-    calldata.append_serde(goal);
-    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    cheat_caller_address(tokenAddress, minterAddress, CheatSpan::TargetCalls(1));
+    let mut callData  = array![];
+    callData .append_serde(FUND_MANAGER());
+    callData.append_serde(goal);
+    call_contract_syscall(tokenAddress, selector!("permissioned_mint"), callData.span()).unwrap();
     // approve
-    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-    token_dispatcher.approve(contract_address, goal);
+    cheat_caller_address(tokenAddress, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    tokenDispatcher.approve(contractAddress, goal);
 
     dispatcher.receiveDonation(goal);
 
     start_cheat_caller_address_global(OWNER());
-    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+    cheat_caller_address(tokenAddress, OWNER(), CheatSpan::TargetCalls(1));
 
     // Spy on emitted events and call the withdraw function
     let mut spy = spy_events();
@@ -279,11 +280,11 @@ fn test_emit_event_donation_withdraw() {
         .assert_emitted(
             @array![
                 (
-                    contract_address,
+                    contractAddress,
                     Fund::Event::DonationWithdraw(
                         Fund::DonationWithdraw {
                             owner_address: OWNER(),
-                            fund_contract_address: contract_address,
+                            fund_contract_address: contractAddress,
                             withdrawn_amount: 10
                         }
                     )
@@ -294,99 +295,99 @@ fn test_emit_event_donation_withdraw() {
 
 #[test]
 #[should_panic(expected: ("You are not the owner",))]
-fn test_withdraw_with_wrong_owner() {
-    let contract_address = _setup_();
+fn testWithdrawWithWrongOwner() {
+    let contractAddress = _setup_();
 
     // call withdraw fn with wrong owner 
     start_cheat_caller_address_global(OTHER_USER());
-    IFundDispatcher { contract_address }.withdraw();
+    IFundDispatcher { contractAddress }.withdraw();
 }
 
 #[test]
 #[should_panic(expected: ('Fund not close goal yet.',))]
-fn test_withdraw_with_non_closed_state() {
-    let contract_address = _setup_();
-    let fund_dispatcher = IFundDispatcher { contract_address };
+fn testWithdrawWithNonClosedState() {
+    let contractAddress = _setup_();
+    let fundDispatcher = IFundDispatcher { contractAddress };
 
     start_cheat_caller_address_global(FUND_MANAGER());
     // set goal
-    fund_dispatcher.setGoal(500_u256);
+    fundDispatcher.setGoal(500_u256);
 
     start_cheat_caller_address_global(OWNER());
     // withdraw funds
-    fund_dispatcher.withdraw();
+    fundDispatcher.withdraw();
 }
 
 #[test]
 #[fork("Mainnet")]
-fn test_withdraw() {
-    let contract_address = _setup_();
+fn testWithDraw() {
+    let contractAddress = _setup_();
     let goal: u256 = 500;
 
-    let dispatcher = IFundDispatcher { contract_address };
-    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
-    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
-    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    let dispatcher = IFundDispatcher { contractAddress };
+    let minterAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let tokenAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let tokenDispatcher = IERC20Dispatcher { contractAddress: tokenAddress };
 
     //Set donation state
     dispatcher.setState(2);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contractAddress, FUND_MANAGER());
     dispatcher.setGoal(goal);
 
-    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-    let mut calldata = array![];
-    calldata.append_serde(FUND_MANAGER());
-    calldata.append_serde(goal);
-    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    cheat_caller_address(tokenAddress, minterAddress, CheatSpan::TargetCalls(1));
+    let mut callData = array![];
+    callData.append_serde(FUND_MANAGER());
+    callData.append_serde(goal);
+    call_contract_syscall(tokenAddress, selector!("permissioned_mint"),  callData.span()).unwrap();
 
-    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-    token_dispatcher.approve(contract_address, goal);
+    cheat_caller_address(tokenAddress, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    tokenDispatcher.approve(contractAddress, goal);
 
     dispatcher.receiveDonation(goal);
 
     start_cheat_caller_address_global(OWNER());
-    cheat_caller_address(token_address, OWNER(), CheatSpan::TargetCalls(1));
+    cheat_caller_address(tokenAddress, OWNER(), CheatSpan::TargetCalls(1));
 
-    let owner_balance_before = token_dispatcher.balance_of(OWNER());
-    let fund_balance_before = token_dispatcher.balance_of(contract_address);
+    let ownerBalanceBefore = tokenDispatcher.balance_of(OWNER());
+    let fundBalanceBefore = tokenDispatcher.balance_of(contractAddress);
 
     // withdraw
     dispatcher.withdraw();
 
-    let owner_balance_after = token_dispatcher.balance_of(OWNER());
-    let fund_balance_after = token_dispatcher.balance_of(contract_address);
+    let ownerBalanceAfter = tokenDispatcher.balance_of(OWNER());
+    let fundBalanceAfter = tokenDispatcher.balance_of(contractAddress);
 
-    assert(owner_balance_after == (owner_balance_before + goal), 'wrong owner balance');
-    assert((fund_balance_before - goal) == fund_balance_after, 'wrong fund balance');
+    assert( ownerBalanceAfter == (ownerBalanceBefore + goal), 'wrong owner balance');
+    assert((fundBalanceBefore - goal) == fundBalanceAfter, 'wrong fund balance');
 }
 
 #[test]
 #[fork("Mainnet")]
-fn test_emit_event_donation_received() {
+fn testEmitEventDonationReceived() {
     //Initial configuration of contract addresses and donation targets
-    let contract_address = _setup_();
+    let contractAddress = _setup_();
     let goal: u256 = 10;
-    let dispatcher = IFundDispatcher { contract_address };
-    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
-    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
-    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+    let dispatcher = IFundDispatcher { contractAddress };
+    let minterAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let tokenAddress = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let tokenDispatcher = IERC20Dispatcher { contractAddress: tokenAddress };
 
     //Donation target configuration in the dispatcher
     dispatcher.setState(2);
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contractAddress, FUND_MANAGER());
     dispatcher.setGoal(goal);
 
     //Provision of STRK token to the fund manager
-    cheat_caller_address(token_address, minter_address, CheatSpan::TargetCalls(1));
-    let mut calldata = array![];
-    calldata.append_serde(FUND_MANAGER());
-    calldata.append_serde(goal);
-    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    cheat_caller_address(tokenAddress, minterAddress, CheatSpan::TargetCalls(1));
+    let mut callData = array![];
+    callData.append_serde(FUND_MANAGER());
+    callData.append_serde(goal);
+    call_contract_syscall(tokenAddress, selector!("permissioned_mint"), callData.span()).unwrap();
 
     //Approve
-    cheat_caller_address(token_address, FUND_MANAGER(), CheatSpan::TargetCalls(1));
-    token_dispatcher.approve(contract_address, goal);
+    cheat_caller_address(tokenAddress, FUND_MANAGER(), CheatSpan::TargetCalls(1));
+    tokenDispatcher.approve(contractAddress, goal);
     let mut spy = spy_events();
 
     //Receipt of the donation at the dispatcher
@@ -394,18 +395,18 @@ fn test_emit_event_donation_received() {
     start_cheat_caller_address_global(FUND_MANAGER());
 
     //Verification of the current balance and issuance of the expected event
-    let current_balance = dispatcher.get_current_goal_state();
+    let currentBalance = dispatcher.get_current_goal_state();
     spy
         .assert_emitted(
             @array![
                 (
-                    contract_address,
+                    contractAddress,
                     Fund::Event::DonationReceived(
                         Fund::DonationReceived {
-                            current_balance,
+                            currentBalance,
                             donated_strks: goal,
                             donator_address: FUND_MANAGER(),
-                            fund_contract_address: contract_address,
+                            fund_contract_address: contractAddress,
                         }
                     )
                 )
@@ -414,45 +415,45 @@ fn test_emit_event_donation_received() {
 }
 
 #[test]
-fn test_set_evidence_link() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
-    let evidence_link = dispatcher.get_evidence_link();
-    assert(evidence_link == EVIDENCE_LINK_1(), 'Invalid evidence_link');
+fn testSetEvidenceLink() {
+    let contractAddress = _setup_();
+    let dispatcher = IFundDispatcher { contractAddress };
+    let evidenceLink = dispatcher.get_evidence_link();
+    assert(evidenceLink == EVIDENCE_LINK_1(), 'Invalid evidence_link');
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_evidence_link(EVIDENCE_LINK_2());
-    let new_evidence_link = dispatcher.get_evidence_link();
-    assert(new_evidence_link == EVIDENCE_LINK_2(), 'Set evidence method not working')
+    let newEvidenceLink = dispatcher.get_evidence_link();
+    assert(newEvidenceLink == EVIDENCE_LINK_2(), 'Set evidence method not working')
 }
 
 #[test]
 #[should_panic(expected: ("You are not the owner",))]
-fn test_set_evidence_link_wrong_owner() {
-    let contract_address = _setup_();
+fn testSetEvidenceLinkWrongOwner() {
+    let contractAddress = _setup_();
 
     // call set_evidence_link fn with wrong owner 
     start_cheat_caller_address_global(OTHER_USER());
-    IFundDispatcher { contract_address }.set_evidence_link(EVIDENCE_LINK_2());
+    IFundDispatcher { contractAddress }.set_evidence_link(EVIDENCE_LINK_2());
 }
 
 #[test]
-fn test_set_contact_handle() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
-    let contact_handle = dispatcher.get_contact_handle();
-    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+fn testSetContactHandle() {
+    let contractAddress _setup_();
+    let dispatcher = IFundDispatcher { contractAddress};
+    let contactHandle = dispatcher.get_contact_handle();
+    assert(contactHandle == CONTACT_HANDLE_1(), 'Invalid contact handle');
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_contact_handle(CONTACT_HANDLE_2());
-    let new_contact_handle = dispatcher.get_contact_handle();
-    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+    let newContactHandle = dispatcher.get_contact_handle();
+    assert( newContactHandle  == CONTACT_HANDLE_2(), 'Set contact method not working')
 }
 
 #[test]
 #[should_panic(expected: ("You are not the owner",))]
-fn test_set_contact_handle_wrong_owner() {
-    let contract_address = _setup_();
+fn testSetContactHandleWrongOwner() {
+    let contractAddress = _setup_();
 
     // call set_contact_handle fn with wrong owner 
     start_cheat_caller_address_global(OTHER_USER());
-    IFundDispatcher { contract_address }.set_contact_handle(CONTACT_HANDLE_2());
+    IFundDispatcher { contractAddress }.set_contact_handle(CONTACT_HANDLE_2());
 }

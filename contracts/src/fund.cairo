@@ -13,15 +13,15 @@ pub trait IFund<TContractState> {
     fn setGoal(ref self: TContractState, goal: u256);
     fn getGoal(self: @TContractState) -> u256;
     fn receiveDonation(ref self: TContractState, strks: u256);
-    fn get_current_goal_state(self: @TContractState) -> u256;
+    fn getCurrentGoalState(self: @TContractState) -> u256;
     fn setState(ref self: TContractState, state: u8);
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
     fn withdraw(ref self: TContractState);
-    fn set_evidence_link(ref self: TContractState, evidence: ByteArray);
-    fn get_evidence_link(self: @TContractState) -> ByteArray;
-    fn set_contact_handle(ref self: TContractState, contact_handle: ByteArray);
-    fn get_contact_handle(self: @TContractState) -> ByteArray;
+    fn setEvidenceLink(ref self: TContractState, evidence: ByteArray);
+    fn getEvidenceLink(self: @TContractState) -> ByteArray;
+    fn setContactHandle(ref self: TContractState, contactHandle: ByteArray);
+    fn getContactHandle(self: @TContractState) -> ByteArray;
 }
 
 #[starknet::contract]
@@ -54,9 +54,9 @@ pub mod Fund {
     #[derive(Drop, starknet::Event)]
     pub struct DonationWithdraw {
         #[key]
-        pub owner_address: ContractAddress,
-        pub fund_contract_address: ContractAddress,
-        pub withdrawn_amount: u256
+        pub ownerAddress: ContractAddress,
+        pub fundContractAddress: ContractAddress,
+        pub withdrawnAmount: u256
     }
 
     #[derive(Drop, starknet::Event)]
@@ -70,10 +70,10 @@ pub mod Fund {
     #[derive(Drop, starknet::Event)]
     pub struct DonationReceived {
         #[key]
-        pub donator_address: ContractAddress,
-        pub current_balance: u256,
-        pub donated_strks: u256,
-        pub fund_contract_address: ContractAddress,
+        pub donatorAddress: ContractAddress,
+        pub currentBalance: u256,
+        pub donatedStrks: u256,
+        pub fundContractAddress: ContractAddress,
     }
     // *************************************************************************
     //                            STORAGE
@@ -84,12 +84,12 @@ pub mod Fund {
         owner: ContractAddress,
         name: ByteArray,
         reason: ByteArray,
-        up_votes: u32,
+        upVotes: u32,
         voters: LegacyMap::<ContractAddress, u32>,
         goal: u256,
         state: u8,
-        evidence_link: ByteArray,
-        contact_handle: ByteArray
+        evidenceLink: ByteArray,
+        contactHandle: ByteArray
     }
 
     // *************************************************************************
@@ -102,19 +102,19 @@ pub mod Fund {
         owner: ContractAddress,
         name: ByteArray,
         goal: u256,
-        evidence_link: ByteArray,
-        contact_handle: ByteArray,
+        evidenceLink: ByteArray,
+        contactHandle: ByteArray,
         reason: ByteArray
     ) {
         self.id.write(id);
         self.owner.write(owner);
         self.name.write(name);
         self.reason.write(reason);
-        self.up_votes.write(FundConstants::INITIAL_UP_VOTES);
+        self.upVotes.write(FundConstants::INITIAL_UP_VOTES);
         self.goal.write(goal);
         self.state.write(FundStates::RECOLLECTING_VOTES);
-        self.evidence_link.write(evidence_link);
-        self.contact_handle.write(contact_handle);
+        self.evidenceLink.write(evidenceLink);
+        self.contactHandle.write(contactHandle);
     }
 
     // *************************************************************************
@@ -149,9 +149,9 @@ pub mod Fund {
             assert(
                 self.state.read() == FundStates::RECOLLECTING_VOTES, 'Fund not recollecting votes!'
             );
-            self.up_votes.write(self.up_votes.read() + 1);
-            self.voters.write(get_caller_address(), self.up_votes.read());
-            if self.up_votes.read() >= FundConstants::UP_VOTES_NEEDED {
+            self.upVotes.write(self.upVotes.read() + 1);
+            self.voters.write(get_caller_address(), self.upVotes.read());
+            if self.upVotes.read() >= FundConstants::UP_VOTES_NEEDED {
                 self.state.write(FundStates::RECOLLECTING_DONATIONS);
             }
 
@@ -160,19 +160,19 @@ pub mod Fund {
                     NewVoteReceived {
                         voter: get_caller_address(),
                         fund: get_contract_address(),
-                        votes: self.up_votes.read()
+                        votes: self.upVotes.read()
                     }
                 );
         }
         fn getUpVotes(self: @ContractState) -> u32 {
-            return self.up_votes.read();
+            return self.upVotes.read();
         }
         fn setGoal(ref self: ContractState, goal: u256) {
             let caller = get_caller_address();
-            let fund_manager_address = contract_address_const::<
+            let fundManagerAddress = contract_address_const::<
                 FundManagerConstants::FUND_MANAGER_ADDRESS
             >();
-            assert!(fund_manager_address == caller, "You are not the fund manager");
+            assert!(fundManagerAddress == caller, "You are not the fund manager");
             self.goal.write(goal);
         }
         fn getGoal(self: @ContractState) -> u256 {
@@ -187,8 +187,8 @@ pub mod Fund {
             self
                 .token_dispatcher()
                 .transfer_from(get_caller_address(), get_contract_address(), strks);
-            let current_balance = self.get_current_goal_state();
-            if current_balance >= self.goal.read() {
+            let currentBalance = self.getCurrentGoalState();
+            if currentBalance >= self.goal.read() {
                 self.state.write(FundStates::CLOSED);
             }
 
@@ -196,14 +196,14 @@ pub mod Fund {
             self
                 .emit(
                     DonationReceived {
-                        current_balance,
-                        donated_strks: strks,
-                        donator_address: get_caller_address(),
-                        fund_contract_address: get_contract_address(),
+                        currentBalance,
+                        donatedStrks: strks,
+                        donatorAddress: get_caller_address(),
+                        fundContractAddress: get_contract_address(),
                     }
                 )
         }
-        fn get_current_goal_state(self: @ContractState) -> u256 {
+        fn getCurrentGoalState(self: @ContractState) -> u256 {
             self.token_dispatcher().balance_of(get_contract_address())
         }
         fn setState(ref self: ContractState, state: u8) {
@@ -221,40 +221,40 @@ pub mod Fund {
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
             assert(
-                self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
+                self.getCurrentGoalState() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
             // Withdraw
-            let withdrawn_amount = self.get_current_goal_state();
+            let withdrawnAmount = self.getCurrentGoalState();
             // TODO: Calculate balance to deposit in owner address and in fund manager address (95%
             // and 5%), also transfer the amount to fund manager address.
-            self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
-            self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
-            assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
+            self.token_dispatcher().approve(self.getOwner(), withdrawnAmount);
+            self.token_dispatcher().transfer(self.getOwner(), withdrawnAmount);
+            assert(self.getCurrentGoalState() == 0, 'Pending stks to withdraw');
             self.setState(4);
             self
                 .emit(
                     DonationWithdraw {
-                        owner_address: self.getOwner(),
-                        fund_contract_address: get_contract_address(),
-                        withdrawn_amount
+                        ownerAddress: self.getOwner(),
+                        fundContractAddress: get_contract_address(),
+                        withdrawnAmount
                     }
                 );
         }
-        fn set_evidence_link(ref self: ContractState, evidence: ByteArray) {
+        fn setEvidenceLink(ref self: ContractState, evidence: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
-            self.evidence_link.write(evidence);
+            self.evidenceLink.write(evidence);
         }
-        fn get_evidence_link(self: @ContractState) -> ByteArray {
-            return self.evidence_link.read();
+        fn getEvidenceLink(self: @ContractState) -> ByteArray {
+            return self.evidenceLink.read();
         }
-        fn set_contact_handle(ref self: ContractState, contact_handle: ByteArray) {
+        fn setContactHandle(ref self: ContractState, contactHandle: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
-            self.contact_handle.write(contact_handle);
+            self.contactHandle.write(contactHandle);
         }
-        fn get_contact_handle(self: @ContractState) -> ByteArray {
-            return self.contact_handle.read();
+        fn getContactHandle(self: @ContractState) -> ByteArray {
+            return self.contactHandle.read();
         }
     }
     // *************************************************************************

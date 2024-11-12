@@ -20,57 +20,57 @@ fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER'>()
 }
 
-fn __setup__() -> (ContractAddress, ClassHash) {
+fn __setUp__() -> (ContractAddress, ClassHash) {
     // Donator
     let donator = declare("Donator").unwrap();
-    let mut donator_calldata: Array<felt252> = array![];
-    donator_calldata.append_serde(OWNER());
-    let (donator_contract_address, _) = donator.deploy(@donator_calldata).unwrap();
-    let donator_class_hash = get_class_hash(donator_contract_address);
+    let mut donatorCalldata: Array<felt252> = array![];
+    donatorCalldata.append_serde(OWNER());
+    let (donator_contract_address, _) = donator.deploy(@donatorCalldata).unwrap();
+    let donatorClassHash = get_class_hash(donator_contract_address);
 
     // Donator Manager 
-    let donator_manager = declare("DonatorManager").unwrap();
-    let mut donator_manager_calldata: Array<felt252> = array![];
-    donator_manager_calldata.append_serde(donator_class_hash);
-    let (contract_address, _) = donator_manager.deploy(@donator_manager_calldata).unwrap();
+    let donatorManager = declare("DonatorManager").unwrap();
+    let mut donatorManagerCalldata: Array<felt252> = array![];
+    donatorManagerCalldata.append_serde(donatorClassHash);
+    let (contract_address, _) = donatorManager.deploy(@donatorManagerCalldata).unwrap();
 
-    return (contract_address, donator_class_hash,);
+    return (contract_address, donatorClassHash,);
 }
 
 // *************************************************************************
 //                              TEST
 // *************************************************************************
 #[test]
-fn test_constructor() {
+fn testConstructor() {
     // Put owner address like caller
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, donator_class_hash) = __setup__();
-    let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
-    let expected_donator_address = donator_manager_contract.getDonatorClassHash();
-    let owner = donator_manager_contract.getOwner();
+    let (contract_address, donatorClassHash) = __setUp__();
+    let donatorManagerContract = IDonatorManagerDispatcher { contract_address };
+    let expectedDonatorAddress = donatorManagerContract.getDonatorClassHash();
+    let owner = donatorManagerContract.getOwner();
     assert(owner == OWNER(), 'Invalid owner');
-    assert(donator_class_hash == expected_donator_address, 'Invalid donator class hash');
+    assert(donatorClassHash == expectedDonatorAddress, 'Invalid donator class hash');
 }
 
 #[test]
-fn test_new_donator() {
+fn testNewDonator() {
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, donator_class_hash) = __setup__();
-    let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
-    donator_manager_contract.newDonator();
-    let expected_donator_class_hash = get_class_hash(
-        donator_manager_contract.getDonatorByAddress(OWNER())
+    let (contract_address, donatorClassHash) =  __setUp__();
+    let donatorManagerContract = IDonatorManagerDispatcher { contract_address };
+    donatorManagerContract.newDonator();
+    let expectedDonatorClassHash = get_class_hash(
+        donatorManagerContract.getDonatorByAddress(OWNER())
     );
-    assert(expected_donator_class_hash == donator_class_hash, 'Invalid donator address');
+    assert(expectedDonatorClassHash == donatorClassHash, 'Invalid donator address');
 }
 
 #[test]
-fn test_emit_event_donator_contract_deployed() {
+fn testEmitEventDonatorContractDeployed() {
     start_cheat_caller_address_global(OWNER());
-    let (contract_address, _) = __setup__();
-    let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
+    let (contract_address, _) =  __setUp__();
+    let donatorManagerContract = IDonatorManagerDispatcher { contract_address };
     let mut spy = spy_events();
-    donator_manager_contract.newDonator();
+    donatorManagerContract.newDonator();
 
     spy
         .assert_emitted(
@@ -79,7 +79,7 @@ fn test_emit_event_donator_contract_deployed() {
                     contract_address,
                     DonatorManager::Event::DonatorContractDeployed(
                         DonatorManager::DonatorContractDeployed {
-                            new_donator: donator_manager_contract.getDonatorByAddress(OWNER()),
+                            newDonator: donatorManagerContract.getDonatorByAddress(OWNER()),
                             owner: OWNER()
                         }
                     )

@@ -6,7 +6,7 @@ pub trait IDonator<TContractState> {
     fn getLevel(self: @TContractState) -> u32;
     fn getTotalStarkDonations(self: @TContractState) -> u256;
     fn getMaxStarkDonationsToNextLevel(self: @TContractState) -> u256;
-    fn updateDonatorValues(ref self: TContractState, donated_starks: u256);
+    fn updateDonatorValues(ref self: TContractState, donatedStarks: u256);
 }
 
 #[starknet::contract]
@@ -19,13 +19,13 @@ mod Donator {
 
     // *************************************************************************
     //                            STORAGE
-    // *************************************************************************
+    // *************************************************************************   
     #[storage]
     struct Storage {
         owner: ContractAddress,
         level: u32,
-        total_stark_donations: u256,
-        max_stark_donations_to_next_level: u256
+        totalStarkDonations: u256,
+        maxStarkDonationsToNextLevel: u256
     }
 
     // *************************************************************************
@@ -35,9 +35,8 @@ mod Donator {
     fn constructor(ref self: ContractState, owner: ContractAddress) {
         self.owner.write(owner);
         self.level.write(DonatorConstants::INITIAL_LEVEL);
-        self.total_stark_donations.write(0);
-        self
-            .max_stark_donations_to_next_level
+        self.totalStarkDonations.write(0);
+        self.maxStarkDonationsToNextLevel
             .write(DonatorConstants::INITIAL_MAX_STARKS_DONATION_TO_NEXT_LEVEL);
     }
 
@@ -53,19 +52,19 @@ mod Donator {
             return self.level.read();
         }
         fn getTotalStarkDonations(self: @ContractState) -> u256 {
-            return self.total_stark_donations.read();
+            return self.totalStarkDonations.read();
         }
         fn getMaxStarkDonationsToNextLevel(self: @ContractState) -> u256 {
-            return self.max_stark_donations_to_next_level.read();
+            return self.maxStarkDonationsToNextLevel.read();
         }
-        fn updateDonatorValues(ref self: ContractState, donated_starks: u256) {
-            let total_donator_pod = self.total_stark_donations.read() + donated_starks;
-            self.total_stark_donations.write(total_donator_pod);
-            if (total_donator_pod > self.max_stark_donations_to_next_level.read()) {
+        fn updateDonatorValues(ref self: ContractState, donatedStarks: u256) {
+            let totalDonatorPod = self.totalStarkDonations.read() + donatedStarks;
+            self.totalStarkDonations.write(totalDonatorPod);
+            if (totalDonatorPod > self.maxStarkDonationsToNextLevel.read()) {
                 self.level.write(self.level.read() + 1);
                 self
-                    .max_stark_donations_to_next_level
-                    .write(self.max_stark_donations_to_next_level.read() * 2);
+                    .maxStarkDonationsToNextLevel
+                    .write(self.maxStarkDonationsToNextLevel.read() * 2);
             }
         }
     }

@@ -13,11 +13,11 @@ fn OWNER() -> ContractAddress {
     contract_address_const::<'OWNER'>()
 }
 
-fn __setup__() -> ContractAddress {
+fn __setUp__() -> ContractAddress {
     let contract = declare("Donator").unwrap();
-    let mut calldata: Array<felt252> = array![];
-    calldata.append_serde(OWNER());
-    let (address, _) = contract.deploy(@calldata).unwrap();
+    let mut callData: Array<felt252> = array![];
+    callData.append_serde(OWNER());
+    let (address, _) = contract.deploy(@callData).unwrap();
     address
 }
 
@@ -25,54 +25,54 @@ fn __setup__() -> ContractAddress {
 //                              TEST
 // *************************************************************************
 #[test]
-fn test_get_owner() {
-    let contract_address = __setup__();
-    let dispatcher = IDonatorDispatcher { contract_address };
+fn testGetOwner() {
+    let contractAddress = __setUp__();
+    let dispatcher = IDonatorDispatcher { contractAddress };
     let owner = dispatcher.getOwner();
     assert(owner == OWNER(), 'Invalid owner');
 }
 
 #[test]
-fn test_get_level() {
-    let contract_address = __setup__();
-    let dispatcher = IDonatorDispatcher { contract_address };
+fn testGetLevel() {
+    let contractAddress = __setUp__();
+    let dispatcher = IDonatorDispatcher { contractAddress };
     let level = dispatcher.getLevel();
     assert(level == 1, 'Invalid level');
 }
 
 #[test]
-fn test_get_total_stark_donations() {
-    let contract_address = __setup__();
-    let dispatcher = IDonatorDispatcher { contract_address };
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
-    assert(total_stark_donations == 0, 'Invalid total stark donations');
+fn testGetTotalStarkDonations() {
+    let contractAddress = __setUp__();
+    let dispatcher = IDonatorDispatcher { contractAddress };
+    let totalStarkDonations = dispatcher.getTotalStarkDonations();
+    assert(totalStarkDonations == 0, 'Invalid total stark donations');
 }
 
 #[test]
-fn test_get_max_stark_donations_to_next_level() {
-    let contract_address = __setup__();
-    let dispatcher = IDonatorDispatcher { contract_address };
-    let max_stark_donations_to_next_level = dispatcher.getMaxStarkDonationsToNextLevel();
-    assert(max_stark_donations_to_next_level == 10, 'Invalid total stark donations');
+fn testGetMaxStarkDonationsToNextLevel() {
+    let contractAddress = __setUp__();
+    let dispatcher = IDonatorDispatcher { contractAddress };
+    let maxStarkDonationsToNextLevel = dispatcher.getMaxStarkDonationsToNextLevel();
+    assert( maxStarkDonationsToNextLevel == 10, 'Invalid total stark donations');
 }
 
 #[test]
-fn test_update_donator_values() {
-    let contract_address = __setup__();
-    let dispatcher = IDonatorDispatcher { contract_address };
+fn testUpdateDonatorValues() {
+    let contractAddress =  __setUp__();
+    let dispatcher = IDonatorDispatcher { contractAddress };
     dispatcher.updateDonatorValues(5);
     let level = dispatcher.getLevel();
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
+    let totalStarkDonations = dispatcher.getTotalStarkDonations();
     assert(level == 1, 'Invalid level');
-    assert(total_stark_donations == 5, 'Invalid total stark donations');
+    assert(totalStarkDonations == 5, 'Invalid total stark donations');
     dispatcher.updateDonatorValues(5);
     let level = dispatcher.getLevel();
     assert(level == 1, 'Invalid level');
     dispatcher.updateDonatorValues(1);
     let level = dispatcher.getLevel();
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
-    let max_stark_donations_to_next_level = dispatcher.getMaxStarkDonationsToNextLevel();
+    let totalStarkDonations = dispatcher.getTotalStarkDonations();
+    let maxStarkDonationsToNextLevel = dispatcher.getMaxStarkDonationsToNextLevel();
     assert(level == 2, 'Invalid level');
-    assert(total_stark_donations == 11, 'Invalid total stark donations');
-    assert(max_stark_donations_to_next_level == 20, 'Invalid total stark donations');
+    assert(totalStarkDonations == 11, 'Invalid total stark donations');
+    assert(maxStarkDonationsToNextLevel == 20, 'Invalid total stark donations');
 }
