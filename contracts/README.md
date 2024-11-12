@@ -26,7 +26,7 @@
     ```bash
      asdf global starknet-foundry 0.27.0   
     ```
-     **Setup your environment(Different option for macOS)**
+     **Setup your environment (Different option for macOS)**
 
     - Scarb v2.6.5 : [here](https://docs.swmansion.com/scarb/download.html#install-via-asdf).
       ```bash
@@ -37,16 +37,45 @@
       export PATH="$HOME/.local/bin:$PATH"
       ```
       It is recommended to restart the terminal.
-    - Starknet Foundry v0.27.0: [here](https://foundry-rs.github.io/starknet-foundry/getting-started/installation.html).
+      
+    **Setup your environment (Ubuntu)**
+     - Scarb v2.6.5 
+        ```bash
+        curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh -s -- -v 2.6.5
+        ```
+        Run at terminal:
+        ```bash
+        code ~ /.bashrc
+        ```
+        Place it at the end of the path/code:
+        ```bash
+        export PATH="$HOME/.local/bin:$PATH"
+        ```
+        It is recommended to restart the terminal.
+
+  - Starknet Foundry v0.27.0: [here](https://foundry-rs.github.io/starknet-foundry/getting-started/installation.html).
       ```bash
       curl -L https://raw.githubusercontent.com/foundry-rs/starknet-foundry/master/scripts/install.sh | sh -s -- -v 0.27.0
       ```
-      Place it in the path:
+      **Place it in the path (Option for macOS):**
       ```bash
       echo 'export PATH="$HOME/.asdf/shims:$HOME/.asdf/bin:$PATH"' >> ~/.zshrc
       ```
       ```bash
       echo 'export PATH="$HOME/.foundry/bin:$PATH"' >> ~/.zshrc
+      ```
+      **Place it in the path (Option for Ubuntu):**
+      ```bash
+      In the terminal: code ~ /.bashrc
+      ```
+      Place it at the end of the path/code:
+      ```bash
+      export PATH="$HOME/.asdf/shims:$HOME/.asdf/bin:$PATH"
+      ```
+      ```bash
+      export PATH="$HOME/.foundry/bin:$PATH"
+      ```
+
 3. **Compile Go Stark Me Backend 🛠️**
 
     To build the contracts, run the command:
