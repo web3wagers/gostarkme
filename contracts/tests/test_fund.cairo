@@ -324,7 +324,7 @@ fn test_set_contact_handle() {
 #[test]
 #[should_panic(expected: ("You are not the owner",))]
 fn test_set_contact_handle_wrong_owner() {
-    let contract_address = _setup_(); 
+    let contract_address = _setup_();
     start_cheat_caller_address_global(OTHER_USER());
     IFundDispatcher { contract_address }.set_contact_handle(CONTACT_HANDLE_2());
 }
