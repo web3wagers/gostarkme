@@ -18,6 +18,7 @@ pub trait IFund<TContractState> {
     fn getState(self: @TContractState) -> u8;
     fn getVoter(self: @TContractState) -> u32;
     fn withdraw(ref self: TContractState);
+    fn updateReceiveDonation(ref self: TContractState, strks: u256);
     fn setEvidenceLink(ref self: TContractState, evidence: ByteArray);
     fn getEvidenceLink(self: @TContractState) -> ByteArray;
     fn setContactHandle(ref self: TContractState, contactHandle: ByteArray);
@@ -178,6 +179,23 @@ pub mod Fund {
         fn getGoal(self: @ContractState) -> u256 {
             return self.goal.read();
         }
+
+        fn updateReceiveDonation(ref self: ContractState, strks: u256) {
+            let current_balance = self.get_current_goal_state();
+            if current_balance >= self.goal.read() {
+                self.state.write(FundStates::CLOSED);
+            }
+            self
+                .emit(
+                    DonationReceived {
+                        current_balance,
+                        donated_strks: strks,
+                        donator_address: get_caller_address(),
+                        fund_contract_address: get_contract_address(),
+                    }
+                )
+        }
+
         // TODO: implement the logic where user actually donates starks
         fn receiveDonation(ref self: ContractState, strks: u256) {
             assert(
