@@ -200,7 +200,10 @@ pub mod Fund {
             let caller = get_caller_address();
             let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
-            assert!(valid_address_1 == caller || valid_address_2 == caller, "Only Admins can change the fund state.");
+            assert!(
+                valid_address_1 == caller || valid_address_2 == caller,
+                "Only Admins can change the fund state."
+            );
             self.state.write(state);
         }
         fn getState(self: @ContractState) -> u8 {
@@ -216,15 +219,20 @@ pub mod Fund {
             assert(
                 self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
             );
+
             let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
-            let withdrawn_amount = self.get_current_goal_state() * 95 / 100;
-            let fund_manager_amount = self.get_current_goal_state() * 5 / 100;
+            let withdrawn_amount = (self.get_current_goal_state() * 95) / 100;
+            let fund_manager_amount = (self.get_current_goal_state() * 5) / 100;
+
             self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
             self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
+
             self.token_dispatcher().approve(valid_address, fund_manager_amount);
             self.token_dispatcher().transfer(valid_address, fund_manager_amount);
+
             assert(self.get_current_goal_state() == 0, 'Pending stks to withdraw');
-            self.setState(4);
+            self.state.write(FundStates::WITHDRAW);
+
             self
                 .emit(
                     DonationWithdraw {
