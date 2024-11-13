@@ -367,7 +367,7 @@ fn test_update_received_donation() {
     let current_balance = dispatcher.get_current_goal_state();
 
     assert(dispatcher.getState() == FundStates::CLOSED, 'state is not closed');
-    assert(currence_balance == strks, 'strks not reached');
+    assert(current_balance == strks, 'strks not reached');
 
     spy
         .assert_emitted(
