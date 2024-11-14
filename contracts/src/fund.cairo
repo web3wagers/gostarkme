@@ -2,21 +2,21 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 pub trait IFund<TContractState> {
-    fn getId(self: @TContractState) -> u128;
-    fn getOwner(self: @TContractState) -> ContractAddress;
-    fn setName(ref self: TContractState, name: ByteArray);
-    fn getName(self: @TContractState) -> ByteArray;
-    fn setReason(ref self: TContractState, reason: ByteArray);
-    fn getReason(self: @TContractState) -> ByteArray;
-    fn receiveVote(ref self: TContractState);
-    fn getUpVotes(self: @TContractState) -> u32;
-    fn setGoal(ref self: TContractState, goal: u256);
-    fn getGoal(self: @TContractState) -> u256;
+    fn get_id(self: @TContractState) -> u128;
+    fn get_owner(self: @TContractState) -> ContractAddress;
+    fn set_name(ref self: TContractState, name: ByteArray);
+    fn get_name(self: @TContractState) -> ByteArray;
+    fn set_reason(ref self: TContractState, reason: ByteArray);
+    fn get_reason(self: @TContractState) -> ByteArray;
+    fn receive_vote(ref self: TContractState);
+    fn get_up_votes(self: @TContractState) -> u32;
+    fn set_goal(ref self: TContractState, goal: u256);
+    fn get_goal(self: @TContractState) -> u256;
     fn update_receive_donation(ref self: TContractState, strks: u256);
     fn get_current_goal_state(self: @TContractState) -> u256;
-    fn setState(ref self: TContractState, state: u8);
-    fn getState(self: @TContractState) -> u8;
-    fn getVoter(self: @TContractState) -> u32;
+    fn set_state(ref self: TContractState, state: u8);
+    fn get_state(self: @TContractState) -> u8;
+    fn get_voter(self: @TContractState) -> u32;
     fn withdraw(ref self: TContractState);
     fn set_evidence_link(ref self: TContractState, evidence: ByteArray);
     fn get_evidence_link(self: @TContractState) -> ByteArray;
@@ -122,29 +122,29 @@ pub mod Fund {
     // *************************************************************************
     #[abi(embed_v0)]
     impl FundImpl of super::IFund<ContractState> {
-        fn getId(self: @ContractState) -> u128 {
+        fn get_id(self: @ContractState) -> u128 {
             return self.id.read();
         }
-        fn getOwner(self: @ContractState) -> ContractAddress {
+        fn get_owner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
         }
-        fn setName(ref self: ContractState, name: ByteArray) {
+        fn set_name(ref self: ContractState, name: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             self.name.write(name);
         }
-        fn getName(self: @ContractState) -> ByteArray {
+        fn get_name(self: @ContractState) -> ByteArray {
             return self.name.read();
         }
-        fn setReason(ref self: ContractState, reason: ByteArray) {
+        fn set_reason(ref self: ContractState, reason: ByteArray) {
             let caller = get_caller_address();
             assert!(self.owner.read() == caller, "You are not the owner");
             self.reason.write(reason);
         }
-        fn getReason(self: @ContractState) -> ByteArray {
+        fn get_reason(self: @ContractState) -> ByteArray {
             return self.reason.read();
         }
-        fn receiveVote(ref self: ContractState) {
+        fn receive_vote(ref self: ContractState) {
             assert(self.voters.read(get_caller_address()) == 0, 'User already voted!');
             assert(
                 self.state.read() == FundStates::RECOLLECTING_VOTES, 'Fund not recollecting votes!'
@@ -164,10 +164,10 @@ pub mod Fund {
                     }
                 );
         }
-        fn getUpVotes(self: @ContractState) -> u32 {
+        fn get_up_votes(self: @ContractState) -> u32 {
             return self.up_votes.read();
         }
-        fn setGoal(ref self: ContractState, goal: u256) {
+        fn set_goal(ref self: ContractState, goal: u256) {
             let caller = get_caller_address();
             let fund_manager_address = contract_address_const::<
                 FundManagerConstants::FUND_MANAGER_ADDRESS
@@ -175,7 +175,7 @@ pub mod Fund {
             assert!(fund_manager_address == caller, "You are not the fund manager");
             self.goal.write(goal);
         }
-        fn getGoal(self: @ContractState) -> u256 {
+        fn get_goal(self: @ContractState) -> u256 {
             return self.goal.read();
         }
         fn update_receive_donation(ref self: ContractState, strks: u256) {
@@ -196,7 +196,7 @@ pub mod Fund {
         fn get_current_goal_state(self: @ContractState) -> u256 {
             self.token_dispatcher().balance_of(get_contract_address())
         }
-        fn setState(ref self: ContractState, state: u8) {
+        fn set_state(ref self: ContractState, state: u8) {
             let caller = get_caller_address();
             let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
@@ -206,10 +206,10 @@ pub mod Fund {
             );
             self.state.write(state);
         }
-        fn getState(self: @ContractState) -> u8 {
+        fn get_state(self: @ContractState) -> u8 {
             return self.state.read();
         }
-        fn getVoter(self: @ContractState) -> u32 {
+        fn get_voter(self: @ContractState) -> u32 {
             return self.voters.read(get_caller_address());
         }
         fn withdraw(ref self: ContractState) {
@@ -217,15 +217,15 @@ pub mod Fund {
             assert!(self.owner.read() == caller, "You are not the owner");
             assert(self.state.read() == FundStates::CLOSED, 'Fund not close goal yet.');
             assert(
-                self.get_current_goal_state() >= self.getGoal(), 'Fund hasnt reached its goal yet'
+                self.get_current_goal_state() >= self.get_goal(), 'Fund hasnt reached its goal yet'
             );
 
             let valid_address = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             let withdrawn_amount = (self.get_current_goal_state() * 95) / 100;
             let fund_manager_amount = (self.get_current_goal_state() * 5) / 100;
 
-            self.token_dispatcher().approve(self.getOwner(), withdrawn_amount);
-            self.token_dispatcher().transfer(self.getOwner(), withdrawn_amount);
+            self.token_dispatcher().approve(self.get_owner(), withdrawn_amount);
+            self.token_dispatcher().transfer(self.get_owner(), withdrawn_amount);
 
             self.token_dispatcher().approve(valid_address, fund_manager_amount);
             self.token_dispatcher().transfer(valid_address, fund_manager_amount);
@@ -236,7 +236,7 @@ pub mod Fund {
             self
                 .emit(
                     DonationWithdraw {
-                        owner_address: self.getOwner(),
+                        owner_address: self.get_owner(),
                         fund_contract_address: get_contract_address(),
                         withdrawn_amount
                     }

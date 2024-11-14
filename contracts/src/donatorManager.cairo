@@ -3,10 +3,10 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IDonatorManager<TContractState> {
-    fn newDonator(ref self: TContractState);
-    fn getOwner(self: @TContractState) -> ContractAddress;
-    fn getDonatorClassHash(self: @TContractState) -> ClassHash;
-    fn getDonatorByAddress(self: @TContractState, owner: ContractAddress) -> ContractAddress;
+    fn new_donator(ref self: TContractState);
+    fn get_owner(self: @TContractState) -> ContractAddress;
+    fn get_donator_class_hash(self: @TContractState) -> ClassHash;
+    fn get_donator_by_address(self: @TContractState, owner: ContractAddress) -> ContractAddress;
 }
 
 #[starknet::contract]
@@ -60,12 +60,12 @@ pub mod DonatorManager {
     // *************************************************************************
     #[abi(embed_v0)]
     impl DonatorManagerImpl of super::IDonatorManager<ContractState> {
-        fn newDonator(ref self: ContractState) {
-            let mut calldata = ArrayTrait::<felt252>::new();
-            calldata.append(get_caller_address().try_into().unwrap());
+        fn new_donator(ref self: ContractState) {
+            let mut call_data = ArrayTrait::<felt252>::new();
+            call_data.append(get_caller_address().try_into().unwrap());
 
             let (new_donator_address, _) = deploy_syscall(
-                self.donator_class_hash.read(), 12345, calldata.span(), false
+                self.donator_class_hash.read(), 12345,call_data.span(), false
             )
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), new_donator_address);
@@ -76,13 +76,13 @@ pub mod DonatorManager {
                     }
                 )
         }
-        fn getOwner(self: @ContractState) -> ContractAddress {
+        fn get_owner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
         }
-        fn getDonatorClassHash(self: @ContractState) -> ClassHash {
+        fn get_donator_class_hash(self: @ContractState) -> ClassHash {
             return self.donator_class_hash.read();
         }
-        fn getDonatorByAddress(self: @ContractState, owner: ContractAddress) -> ContractAddress {
+        fn get_donator_by_address(self: @ContractState, owner: ContractAddress) -> ContractAddress {
             return self.donators.read(owner);
         }
     }

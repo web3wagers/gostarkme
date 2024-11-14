@@ -28,7 +28,7 @@ fn __setup__() -> ContractAddress {
 fn test_get_owner() {
     let contract_address = __setup__();
     let dispatcher = IDonatorDispatcher { contract_address };
-    let owner = dispatcher.getOwner();
+    let owner = dispatcher.get_owner();
     assert(owner == OWNER(), 'Invalid owner');
 }
 
@@ -36,7 +36,7 @@ fn test_get_owner() {
 fn test_get_level() {
     let contract_address = __setup__();
     let dispatcher = IDonatorDispatcher { contract_address };
-    let level = dispatcher.getLevel();
+    let level = dispatcher.get_level();
     assert(level == 1, 'Invalid level');
 }
 
@@ -44,7 +44,7 @@ fn test_get_level() {
 fn test_get_total_stark_donations() {
     let contract_address = __setup__();
     let dispatcher = IDonatorDispatcher { contract_address };
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
+    let total_stark_donations = dispatcher.get_total_stark_donations();
     assert(total_stark_donations == 0, 'Invalid total stark donations');
 }
 
@@ -52,7 +52,7 @@ fn test_get_total_stark_donations() {
 fn test_get_max_stark_donations_to_next_level() {
     let contract_address = __setup__();
     let dispatcher = IDonatorDispatcher { contract_address };
-    let max_stark_donations_to_next_level = dispatcher.getMaxStarkDonationsToNextLevel();
+    let max_stark_donations_to_next_level = dispatcher.get_max_stark_donations_to_next_level();
     assert(max_stark_donations_to_next_level == 10, 'Invalid total stark donations');
 }
 
@@ -60,18 +60,18 @@ fn test_get_max_stark_donations_to_next_level() {
 fn test_update_donator_values() {
     let contract_address = __setup__();
     let dispatcher = IDonatorDispatcher { contract_address };
-    dispatcher.updateDonatorValues(5);
-    let level = dispatcher.getLevel();
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
+    dispatcher.update_donator_values(5);
+    let level = dispatcher.get_level();
+    let total_stark_donations = dispatcher.get_total_stark_donations();
     assert(level == 1, 'Invalid level');
     assert(total_stark_donations == 5, 'Invalid total stark donations');
-    dispatcher.updateDonatorValues(5);
-    let level = dispatcher.getLevel();
+    dispatcher.update_donator_values(5);
+    let level = dispatcher.get_level();
     assert(level == 1, 'Invalid level');
-    dispatcher.updateDonatorValues(1);
-    let level = dispatcher.getLevel();
-    let total_stark_donations = dispatcher.getTotalStarkDonations();
-    let max_stark_donations_to_next_level = dispatcher.getMaxStarkDonationsToNextLevel();
+    dispatcher.update_donator_values(1);
+    let level = dispatcher.get_level();
+    let total_stark_donations = dispatcher.get_total_stark_donations();
+    let max_stark_donations_to_next_level = dispatcher.get_max_stark_donations_to_next_level();
     assert(level == 2, 'Invalid level');
     assert(total_stark_donations == 11, 'Invalid total stark donations');
     assert(max_stark_donations_to_next_level == 20, 'Invalid total stark donations');
