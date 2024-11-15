@@ -344,10 +344,10 @@ fn test_update_received_donation() {
     let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
 
     start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
-    dispatcher.setState(2);
+    dispatcher.set_state(2);
 
     start_cheat_caller_address(contract_address, FUND_MANAGER());
-    dispatcher.setGoal(strks);
+    dispatcher.set_goal(strks);
 
     start_cheat_caller_address(token_address, minter_address);
     let mut calldata = array![];
@@ -366,7 +366,7 @@ fn test_update_received_donation() {
 
     let current_balance = dispatcher.get_current_goal_state();
 
-    assert(dispatcher.getState() == FundStates::CLOSED, 'state is not closed');
+    assert(dispatcher.get_state() == FundStates::CLOSED, 'state is not closed');
     assert(current_balance == strks, 'strks not reached');
 
     spy
