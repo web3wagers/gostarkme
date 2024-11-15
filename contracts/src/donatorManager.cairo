@@ -65,7 +65,7 @@ pub mod DonatorManager {
             call_data.append(get_caller_address().try_into().unwrap());
 
             let (new_donator_address, _) = deploy_syscall(
-                self.donator_class_hash.read(), 12345,call_data.span(), false
+                self.donator_class_hash.read(), 12345, call_data.span(), false
             )
                 .unwrap();
             self.donators.write(get_caller_address().try_into().unwrap(), new_donator_address);
