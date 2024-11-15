@@ -46,8 +46,8 @@ fn test_constructor() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, donator_class_hash) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
-    let expected_donator_address = donator_manager_contract.getDonatorClassHash();
-    let owner = donator_manager_contract.getOwner();
+    let expected_donator_address = donator_manager_contract.get_donator_class_hash();
+    let owner = donator_manager_contract.get_owner();
     assert(owner == OWNER(), 'Invalid owner');
     assert(donator_class_hash == expected_donator_address, 'Invalid donator class hash');
 }
@@ -57,9 +57,9 @@ fn test_new_donator() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, donator_class_hash) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
-    donator_manager_contract.newDonator();
+    donator_manager_contract.new_donator();
     let expected_donator_class_hash = get_class_hash(
-        donator_manager_contract.getDonatorByAddress(OWNER())
+        donator_manager_contract.get_donator_by_address(OWNER())
     );
     assert(expected_donator_class_hash == donator_class_hash, 'Invalid donator address');
 }
@@ -70,7 +70,7 @@ fn test_emit_event_donator_contract_deployed() {
     let (contract_address, _) = __setup__();
     let donator_manager_contract = IDonatorManagerDispatcher { contract_address };
     let mut spy = spy_events();
-    donator_manager_contract.newDonator();
+    donator_manager_contract.new_donator();
 
     spy
         .assert_emitted(
@@ -79,7 +79,7 @@ fn test_emit_event_donator_contract_deployed() {
                     contract_address,
                     DonatorManager::Event::DonatorContractDeployed(
                         DonatorManager::DonatorContractDeployed {
-                            new_donator: donator_manager_contract.getDonatorByAddress(OWNER()),
+                            new_donator: donator_manager_contract.get_donator_by_address(OWNER()),
                             owner: OWNER()
                         }
                     )

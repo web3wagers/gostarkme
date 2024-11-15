@@ -81,14 +81,14 @@ fn _setup_() -> ContractAddress {
 fn test_constructor() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    let id = dispatcher.getId();
-    let owner = dispatcher.getOwner();
-    let name = dispatcher.getName();
-    let reason = dispatcher.getReason();
-    let up_votes = dispatcher.getUpVotes();
-    let goal = dispatcher.getGoal();
+    let id = dispatcher.get_id();
+    let owner = dispatcher.get_owner();
+    let name = dispatcher.get_name();
+    let reason = dispatcher.get_reason();
+    let up_votes = dispatcher.get_up_votes();
+    let goal = dispatcher.get_goal();
     let current_goal_state = dispatcher.get_current_goal_state();
-    let state = dispatcher.getState();
+    let state = dispatcher.get_state();
     assert(id == ID(), 'Invalid id');
     assert(owner == OWNER(), 'Invalid owner');
     assert(name == NAME(), 'Invalid name');
@@ -103,11 +103,11 @@ fn test_constructor() {
 fn test_set_name() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    let name = dispatcher.getName();
+    let name = dispatcher.get_name();
     assert(name == NAME(), 'Invalid name');
     start_cheat_caller_address_global(OWNER());
-    dispatcher.setName("NEW_NAME");
-    let new_name = dispatcher.getName();
+    dispatcher.set_name("NEW_NAME");
+    let new_name = dispatcher.get_name();
     assert(new_name == "NEW_NAME", 'Set name method not working')
 }
 
@@ -115,11 +115,11 @@ fn test_set_name() {
 fn test_set_reason() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    let reason = dispatcher.getReason();
+    let reason = dispatcher.get_reason();
     assert(reason == REASON_1(), 'Invalid reason');
     start_cheat_caller_address_global(OWNER());
-    dispatcher.setReason(REASON_2());
-    let new_reason = dispatcher.getReason();
+    dispatcher.set_reason(REASON_2());
+    let new_reason = dispatcher.get_reason();
     assert(new_reason == REASON_2(), 'Set reason method not working')
 }
 
@@ -127,11 +127,11 @@ fn test_set_reason() {
 fn test_set_goal() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    let goal = dispatcher.getGoal();
+    let goal = dispatcher.get_goal();
     assert(goal == GOAL(), 'Invalid goal');
     start_cheat_caller_address_global(FUND_MANAGER());
-    dispatcher.setGoal(123);
-    let new_goal = dispatcher.getGoal();
+    dispatcher.set_goal(123);
+    let new_goal = dispatcher.get_goal();
     assert(new_goal == 123, 'Set goal method not working')
 }
 
@@ -139,11 +139,11 @@ fn test_set_goal() {
 fn test_receive_vote_successful() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    dispatcher.receiveVote();
-    let me = dispatcher.getVoter();
+    dispatcher.receive_vote();
+    let me = dispatcher.get_voter();
     // Owner vote, fund have one vote
     assert(me == 1, 'Owner is not in the voters');
-    let votes = dispatcher.getUpVotes();
+    let votes = dispatcher.get_up_votes();
     assert(votes == 1, 'Vote unuseccessful');
 }
 
@@ -152,14 +152,14 @@ fn test_receive_vote_successful() {
 fn test_receive_vote_unsuccessful_double_vote() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    dispatcher.receiveVote();
-    let me = dispatcher.getVoter();
+    dispatcher.receive_vote();
+    let me = dispatcher.get_voter();
     // Owner vote, fund have one vote
     assert(me == 1, 'Owner is not in the voters');
-    let votes = dispatcher.getUpVotes();
+    let votes = dispatcher.get_up_votes();
     assert(votes == 1, 'Vote unuseccessful');
     // Owner vote, second time
-    dispatcher.receiveVote();
+    dispatcher.receive_vote();
 }
 
 #[test]
@@ -170,7 +170,7 @@ fn test_new_vote_received_event_emitted_successful() {
     let mut spy = spy_events();
 
     start_cheat_caller_address(contract_address, OTHER_USER());
-    dispatcher.receiveVote();
+    dispatcher.receive_vote();
 
     spy
         .assert_emitted(
@@ -193,7 +193,7 @@ fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     // Change the goal without being the fund manager
-    dispatcher.setGoal(22);
+    dispatcher.set_goal(22);
 }
 
 
@@ -215,7 +215,7 @@ fn test_withdraw_with_non_closed_state() {
 
     start_cheat_caller_address_global(FUND_MANAGER());
     // set goal
-    fund_dispatcher.setGoal(500_u256);
+    fund_dispatcher.set_goal(500_u256);
 
     start_cheat_caller_address_global(OWNER());
     // withdraw funds
@@ -235,11 +235,11 @@ fn test_withdraw() {
 
     //Set donation state
     start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
-    dispatcher.setState(2);
+    dispatcher.set_state(2);
     stop_cheat_caller_address(contract_address);
 
     start_cheat_caller_address(contract_address, FUND_MANAGER());
-    dispatcher.setGoal(goal);
+    dispatcher.set_goal(goal);
     stop_cheat_caller_address(contract_address);
 
     start_cheat_caller_address(token_address, minter_address);
@@ -261,7 +261,7 @@ fn test_withdraw() {
     dispatcher.update_receive_donation(goal);
     stop_cheat_caller_address(contract_address);
 
-    assert(dispatcher.getState() == FundStates::CLOSED, 'state is not closed');
+    assert(dispatcher.get_state() == FundStates::CLOSED, 'state is not closed');
     assert(dispatcher.get_current_goal_state() == goal, 'goal not reached');
 
     start_cheat_caller_address(contract_address, OWNER());
