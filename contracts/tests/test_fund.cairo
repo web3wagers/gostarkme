@@ -386,3 +386,61 @@ fn test_update_received_donation() {
             ]
         );
 }
+
+#[test]
+#[fork("Mainnet")]
+fn test_emit_event_donation_withdraw() {
+    let contract_address = _setup_();
+
+    let mut spy = spy_events();
+
+    let goal: u256 = 500 * ONE_E18;
+
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
+    dispatcher.set_state(2);
+
+    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    dispatcher.set_goal(goal);
+
+    start_cheat_caller_address(token_address, minter_address);
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    stop_cheat_caller_address(token_address);
+
+    assert(token_dispatcher.balance_of(FUND_MANAGER()) == goal, 'invalid balance');
+
+    start_cheat_caller_address(token_address, FUND_MANAGER());
+    token_dispatcher.transfer(contract_address, goal);
+    stop_cheat_caller_address(token_address);
+
+    dispatcher.update_receive_donation(goal);
+
+    let current_balance = dispatcher.get_current_goal_state();
+
+    assert(dispatcher.get_state() == FundStates::CLOSED, 'state is not closed');
+    assert(current_balance == goal, 'goal not reached');
+
+    start_cheat_caller_address(contract_address, OWNER());
+
+    let withdrawn_amount = (goal * 95) / 100;
+
+    dispatcher.withdraw();
+
+    spy.assert_emitted(@array![
+        (
+            contract_address,
+            Fund::Event::DonationWithdraw(Fund::DonationWithdraw {
+                owner_address: OWNER(),
+                fund_contract_address: contract_address,
+                withdrawn_amount
+            })
+        )
+    ]);
+}
