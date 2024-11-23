@@ -53,8 +53,6 @@ const Fund = () => {
       // Fetch owner
       const owner = (await fundContract.getOwner()).toString();
       setIsOwner(owner.toLowerCase() === wallet?.account?.address.toLowerCase());
-      // IF you want to test the functionality of the owner, uncomment the line below
-      // setIsOwner("YOUR WALLET ADDRESS" === wallet?.account?.address.toLowerCase());
 
       setFund({
         name: name,
@@ -114,9 +112,7 @@ const Fund = () => {
           )}
           {Number(fund.state) === 2 && (
             <>
-              {isOwner ? (
-                <p>You are the owner. Donations will go towards your funding goal.</p>
-              ) : (
+              {!isOwner && (
                 <FundDonate
                   currentBalance={fund.currentBalance}
                   goal={fund.goal}
