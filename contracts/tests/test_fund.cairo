@@ -60,6 +60,9 @@ fn CONTACT_HANDLE_2() -> ByteArray {
 fn VALID_ADDRESS_1() -> ContractAddress {
     contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>()
 }
+fn VALID_ADDRESS_2() -> ContractAddress {
+    contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>()
+}
 fn _setup_() -> ContractAddress {
     let contract = declare("Fund").unwrap();
     let mut calldata: Array<felt252> = array![];
@@ -100,15 +103,46 @@ fn test_constructor() {
 }
 
 #[test]
-fn test_set_name() {
+fn test_set_name_admin() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let name = dispatcher.get_name();
     assert(name == NAME(), 'Invalid name');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_name("NEW_NAME_ADMIN_1");
+    assert(dispatcher.get_name() == "NEW_NAME_ADMIN_1", 'Set name method not working');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_name("NEW_NAME_ADMIN_2");
+    assert(dispatcher.get_name() == "NEW_NAME_ADMIN_2", 'Set name method not working');
+}
+
+#[test]
+fn test_set_name_owner() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let name = dispatcher.get_name();
+    assert(name == NAME(), 'Invalid name');
+
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_name("NEW_NAME");
     let new_name = dispatcher.get_name();
-    assert(new_name == "NEW_NAME", 'Set name method not working')
+    assert(new_name == "NEW_NAME", 'Set name method not working');
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_name_not_admin_or_owner() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let name = dispatcher.get_name();
+    assert(name == NAME(), 'Invalid name');
+
+    start_cheat_caller_address_global(FUND_MANAGER());
+    dispatcher.set_name("NEW_NAME");
+    let new_name = dispatcher.get_name();
+    assert(new_name == "NEW_NAME", 'Set name method not working');
 }
 
 #[test]
