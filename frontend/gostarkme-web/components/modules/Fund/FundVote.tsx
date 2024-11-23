@@ -7,6 +7,7 @@ import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
+import {useState} from "react";
 
 interface FundVoteProps {
   upVotes: number,
@@ -26,15 +27,20 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
 
   const router = useRouter();
 
+  //crear const para definir el status del voto
+  const [voteStatus, setVoteStatus] = useState(false);
+
   async function vote() {
+    console.log("test");
     setLoading(true);
+
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
     fundContract.receiveVote()
       .then(async (resp: InvokeFunctionResponse) => {
         setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
         router.push("/app/confirmation");
       })
-      .catch((e: any) => { getDetails() });
+      .catch((e: any) => { getDetails() })
   }
 
   return (
@@ -44,8 +50,20 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
         <p className="text-center mx-2">{upVotes.toString()} / {upVotesNeeded.toString()} </p>
         <p>&#127775;</p>
       </div>
-      {wallet ? ( // Check if a wallet is connected by evaluating 'wallet' condition
-        <Button label="Vote" onClick={vote} /> // If the wallet is connected, render a button that allows voting
+      {wallet ? (// Check if a wallet is connected by evaluating 'wallet' condition
+        voteStatus ? (//if voteStatus is true buttons is disabled
+          <div className="text-center"> 
+            <Button 
+              label="Vote" 
+              onClick={() => {}} 
+              className="opacity-50 cursor-not-allowed"
+              disabled={true}
+            />
+            <p className="text-sm text-gray-500 mt-2">You have already voted</p>
+          </div>
+        ) : (
+          <Button label="Vote" onClick={vote} /> // If the wallet is connected, and voteStatus is false render a button that allows voting
+        )
       ) : ( // If the wallet is not connected, render a disabled vote button with instructions
         <div className="text-center"> 
           <Button 
