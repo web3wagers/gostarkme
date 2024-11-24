@@ -344,7 +344,7 @@ fn test_set_evidence_link_wrong_owner() {
 }
 
 #[test]
-fn test_set_contact_handle() {
+fn test_set_contact_handle_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let contact_handle = dispatcher.get_contact_handle();
@@ -356,8 +356,32 @@ fn test_set_contact_handle() {
 }
 
 #[test]
-#[should_panic(expected: ("You are not the owner",))]
-fn test_set_contact_handle_wrong_owner() {
+fn test_set_contact_handle_admin_1() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+}
+
+#[test]
+fn test_set_contact_handle_admin_2() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_contact_handle_wrong_owner_or_admin() {
     let contract_address = _setup_();
     start_cheat_caller_address_global(OTHER_USER());
     IFundDispatcher { contract_address }.set_contact_handle(CONTACT_HANDLE_2());
