@@ -249,6 +249,15 @@ fn test_new_vote_received_event_emitted_successful() {
 }
 
 #[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_reason_unauthorized() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Change the reason without being authrorized
+    dispatcher.set_reason("not stored reason");
+}
+
+#[test]
 #[should_panic(expected: ("Only Admins can set goal",))]
 fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
