@@ -37,10 +37,10 @@ fn NAME() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn REASON_1() -> ByteArray {
-    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum 1"
 }
 fn REASON_2() -> ByteArray {
-    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum 2"
 }
 fn GOAL() -> u256 {
     1000
@@ -146,15 +146,36 @@ fn test_set_name_not_admin_or_owner() {
 }
 
 #[test]
-fn test_set_reason() {
+fn test_set_reason_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.get_reason();
     assert(reason == REASON_1(), 'Invalid reason');
+
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_reason(REASON_2());
     let new_reason = dispatcher.get_reason();
-    assert(new_reason == REASON_2(), 'Set reason method not working')
+    assert(new_reason == REASON_2(), 'Not allowed to change reason');
+}
+
+#[test]
+fn test_set_reason_admins() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let reason = dispatcher.get_reason();
+    assert(reason == REASON_1(), 'Invalid reason');
+
+    // test with ADMIN_1
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_reason(REASON_1());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_1(), 'Not allowed to change reason');
+
+    // test with ADMIN_2
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_reason(REASON_2());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_2(), 'Not allowed to change reason')
 }
 
 #[test]
@@ -225,6 +246,15 @@ fn test_new_vote_received_event_emitted_successful() {
                 )
             ]
         );
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_reason_unauthorized() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Change the reason without being authrorized
+    dispatcher.set_reason("not stored reason");
 }
 
 #[test]
