@@ -504,30 +504,46 @@ fn test_emit_event_donation_withdraw() {
 }
 
 #[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
 fn test_set_contact_handle(){
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let contact_handle = dispatcher.get_contact_handle();
-    let authorized_callers:Vec<ByteArray> = vec![OWNER(), VALID_ADDRESS_1(), VALID_ADDRESS_2()];
     assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
 
-    for caller in authorized_callers {
-        start_cheat_caller_address_global(caller);
-        dispatcher.set_contact_handle(CONTACT_HANDLE_2());//set
-        let new_contact_handle = dispatcher.get_contact_handle();//get
-        assert(new_contact_handle == CONTACT_HANDLE_2(),format!("Set contact method not working for caller {:?}", caller));
-        dispatcher.set_contact_handle(CONTACT_HANDLE_1());
-        let reverted_contact_handle = dispatcher.get_contact_handle();
-        assert(reverted_contact_handle == CONTACT_HANDLE_1(),format!("Revert contact handle not working for caller {:?}", caller)
-        )
-    };
-
-    // set a no valid address
-    let no_valid_address = 0x12345;
-    start_cheat_caller_address_global(no_valid_address);
+    //owner
+    start_cheat_caller_address_global(OWNER());
     dispatcher.set_contact_handle(CONTACT_HANDLE_2());//set
     let new_contact_handle = dispatcher.get_contact_handle();//get
-    assert(new_contact_handle == CONTACT_HANDLE_1(),"this caller is not a valid address and changed the storage, please check the function ...");
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+    
+    //valid_address1
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());//set
+    let new_contact_handle = dispatcher.get_contact_handle();//get
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+    
+    //valid_address2
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());//set
+    let new_contact_handle = dispatcher.get_contact_handle();//get
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(),' revert ');
+
+    // set a no valid address
+    //always should fail
+    start_cheat_caller_address_global(OTHER_USER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());//set
+    let new_contact_handle = dispatcher.get_contact_handle();//get
+    assert(new_contact_handle == CONTACT_HANDLE_1(),'check the function');
 
 
 
