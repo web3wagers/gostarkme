@@ -136,17 +136,17 @@ pub mod Fund {
         fn get_name(self: @ContractState) -> ByteArray {
             return self.name.read();
         }
-        // Added a new assert to the set_reason method
-        fn set_reason(ref self: ContractState, reason: ByteArray) {
-            let caller = get_caller_address();
-            assert!(self.owner.read() == caller, "You are not the owner");
-            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
-            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
-            assert!(
-                valid_address_1 == caller || valid_address_2 == caller,
-                "You are not an Admin."
-            );
-            self.reason.write(reason);
+       fn set_reason(ref self: ContractState, reason: ByteArray) {
+        let caller = get_caller_address();
+        let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+        let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+
+        assert!(
+            self.owner.read() == caller || valid_address_1 == caller || valid_address_2 == caller,
+            "You must be an owner or admin to perform this action"
+        );
+
+           self.reason.write(reason);
         }
         fn get_reason(self: @ContractState) -> ByteArray {
             return self.reason.read();
