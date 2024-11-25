@@ -146,15 +146,36 @@ fn test_set_name_not_admin_or_owner() {
 }
 
 #[test]
-fn test_set_reason() {
+fn test_set_reason_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.get_reason();
     assert(reason == REASON_1(), 'Invalid reason');
+
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_reason(REASON_2());
     let new_reason = dispatcher.get_reason();
-    assert(new_reason == REASON_2(), 'Set reason method not working')
+    assert(new_reason == REASON_2(), 'Not allowed to change reason');
+}
+
+#[test]
+fn test_set_reason_admins() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let reason = dispatcher.get_reason();
+    assert(reason == REASON_1(), 'Invalid reason');
+
+    // test with ADMIN_1
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_reason(REASON_1());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_1(), 'Not allowed to change reason');
+
+    // test with ADMIN_2
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_reason(REASON_2());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_2(), 'Not allowed to change reason')
 }
 
 #[test]
