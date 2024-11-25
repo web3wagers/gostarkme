@@ -130,7 +130,15 @@ pub mod Fund {
         }
         fn set_name(ref self: ContractState, name: ByteArray) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, "You are not the owner");
+            let valid_address_1 = contract_address_const::<
+                FundManagerConstants::VALID_ADDRESS_1
+            >();
+            let valid_address_2 = contract_address_const::<
+                FundManagerConstants::VALID_ADDRESS_2
+            >();
+            assert!(
+                self.owner.read() == caller || valid_address_1 == caller || valid_address_2 == caller,
+                "You must be an owner or admin to perform this action");
             self.name.write(name);
         }
         fn get_name(self: @ContractState) -> ByteArray {
@@ -176,10 +184,12 @@ pub mod Fund {
         }
         fn set_goal(ref self: ContractState, goal: u256) {
             let caller = get_caller_address();
-            let fund_manager_address = contract_address_const::<
-                FundManagerConstants::FUND_MANAGER_ADDRESS
-            >();
-            assert!(fund_manager_address == caller, "You are not the fund manager");
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+            assert!(
+                valid_address_1 == caller || valid_address_2 == caller,
+                "Only Admins can change the fund state"
+            );
             self.goal.write(goal);
         }
         fn get_goal(self: @ContractState) -> u256 {
@@ -259,7 +269,14 @@ pub mod Fund {
         }
         fn set_contact_handle(ref self: ContractState, contact_handle: ByteArray) {
             let caller = get_caller_address();
-            assert!(self.owner.read() == caller, "You are not the owner");
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+            assert!(
+                self.owner.read() == caller
+                    || valid_address_1 == caller
+                    || valid_address_2 == caller,
+                "You must be an owner or admin to perform this action"
+            );
             self.contact_handle.write(contact_handle);
         }
         fn get_contact_handle(self: @ContractState) -> ByteArray {
