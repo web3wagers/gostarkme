@@ -163,10 +163,16 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.get_goal();
     assert(goal == GOAL(), 'Invalid goal');
-    start_cheat_caller_address_global(FUND_MANAGER());
+    
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
     dispatcher.set_goal(123);
     let new_goal = dispatcher.get_goal();
     assert(new_goal == 123, 'Set goal method not working')
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_goal(140);
+    let new_goal_2 = dispatcher.get_goal();
+    assert(new_goal_2 == 140, 'Set goal method not working');
 }
 
 #[test]
@@ -222,7 +228,7 @@ fn test_new_vote_received_event_emitted_successful() {
 }
 
 #[test]
-#[should_panic(expected: ("You are not the fund manager",))]
+#[should_panic(expected: ("Only Admins can change the fund state",))]
 fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };

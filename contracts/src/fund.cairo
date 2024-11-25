@@ -177,10 +177,12 @@ pub mod Fund {
         }
         fn set_goal(ref self: ContractState, goal: u256) {
             let caller = get_caller_address();
-            let fund_manager_address = contract_address_const::<
-                FundManagerConstants::FUND_MANAGER_ADDRESS
-            >();
-            assert!(fund_manager_address == caller, "You are not the fund manager");
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+            assert!(
+                valid_address_1 == caller || valid_address_2 == caller,
+                "Only Admins can change the fund state"
+            );
             self.goal.write(goal);
         }
         fn get_goal(self: @ContractState) -> u256 {
