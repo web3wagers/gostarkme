@@ -130,15 +130,14 @@ pub mod Fund {
         }
         fn set_name(ref self: ContractState, name: ByteArray) {
             let caller = get_caller_address();
-            let valid_address_1 = contract_address_const::<
-                FundManagerConstants::VALID_ADDRESS_1
-            >();
-            let valid_address_2 = contract_address_const::<
-                FundManagerConstants::VALID_ADDRESS_2
-            >();
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
             assert!(
-                self.owner.read() == caller || valid_address_1 == caller || valid_address_2 == caller,
-                "You must be an owner or admin to perform this action");
+                self.owner.read() == caller
+                    || valid_address_1 == caller
+                    || valid_address_2 == caller,
+                "You must be an owner or admin to perform this action"
+            );
             self.name.write(name);
         }
         fn get_name(self: @ContractState) -> ByteArray {
@@ -180,8 +179,7 @@ pub mod Fund {
             let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
             let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
             assert!(
-                valid_address_1 == caller || valid_address_2 == caller,
-                "Only Admins can change the fund state"
+                valid_address_1 == caller || valid_address_2 == caller, "Only Admins can set goal"
             );
             self.goal.write(goal);
         }

@@ -163,11 +163,11 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.get_goal();
     assert(goal == GOAL(), 'Invalid goal');
-    
+
     start_cheat_caller_address_global(VALID_ADDRESS_1());
     dispatcher.set_goal(123);
     let new_goal = dispatcher.get_goal();
-    assert(new_goal == 123, 'Set goal method not working')
+    assert(new_goal == 123, 'Set goal method not working');
 
     start_cheat_caller_address_global(VALID_ADDRESS_2());
     dispatcher.set_goal(140);
@@ -228,7 +228,7 @@ fn test_new_vote_received_event_emitted_successful() {
 }
 
 #[test]
-#[should_panic(expected: ("Only Admins can change the fund state",))]
+#[should_panic(expected: ("Only Admins can set goal",))]
 fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
@@ -253,7 +253,7 @@ fn test_withdraw_with_non_closed_state() {
     let contract_address = _setup_();
     let fund_dispatcher = IFundDispatcher { contract_address };
 
-    start_cheat_caller_address_global(FUND_MANAGER());
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
     // set goal
     fund_dispatcher.set_goal(500_u256);
 
@@ -278,7 +278,7 @@ fn test_withdraw() {
     dispatcher.set_state(2);
     stop_cheat_caller_address(contract_address);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_goal(goal);
     stop_cheat_caller_address(contract_address);
 
@@ -410,7 +410,7 @@ fn test_update_received_donation() {
     start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_state(2);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_goal(strks);
 
     start_cheat_caller_address(token_address, minter_address);
@@ -442,7 +442,7 @@ fn test_update_received_donation() {
                         Fund::DonationReceived {
                             current_balance,
                             donated_strks: strks,
-                            donator_address: FUND_MANAGER(),
+                            donator_address: VALID_ADDRESS_1(),
                             fund_contract_address: contract_address,
                         }
                     )
@@ -468,7 +468,7 @@ fn test_emit_event_donation_withdraw() {
     start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_state(2);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_goal(goal);
 
     start_cheat_caller_address(token_address, minter_address);
@@ -497,14 +497,19 @@ fn test_emit_event_donation_withdraw() {
 
     dispatcher.withdraw();
 
-    spy.assert_emitted(@array![
-        (
-            contract_address,
-            Fund::Event::DonationWithdraw(Fund::DonationWithdraw {
-                owner_address: OWNER(),
-                fund_contract_address: contract_address,
-                withdrawn_amount
-            })
-        )
-    ]);
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::DonationWithdraw(
+                        Fund::DonationWithdraw {
+                            owner_address: OWNER(),
+                            fund_contract_address: contract_address,
+                            withdrawn_amount
+                        }
+                    )
+                )
+            ]
+        );
 }
