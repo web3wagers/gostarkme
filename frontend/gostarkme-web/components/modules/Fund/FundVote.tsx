@@ -7,7 +7,7 @@ import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 interface FundVoteProps {
   upVotes: number,
@@ -15,9 +15,10 @@ interface FundVoteProps {
   addr: string,
   setLoading: (load: boolean) => void,
   getDetails: () => void,
+  numberVotes: number //declare the amount of votes
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails }: FundVoteProps) => {
+export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails, numberVotes}: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
@@ -27,13 +28,11 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
 
   const router = useRouter();
 
-  //crear const para definir el status del voto
+  //create const to define vote status
   const [voteStatus, setVoteStatus] = useState(false);
 
   async function vote() {
-    console.log("test");
     setLoading(true);
-
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
     fundContract.receiveVote()
       .then(async (resp: InvokeFunctionResponse) => {
@@ -42,6 +41,10 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
       })
       .catch((e: any) => { getDetails() })
   }
+
+  useEffect(() => {
+    setVoteStatus(numberVotes >= 1); // Update voteStatus to TRUE if numberVotes is 1
+  }, [numberVotes]);
 
   return (
     <div className="flex flex-col">

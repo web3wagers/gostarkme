@@ -19,7 +19,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.28.0",
-    "starknet": "^6.7.0",
+    "starknet": "^6.11.0",
     "starknetkit": "^1.1.5",
     "usehooks-ts": "^3.1.0"
   },

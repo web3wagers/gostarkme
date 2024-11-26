@@ -56,6 +56,8 @@ const Fund = () => {
 
     let contactHandle = await fundContract.get_contact_handle();
 
+    let numberVotes = await fundContract.getVoter();
+
     setFund({
       name: name,
       desc: desc,
@@ -65,7 +67,8 @@ const Fund = () => {
       upVotes: upVotes,
       addr: addr,
       evidenceLink: evidenceLink,
-      contactHandle: contactHandle
+      contactHandle: contactHandle,
+      numberVotes: numberVotes
     });
     setLoading(false);
   }
@@ -97,7 +100,7 @@ const Fund = () => {
           <h2 className="text-xl">Contact handle</h2>
           <a href={fund.contactHandle} className="text-blue-600" target="_blank">{fund.contactHandle}</a>
           {Number(fund.state) === 0 && <p>Fund is currently innactive.</p>}
-          {Number(fund.state) === 1 && <FundVote upVotes={fund.upVotes} upVotesNeeded={upVotesNeeded} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
+          {Number(fund.state) === 1 && <FundVote upVotes={fund.upVotes} upVotesNeeded={upVotesNeeded} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} numberVotes={fund.numberVotes}/>}
           {Number(fund.state) === 2 && <FundDonate currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} icon={starknetlogo} />}
           {Number(fund.state) === 3 && <FundWithdraw currentBalance={fund.currentBalance} goal={fund.goal} addr={fund.addr} setLoading={setLoading} getDetails={getDetails} />}
           {Number(fund.state) === 4 && <p>Fund was already withdrawed.</p>}
