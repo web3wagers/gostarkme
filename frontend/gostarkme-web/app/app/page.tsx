@@ -5,8 +5,6 @@ import Navbar from "@/components/ui/Navbar";
 import { FUND_MANAGER_ADDR } from "@/constants";
 import { fundAbi } from "@/contracts/abis/fund";
 import { fundManager } from "@/contracts/abis/fundManager";
-import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtomValue } from "jotai";
 import React, { useEffect, useState } from "react";
 import { Contract } from "starknet";
 import { navItems } from "@/constants";
@@ -14,21 +12,20 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const Dashboard = () => {
 
-  const wallet = useAtomValue(walletStarknetkitLatestAtom);
-
   const [funds, setFunds] = useState<any>([]);
 
   const [loading, setLoading] = useState(true);
 
   async function getFunds() {
-    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
+    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR);
+
     const id = await fundManagerContract.getCurrentId();
     let fundings = [];
     for (let i = 1; i < id; i++) {
       // GET FUND ADDRESS
       let fundaddr = await fundManagerContract.getFund(i);
       fundaddr = "0x" + fundaddr.toString(16);
-      const fundContract = new Contract(fundAbi, fundaddr, wallet?.account);
+      const fundContract = new Contract(fundAbi, fundaddr);
       // GET FUND STATE
       let state = await fundContract.getState();
       if (state == 4 || state == 0) {
@@ -71,20 +68,14 @@ const Dashboard = () => {
           href: "/"
         }}
       />
-      {!wallet &&
-        <div className="text-center text-gray-500 mt-32">
-          Please connect your wallet to see funding dashboard.
-        </div>
-      }
-
-      {loading && wallet && <div className="text-center text-gray-500 mt-12">
+      {loading && <div className="text-center text-gray-500 mt-12">
         <LoadingSpinner />
         <div className="text-center text-gray-500">
           Loading funds...
         </div>
       </div>}
 
-      {funds.length !== 0 && !loading && wallet &&
+      {funds.length !== 0 && !loading &&
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 md:gap-x-[138px] md:gap-y-[84px] mt-10 lg:mt-12">
           {funds.map((fund: { type: string; title: string; description: string; fund_id: string }, index: number) => (
             <FundCards key={index} fund={fund} index={index} />
@@ -92,7 +83,7 @@ const Dashboard = () => {
         </div>
       }
 
-      {funds.length === 0 && !loading && wallet &&
+      {funds.length === 0 && !loading &&
         <div className="flex justify-center items-center h-64">
           <div className="text-center text-gray-500">
             There is no fundings to display.
