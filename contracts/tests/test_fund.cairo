@@ -543,3 +543,50 @@ fn test_emit_event_donation_withdraw() {
             ]
         );
 }
+
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_contact_handle_error() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+
+    start_cheat_caller_address_global(OTHER_USER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2())
+}
+
+#[test]
+fn test_set_contact_handle_success() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), ' revert ')
+}
+
+
