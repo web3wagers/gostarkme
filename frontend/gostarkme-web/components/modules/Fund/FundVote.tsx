@@ -7,6 +7,7 @@ import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
+import {useState, useEffect} from "react"; 
 
 interface FundVoteProps {
   upVotes: number,
@@ -14,9 +15,10 @@ interface FundVoteProps {
   addr: string,
   setLoading: (load: boolean) => void,
   getDetails: () => void,
+  numberVotes: number //declare the amount of votes
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails }: FundVoteProps) => {
+export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails, numberVotes}: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
@@ -26,16 +28,61 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
 
   const router = useRouter();
 
-  async function vote() {
+  const [isChecking, setIsChecking] = useState(true); //create const to check if the vote status is being checked
+  const [voteStatus, setVoteStatus] = useState(false); //create const to define vote status
+  const [isVoting, setIsVoting] = useState(false); //create const to check if the user is voting
+
+  //useEffect to check if the user has voted
+  useEffect(() => {
+    const checkVoteStatus = async () => {
+      if (!wallet?.account) {
+        setIsChecking(false); //if the wallet is not connected, set isChecking to false
+        return;
+      }
+      
+      setIsChecking(true);
+      try { //try to check the vote status
+        const fundContract = new Contract(fundAbi, addr, wallet.account);
+        
+        try {
+          await fundContract.estimate('receiveVote');
+          setVoteStatus(false);
+        } catch (error: any) {
+          if (error?.toString().includes('User already voted')) { //if the user has voted, set voteStatus to true
+            setVoteStatus(true);
+          }
+        }
+      } catch (error) {
+        console.error("Contract interaction error:", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkVoteStatus();
+  }, [wallet?.account, addr]);
+  
+  const handleVote = async () => {
+    if (!wallet?.account) return;
     setLoading(true);
-    const fundContract = new Contract(fundAbi, addr, wallet?.account);
-    fundContract.receiveVote()
-      .then(async (resp: InvokeFunctionResponse) => {
-        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
-        router.push("/app/confirmation");
-      })
-      .catch((e: any) => { getDetails() });
-  }
+    setIsVoting(true);
+    try {
+      const fundContract = new Contract(fundAbi, addr, wallet.account);
+      const resp = await fundContract.invoke('receiveVote');
+      setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+      setVoteStatus(true);
+      router.push("/app/confirmation");
+    } catch (error: any) {
+      console.error("Vote failed:", error);
+      if (error?.toString().includes('User already voted')) {
+        console.log("User has already voted");
+        setVoteStatus(true);
+      }
+    } finally {
+      setLoading(false);
+      setIsVoting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col">
@@ -44,8 +91,34 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails 
         <p className="text-center mx-2">{upVotes.toString()} / {upVotesNeeded.toString()} </p>
         <p>&#127775;</p>
       </div>
-      {wallet ? ( // Check if a wallet is connected by evaluating 'wallet' condition
-        <Button label="Vote" onClick={vote} /> // If the wallet is connected, render a button that allows voting
+      {isChecking ? ( //if isChecking is true render a button that checks the vote status
+        <div className="text-center">
+          <Button 
+            label="Checking vote status..." 
+            onClick={() => {}} 
+            className="opacity-50 cursor-not-allowed"
+            disabled={true}
+          />
+        </div>
+      ) : wallet ? ( // Check if a wallet is connected by evaluating 'wallet' condition
+        voteStatus ? ( //if voteStatus is true button is disabled
+          <div className="text-center"> 
+            <Button 
+              label="Vote" 
+              onClick={() => {}} 
+              className="opacity-50 cursor-not-allowed"
+              disabled={true}
+            />
+            <p className="text-sm text-gray-500 mt-2">You have already voted</p>
+          </div>
+        ) : (
+          <Button 
+            label={isVoting ? "Voting..." : "Vote"} 
+            onClick={vote}
+            disabled={isVoting} 
+            className={isVoting ? "opacity-50 cursor-not-allowed" : ""}
+          /> // If the wallet is connected, and voteStatus is false render a button that allows voting
+        )
       ) : ( // If the wallet is not connected, render a disabled vote button with instructions
         <div className="text-center"> 
           <Button 
