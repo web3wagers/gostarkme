@@ -37,10 +37,10 @@ fn NAME() -> ByteArray {
     "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
 }
 fn REASON_1() -> ByteArray {
-    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum 1"
 }
 fn REASON_2() -> ByteArray {
-    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum"
+    "Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum, Lorem impsum 2"
 }
 fn GOAL() -> u256 {
     1000
@@ -59,6 +59,9 @@ fn CONTACT_HANDLE_2() -> ByteArray {
 }
 fn VALID_ADDRESS_1() -> ContractAddress {
     contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>()
+}
+fn VALID_ADDRESS_2() -> ContractAddress {
+    contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>()
 }
 fn _setup_() -> ContractAddress {
     let contract = declare("Fund").unwrap();
@@ -100,27 +103,79 @@ fn test_constructor() {
 }
 
 #[test]
-fn test_set_name() {
+fn test_set_name_admin() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let name = dispatcher.get_name();
     assert(name == NAME(), 'Invalid name');
-    start_cheat_caller_address_global(OWNER());
-    dispatcher.set_name("NEW_NAME");
-    let new_name = dispatcher.get_name();
-    assert(new_name == "NEW_NAME", 'Set name method not working')
+
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_name("NEW_NAME_ADMIN_1");
+    assert(dispatcher.get_name() == "NEW_NAME_ADMIN_1", 'Set name method not working');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_name("NEW_NAME_ADMIN_2");
+    assert(dispatcher.get_name() == "NEW_NAME_ADMIN_2", 'Set name method not working');
 }
 
 #[test]
-fn test_set_reason() {
+fn test_set_name_owner() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let name = dispatcher.get_name();
+    assert(name == NAME(), 'Invalid name');
+
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.set_name("NEW_NAME");
+    let new_name = dispatcher.get_name();
+    assert(new_name == "NEW_NAME", 'Set name method not working');
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_name_not_admin_or_owner() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let name = dispatcher.get_name();
+    assert(name == NAME(), 'Invalid name');
+
+    start_cheat_caller_address_global(FUND_MANAGER());
+    dispatcher.set_name("NEW_NAME");
+    let new_name = dispatcher.get_name();
+    assert(new_name == "NEW_NAME", 'Set name method not working');
+}
+
+#[test]
+fn test_set_reason_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let reason = dispatcher.get_reason();
     assert(reason == REASON_1(), 'Invalid reason');
+
     start_cheat_caller_address_global(OWNER());
     dispatcher.set_reason(REASON_2());
     let new_reason = dispatcher.get_reason();
-    assert(new_reason == REASON_2(), 'Set reason method not working')
+    assert(new_reason == REASON_2(), 'Not allowed to change reason');
+}
+
+#[test]
+fn test_set_reason_admins() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let reason = dispatcher.get_reason();
+    assert(reason == REASON_1(), 'Invalid reason');
+
+    // test with ADMIN_1
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_reason(REASON_1());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_1(), 'Not allowed to change reason');
+
+    // test with ADMIN_2
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_reason(REASON_2());
+    let new_reason = dispatcher.get_reason();
+    assert(new_reason == REASON_2(), 'Not allowed to change reason')
 }
 
 #[test]
@@ -129,10 +184,16 @@ fn test_set_goal() {
     let dispatcher = IFundDispatcher { contract_address };
     let goal = dispatcher.get_goal();
     assert(goal == GOAL(), 'Invalid goal');
-    start_cheat_caller_address_global(FUND_MANAGER());
+
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
     dispatcher.set_goal(123);
     let new_goal = dispatcher.get_goal();
-    assert(new_goal == 123, 'Set goal method not working')
+    assert(new_goal == 123, 'Set goal method not working');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_goal(140);
+    let new_goal_2 = dispatcher.get_goal();
+    assert(new_goal_2 == 140, 'Set goal method not working');
 }
 
 #[test]
@@ -188,7 +249,16 @@ fn test_new_vote_received_event_emitted_successful() {
 }
 
 #[test]
-#[should_panic(expected: ("You are not the fund manager",))]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_reason_unauthorized() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    // Change the reason without being authrorized
+    dispatcher.set_reason("not stored reason");
+}
+
+#[test]
+#[should_panic(expected: ("Only Admins can set goal",))]
 fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
@@ -213,7 +283,7 @@ fn test_withdraw_with_non_closed_state() {
     let contract_address = _setup_();
     let fund_dispatcher = IFundDispatcher { contract_address };
 
-    start_cheat_caller_address_global(FUND_MANAGER());
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
     // set goal
     fund_dispatcher.set_goal(500_u256);
 
@@ -238,7 +308,7 @@ fn test_withdraw() {
     dispatcher.set_state(2);
     stop_cheat_caller_address(contract_address);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_goal(goal);
     stop_cheat_caller_address(contract_address);
 
@@ -310,7 +380,7 @@ fn test_set_evidence_link_wrong_owner() {
 }
 
 #[test]
-fn test_set_contact_handle() {
+fn test_set_contact_handle_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
     let contact_handle = dispatcher.get_contact_handle();
@@ -322,8 +392,32 @@ fn test_set_contact_handle() {
 }
 
 #[test]
-#[should_panic(expected: ("You are not the owner",))]
-fn test_set_contact_handle_wrong_owner() {
+fn test_set_contact_handle_admin_1() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+}
+
+#[test]
+fn test_set_contact_handle_admin_2() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working')
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_contact_handle_wrong_owner_or_admin() {
     let contract_address = _setup_();
     start_cheat_caller_address_global(OTHER_USER());
     IFundDispatcher { contract_address }.set_contact_handle(CONTACT_HANDLE_2());
@@ -346,7 +440,7 @@ fn test_update_received_donation() {
     start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_state(2);
 
-    start_cheat_caller_address(contract_address, FUND_MANAGER());
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
     dispatcher.set_goal(strks);
 
     start_cheat_caller_address(token_address, minter_address);
@@ -378,7 +472,7 @@ fn test_update_received_donation() {
                         Fund::DonationReceived {
                             current_balance,
                             donated_strks: strks,
-                            donator_address: FUND_MANAGER(),
+                            donator_address: VALID_ADDRESS_1(),
                             fund_contract_address: contract_address,
                         }
                     )
@@ -386,3 +480,113 @@ fn test_update_received_donation() {
             ]
         );
 }
+
+#[test]
+#[fork("Mainnet")]
+fn test_emit_event_donation_withdraw() {
+    let contract_address = _setup_();
+
+    let mut spy = spy_events();
+
+    let goal: u256 = 500 * ONE_E18;
+
+    let dispatcher = IFundDispatcher { contract_address };
+    let minter_address = contract_address_const::<StarknetConstants::STRK_TOKEN_MINTER_ADDRESS>();
+    let token_address = contract_address_const::<StarknetConstants::STRK_TOKEN_ADDRESS>();
+    let token_dispatcher = IERC20Dispatcher { contract_address: token_address };
+
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
+    dispatcher.set_state(2);
+
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
+    dispatcher.set_goal(goal);
+
+    start_cheat_caller_address(token_address, minter_address);
+    let mut calldata = array![];
+    calldata.append_serde(FUND_MANAGER());
+    calldata.append_serde(goal);
+    call_contract_syscall(token_address, selector!("permissioned_mint"), calldata.span()).unwrap();
+    stop_cheat_caller_address(token_address);
+
+    assert(token_dispatcher.balance_of(FUND_MANAGER()) == goal, 'invalid balance');
+
+    start_cheat_caller_address(token_address, FUND_MANAGER());
+    token_dispatcher.transfer(contract_address, goal);
+    stop_cheat_caller_address(token_address);
+
+    dispatcher.update_receive_donation(goal);
+
+    let current_balance = dispatcher.get_current_goal_state();
+
+    assert(dispatcher.get_state() == FundStates::CLOSED, 'state is not closed');
+    assert(current_balance == goal, 'goal not reached');
+
+    start_cheat_caller_address(contract_address, OWNER());
+
+    let withdrawn_amount = (goal * 95) / 100;
+
+    dispatcher.withdraw();
+
+    spy
+        .assert_emitted(
+            @array![
+                (
+                    contract_address,
+                    Fund::Event::DonationWithdraw(
+                        Fund::DonationWithdraw {
+                            owner_address: OWNER(),
+                            fund_contract_address: contract_address,
+                            withdrawn_amount
+                        }
+                    )
+                )
+            ]
+        );
+}
+
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_contact_handle_error() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+
+    start_cheat_caller_address_global(OTHER_USER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2())
+}
+
+#[test]
+fn test_set_contact_handle_success() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let contact_handle = dispatcher.get_contact_handle();
+    assert(contact_handle == CONTACT_HANDLE_1(), 'Invalid contact handle');
+
+    start_cheat_caller_address_global(OWNER());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_1());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), 'revert');
+
+    start_cheat_caller_address_global(VALID_ADDRESS_2());
+    dispatcher.set_contact_handle(CONTACT_HANDLE_2());
+    let new_contact_handle = dispatcher.get_contact_handle();
+    assert(new_contact_handle == CONTACT_HANDLE_2(), 'Set contact method not working');
+    dispatcher.set_contact_handle(CONTACT_HANDLE_1());
+    let reverted_contact_handle = dispatcher.get_contact_handle();
+    assert(reverted_contact_handle == CONTACT_HANDLE_1(), ' revert ')
+}
+
+
