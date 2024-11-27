@@ -7,7 +7,7 @@ import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
-import {useState, useEffect} from "react"; //import useState and useEffect
+import {useState, useEffect} from "react"; 
 
 interface FundVoteProps {
   upVotes: number,
@@ -62,17 +62,27 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails,
     checkVoteStatus();
   }, [wallet?.account, addr]);
   
-  async function vote() {
+  const handleVote = async () => {
+    if (!wallet?.account) return;
     setLoading(true);
-    const fundContract = new Contract(fundAbi, addr, wallet?.account);
-    fundContract.receiveVote()
-      .then(async (resp: InvokeFunctionResponse) => {
-        setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
-        router.push("/app/confirmation");
-      })
-      .catch((e: any) => { getDetails() })
-  }
-
+    setIsVoting(true);
+    try {
+      const fundContract = new Contract(fundAbi, addr, wallet.account);
+      const resp = await fundContract.invoke('receiveVote');
+      setLatestTx({ txHash: resp.transaction_hash, type: "vote" });
+      setVoteStatus(true);
+      router.push("/app/confirmation");
+    } catch (error: any) {
+      console.error("Vote failed:", error);
+      if (error?.toString().includes('User already voted')) {
+        console.log("User has already voted");
+        setVoteStatus(true);
+      }
+    } finally {
+      setLoading(false);
+      setIsVoting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col">
