@@ -15,10 +15,9 @@ interface FundVoteProps {
   addr: string,
   setLoading: (load: boolean) => void,
   getDetails: () => void,
-  numberVotes: number //declare the amount of votes
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails, numberVotes}: FundVoteProps) => {
+export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
 
@@ -28,27 +27,26 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails,
 
   const router = useRouter();
 
-  const [isChecking, setIsChecking] = useState(true); //create const to check if the vote status is being checked
-  const [voteStatus, setVoteStatus] = useState(false); //create const to define vote status
-  const [isVoting, setIsVoting] = useState(false); //create const to check if the user is voting
+  const [isChecking, setIsChecking] = useState(true); 
+  const [voteStatus, setVoteStatus] = useState(false); 
+  const [isVoting, setIsVoting] = useState(false);
 
-  //useEffect to check if the user has voted
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (!wallet?.account) {
-        setIsChecking(false); //if the wallet is not connected, set isChecking to false
+        setIsChecking(false); 
         return;
       }
       
       setIsChecking(true);
-      try { //try to check the vote status
+      try {
         const fundContract = new Contract(fundAbi, addr, wallet.account);
         
         try {
           await fundContract.estimate('receiveVote');
           setVoteStatus(false);
         } catch (error: any) {
-          if (error?.toString().includes('User already voted')) { //if the user has voted, set voteStatus to true
+          if (error?.toString().includes('User already voted')) { 
             setVoteStatus(true);
           }
         }
@@ -114,7 +112,7 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading, getDetails,
         ) : (
           <Button 
             label={isVoting ? "Voting..." : "Vote"} 
-            onClick={vote}
+            onClick={handleVote}
             disabled={isVoting} 
             className={isVoting ? "opacity-50 cursor-not-allowed" : ""}
           /> // If the wallet is connected, and voteStatus is false render a button that allows voting
