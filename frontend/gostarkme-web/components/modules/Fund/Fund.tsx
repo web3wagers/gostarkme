@@ -29,11 +29,10 @@ const Fund = () => {
   const clickedFund = useAtomValue(clickedFundState);
 
   async function getDetails() {
+    let addr = await fundManagerContract.getFund(clickedFund?.id);
+    addr = "0x" + addr.toString(16);
+    const fundContract = new Contract(fundAbi, addr, wallet?.account);
     try {
-      let addr = await fundManagerContract.getFund(clickedFund?.id);
-      addr = "0x" + addr.toString(16);
-      const fundContract = new Contract(fundAbi, addr, wallet?.account);
-
       // Fetch fund details
       let name = await fundContract.getName();
       let desc = await fundContract.getReason();
@@ -70,37 +69,6 @@ const Fund = () => {
     } finally {
       setLoading(false);
     }
-    
-    let state = await fundContract.getState();
-
-    let currentBalance = await fundContract.get_current_goal_state();
-
-    currentBalance = BigInt(currentBalance) / BigInt(10 ** 18);
-
-    let goal = await fundContract.getGoal();
-    goal = BigInt(goal) / BigInt(10 ** 18);
-    
-    let upVotes = await fundContract.getUpVotes();
-
-    let evidenceLink = await fundContract.get_evidence_link();
-
-    let contactHandle = await fundContract.get_contact_handle();
-
-    let numberVotes = await fundContract.getVoter();
-
-    setFund({
-      name: name,
-      desc: desc,
-      state: state,
-      currentBalance: currentBalance,
-      goal: goal,
-      upVotes: upVotes,
-      addr: addr,
-      evidenceLink: evidenceLink,
-      contactHandle: contactHandle,
-      numberVotes: numberVotes
-    });
-    setLoading(false);
   }
 
   useEffect(() => {
