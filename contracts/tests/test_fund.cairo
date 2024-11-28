@@ -133,6 +133,18 @@ fn test_set_name_owner() {
 
 #[test]
 #[should_panic(expected: ("You must be an owner or admin to perform this action",))]
+fn test_set_name_unauthorized_access() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let name = dispatcher.get_name();
+    assert(name == NAME(), 'Invalid name');
+
+    start_cheat_caller_address_global(OTHER_USER());
+    dispatcher.set_name("UNAUTHORIZED_NAME");
+}
+
+#[test]
+#[should_panic(expected: ("You must be an owner or admin to perform this action",))]
 fn test_set_name_not_admin_or_owner() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
@@ -588,5 +600,4 @@ fn test_set_contact_handle_success() {
     let reverted_contact_handle = dispatcher.get_contact_handle();
     assert(reverted_contact_handle == CONTACT_HANDLE_1(), ' revert ')
 }
-
 

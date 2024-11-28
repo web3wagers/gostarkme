@@ -149,7 +149,9 @@ pub mod Fund {
             let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
 
             assert!(
-                self.owner.read() == caller || valid_address_1 == caller || valid_address_2 == caller,
+                self.owner.read() == caller
+                    || valid_address_1 == caller
+                    || valid_address_2 == caller,
                 "You must be an owner or admin to perform this action"
             );
 
