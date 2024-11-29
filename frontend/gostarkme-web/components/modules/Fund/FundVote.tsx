@@ -2,7 +2,11 @@ import { calculatePorcentage } from "@/app/utils";
 import { Button } from "@/components/ui/Button";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { fundAbi } from "@/contracts/abis/fund";
-import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
+import {
+  networkAtom,
+  networkEnvironmentAtom,
+  walletStarknetkitLatestAtom,
+} from "@/state/connectedWallet";
 import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
@@ -20,6 +24,8 @@ interface FundVoteProps {
 export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
+  const network = useAtomValue(networkAtom);
+  const networkEnvironment = useAtomValue(networkEnvironmentAtom);
 
   const progress = calculatePorcentage(upVotes, upVotesNeeded);
 
@@ -110,12 +116,23 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVotePr
             <p className="text-sm text-gray-500 mt-2">You have already voted</p>
           </div>
         ) : (
-          <Button 
-            label={isVoting ? "Voting..." : "Vote"} 
-            onClick={handleVote}
-            disabled={isVoting} 
-            className={isVoting ? "opacity-50 cursor-not-allowed" : ""}
-          /> // If the wallet is connected, and voteStatus is false render a button that allows voting
+          <div className="text-center">
+            <Button
+              label={isVoting ? "Voting..." : "Vote"}
+              onClick={handleVote}
+              disabled={isVoting || !network}
+              className={
+                isVoting || !network ? "opacity-50 cursor-not-allowed" : ""
+              }
+            />
+            {/* // If the wallet is connected, and voteStatus is false render a button that allows voting */}
+            {!network && (
+              <p className="text-sm text-gray-500 mt-2">
+                Your wallet is currently connected to the wrong network. Please
+                switch to {networkEnvironment[1]} to continue.
+              </p>
+            )}
+          </div>
         )
       ) : ( // If the wallet is not connected, render a disabled vote button with instructions
         <div className="text-center"> 
