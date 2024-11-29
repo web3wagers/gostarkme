@@ -195,27 +195,28 @@ fn test_set_goal_by_admins() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
 
-    let initial_goal = dispatcher.getGoal();
+    let initial_goal = dispatcher.get_goal();
     assert(initial_goal == GOAL(), 'Initial goal is incorrect');
 
     start_cheat_caller_address_global(VALID_ADDRESS_1());
-    dispatcher.setGoal(123);
-    let updated_goal_1 = dispatcher.getGoal();
+    dispatcher.set_goal(123);
+    let updated_goal_1 = dispatcher.get_goal();
     assert(updated_goal_1 == 123, 'Failed to update goal');
 
     start_cheat_caller_address_global(VALID_ADDRESS_2());
-    dispatcher.setGoal(456);
-    let updated_goal_2 = dispatcher.getGoal();
+    dispatcher.set_goal(456);
+    let updated_goal_2 = dispatcher.get_goal();
     assert(updated_goal_2 == 456, 'Failed to update goal');
 }
 
 #[test]
-#[should_panic(expected: ("You are not the fund manager",))]
+#[should_panic(expected: ("Only Admins can set goal",))]
 fn test_set_goal_unauthorized() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
-    // Change the goal without being the fund manager
-    dispatcher.setGoal(22);
+    // Change the goal as the fund manager, which shouldnt be authorized anymore
+    start_cheat_caller_address_global(FUND_MANAGER());
+    dispatcher.set_goal(22);
 }
 
 #[test]
@@ -278,16 +279,6 @@ fn test_set_reason_unauthorized() {
     // Change the reason without being authrorized
     dispatcher.set_reason("not stored reason");
 }
-
-#[test]
-#[should_panic(expected: ("Only Admins can set goal",))]
-fn test_set_goal_unauthorized() {
-    let contract_address = _setup_();
-    let dispatcher = IFundDispatcher { contract_address };
-    // Change the goal without being the fund manager
-    dispatcher.set_goal(22);
-}
-
 
 #[test]
 #[should_panic(expected: ("You are not the owner",))]
