@@ -3,15 +3,13 @@ import { Button } from "@/components/ui/Button";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { fundAbi } from "@/contracts/abis/fund";
 import {
-  networkAtom,
-  networkEnvironmentAtom,
   walletStarknetkitLatestAtom,
 } from "@/state/connectedWallet";
 import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
-import { Contract, InvokeFunctionResponse } from "starknet";
+import { Contract } from "starknet";
 import { useRouter } from "next/navigation";
-import {useState, useEffect} from "react"; 
+import { useState, useEffect } from "react";
 
 interface FundVoteProps {
   upVotes: number,
@@ -21,11 +19,11 @@ interface FundVoteProps {
   getDetails: () => void,
 }
 
-export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVoteProps) => {
+export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading }: FundVoteProps) => {
 
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-  const network = useAtomValue(networkAtom);
-  const networkEnvironment = useAtomValue(networkEnvironmentAtom);
+  const [network, setNetwork] = useState(wallet?.chainId);
+  const networkEnvironment = process.env.NEXT_PUBLIC_CHAIN_ID;
 
   const progress = calculatePorcentage(upVotes, upVotesNeeded);
 
@@ -33,26 +31,31 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVotePr
 
   const router = useRouter();
 
-  const [isChecking, setIsChecking] = useState(true); 
-  const [voteStatus, setVoteStatus] = useState(false); 
+  const [isChecking, setIsChecking] = useState(true);
+  const [voteStatus, setVoteStatus] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+
+  const handleNetwork = (chainId?: string, accounts?: string[]) => {
+    setNetwork(wallet?.chainId);
+  };
+  wallet?.on('networkChanged', handleNetwork);
 
   useEffect(() => {
     const checkVoteStatus = async () => {
       if (!wallet?.account) {
-        setIsChecking(false); 
+        setIsChecking(false);
         return;
       }
-      
+
       setIsChecking(true);
       try {
         const fundContract = new Contract(fundAbi, addr, wallet.account);
-        
+
         try {
           await fundContract.estimate('receiveVote');
           setVoteStatus(false);
         } catch (error: any) {
-          if (error?.toString().includes('User already voted')) { 
+          if (error?.toString().includes('User already voted')) {
             setVoteStatus(true);
           }
         }
@@ -65,7 +68,7 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVotePr
 
     checkVoteStatus();
   }, [wallet?.account, addr]);
-  
+
   const handleVote = async () => {
     if (!wallet?.account) return;
     setLoading(true);
@@ -97,19 +100,19 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVotePr
       </div>
       {isChecking ? ( //if isChecking is true render a button that checks the vote status
         <div className="text-center">
-          <Button 
-            label="Checking vote status..." 
-            onClick={() => {}} 
+          <Button
+            label="Checking vote status..."
+            onClick={() => { }}
             className="opacity-50 cursor-not-allowed"
             disabled={true}
           />
         </div>
       ) : wallet ? ( // Check if a wallet is connected by evaluating 'wallet' condition
         voteStatus ? ( //if voteStatus is true button is disabled
-          <div className="text-center"> 
-            <Button 
-              label="Vote" 
-              onClick={() => {}} 
+          <div className="text-center">
+            <Button
+              label="Vote"
+              onClick={() => { }}
               className="opacity-50 cursor-not-allowed"
               disabled={true}
             />
@@ -120,30 +123,30 @@ export const FundVote = ({ upVotes, upVotesNeeded, addr, setLoading}: FundVotePr
             <Button
               label={isVoting ? "Voting..." : "Vote"}
               onClick={handleVote}
-              disabled={isVoting || !network}
+              disabled={isVoting || network !== networkEnvironment}
               className={
-                isVoting || !network ? "opacity-50 cursor-not-allowed" : ""
+                isVoting || network !== networkEnvironment ? "opacity-50 cursor-not-allowed" : ""
               }
             />
             {/* // If the wallet is connected, and voteStatus is false render a button that allows voting */}
-            {!network && (
+            {network !== networkEnvironment && (
               <p className="text-sm text-gray-500 mt-2">
                 Your wallet is currently connected to the wrong network. Please
-                switch to {networkEnvironment[1]} to continue.
+                switch to {networkEnvironment} to continue.
               </p>
             )}
           </div>
         )
       ) : ( // If the wallet is not connected, render a disabled vote button with instructions
-        <div className="text-center"> 
-          <Button 
-            label="Vote" 
-            onClick={() => {}} 
+        <div className="text-center">
+          <Button
+            label="Vote"
+            onClick={() => { }}
             className="opacity-50 cursor-not-allowed"
             disabled={true}
           />
           <p className="text-sm text-gray-500 mt-2">
-          Connect your wallet to vote
+            Connect your wallet to vote
           </p>
         </div>
       )}

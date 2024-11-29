@@ -1,12 +1,11 @@
 "use client";
 import { ARGENT_WEBWALLET_URL, CHAIN_ID, provider } from "@/constants";
-import { networkAtom, walletStarknetkitLatestAtom } from "@/state/connectedWallet";
+import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { useAtom, useSetAtom } from "jotai";
 import { connect, disconnect } from "starknetkit";
 
 export default function WalletConnector() {
   const [wallet, setWallet] = useAtom(walletStarknetkitLatestAtom)
-  const setNetworkAtom = useSetAtom(networkAtom)
 
   const handleConnect = async (event:any) => {
     try {
@@ -21,8 +20,6 @@ export default function WalletConnector() {
           icons: [],
         },
       })
-
-      wallet && setNetworkAtom(wallet?.chainId === process.env.NEXT_PUBLIC_NETWORK)
 
       setWallet(wallet)
     } catch (e) {
