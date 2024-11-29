@@ -5,7 +5,11 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import { provider } from "@/constants";
 import { strkAbi } from "@/contracts/abis/strk";
 import { addrSTRK } from "@/contracts/addresses";
-import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
+import {
+  networkAtom,
+  networkEnvironmentAtom,
+  walletStarknetkitLatestAtom,
+} from "@/state/connectedWallet";
 import { useAtomValue } from "jotai";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
@@ -24,6 +28,8 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [localBalance, setLocalBalance] = useState<number>(currentBalance);
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
+  const network = useAtomValue(networkAtom);
+  const networkEnvironment = useAtomValue(networkEnvironmentAtom);
   const progress = calculatePorcentage(localBalance, goal);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,17 +132,23 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
           {error}
         </p>
       )}
-      <button
-        onClick={handleDonateClick}
-        disabled={isLoading}
-        className={`self-center py-2 px-6 md:py-3 md:px-10 rounded-md text-xs md:text-sm shadow-xl ease-in-out duration-500 active:duration-0 shadow-gray-400 
-          ${isLoading 
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : 'bg-darkblue text-white hover:bg-starkorange active:bg-darkblue'
-          }`}
-      >
-        {isLoading ? "Processing..." : "Donate"}
-      </button>
+      <div className="text-center">
+        <button
+          disabled={!network}
+          onClick={handleDonateClick}
+          className={`self-center bg-darkblue text-white py-2 px-6 md:py-3 md:px-10 rounded-md
+          text-xs md:text-sm shadow-xl hover:bg-starkorange active:bg-darkblue ease-in-out
+          duration-500 active:duration-0 shadow-gray-400 ${!network ? "opacity-50 cursor-not-allowed" : ""}`}
+        >
+          Donate
+        </button>
+        {wallet && !network && (
+          <p className="text-sm text-gray-500 mt-2">
+            Your wallet is currently connected to the wrong network. Please
+            switch to {networkEnvironment[1]} to continue.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
