@@ -76,6 +76,7 @@ jobs:
       - name: Build with Next.js
         env:
             NEXT_PUBLIC_APP_ROOT: ${{ vars.NEXT_PUBLIC_APP_ROOT }}
+            NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
         run: |
           echo "ROOT is ${{ vars.ROOT }}"
           ${{ steps.detect-package-manager.outputs.runner }} next build
