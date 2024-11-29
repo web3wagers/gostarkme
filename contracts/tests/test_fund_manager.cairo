@@ -76,8 +76,8 @@ fn test_constructor() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    let expected_fund_address = fund_manager_contract.getFundClassHash();
-    let owner = fund_manager_contract.getOwner();
+    let expected_fund_address = fund_manager_contract.get_fund_class_hash();
+    let owner = fund_manager_contract.get_owner();
     assert(owner == OWNER(), 'Invalid owner');
     assert(fund_class_hash == expected_fund_address, 'Invalid fund class hash');
 }
@@ -87,9 +87,9 @@ fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
-    let expected_fund_class_hash = get_class_hash(fund_manager_contract.getFund(1));
-    let current_id = fund_manager_contract.getCurrentId();
+    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    let expected_fund_class_hash = get_class_hash(fund_manager_contract.get_fund(1));
+    let current_id = fund_manager_contract.get_current_id();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
     assert(current_id == 2, 'Invalid current ID');
 }
@@ -100,7 +100,7 @@ fn test_new_fund_bad_goal() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, _) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.newFund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    fund_manager_contract.new_fund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
 }
 
 #[test]
@@ -112,10 +112,10 @@ fn test_fund_deployed_event() {
 
     let mut spy = spy_events();
 
-    let current_id = fund_manager_contract.getCurrentId();
-    fund_manager_contract.newFund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    let current_id = fund_manager_contract.get_current_id();
+    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
 
-    let expected_fund_class_hash = fund_manager_contract.getFund(1);
+    let expected_fund_class_hash = fund_manager_contract.get_fund(1);
 
     spy
         .assert_emitted(

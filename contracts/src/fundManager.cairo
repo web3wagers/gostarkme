@@ -3,7 +3,7 @@ use starknet::class_hash::ClassHash;
 
 #[starknet::interface]
 pub trait IFundManager<TContractState> {
-    fn newFund(
+    fn new_fund(
         ref self: TContractState,
         name: ByteArray,
         goal: u256,
@@ -11,10 +11,10 @@ pub trait IFundManager<TContractState> {
         contact_handle: ByteArray,
         reason: ByteArray
     );
-    fn getCurrentId(self: @TContractState) -> u128;
-    fn getFund(self: @TContractState, id: u128) -> ContractAddress;
-    fn getOwner(self: @TContractState) -> ContractAddress;
-    fn getFundClassHash(self: @TContractState) -> ClassHash;
+    fn get_current_id(self: @TContractState) -> u128;
+    fn get_fund(self: @TContractState, id: u128) -> ContractAddress;
+    fn get_owner(self: @TContractState) -> ContractAddress;
+    fn get_fund_class_hash(self: @TContractState) -> ClassHash;
 }
 
 #[starknet::contract]
@@ -78,7 +78,7 @@ pub mod FundManager {
 
     #[abi(embed_v0)]
     impl FundManagerImpl of super::IFundManager<ContractState> {
-        fn newFund(
+        fn new_fund(
             ref self: ContractState,
             name: ByteArray,
             goal: u256,
@@ -112,16 +112,16 @@ pub mod FundManager {
 
             self.current_id.write(self.current_id.read() + 1);
         }
-        fn getCurrentId(self: @ContractState) -> u128 {
+        fn get_current_id(self: @ContractState) -> u128 {
             return self.current_id.read();
         }
-        fn getFund(self: @ContractState, id: u128) -> ContractAddress {
+        fn get_fund(self: @ContractState, id: u128) -> ContractAddress {
             return self.funds.read(id);
         }
-        fn getOwner(self: @ContractState) -> ContractAddress {
+        fn get_owner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
         }
-        fn getFundClassHash(self: @ContractState) -> ClassHash {
+        fn get_fund_class_hash(self: @ContractState) -> ClassHash {
             return self.fund_class_hash.read();
         }
     }

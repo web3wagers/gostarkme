@@ -5,7 +5,7 @@ declare:
 	starkli declare ./target/dev/gostarkme_FundManager.contract_class.json --keystore ~/.starkli-wallets/deployer/keystore_2.json --account ~/.starkli-wallets/accounts/account_2.json --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/2qi3kpZwfw6DlnjQmzL8vUh5PlqZ0Dpv
 
 deploy:
-	starkli deploy 0x00a154538458a3aa00c13ff94e30cacf715ee1d43075d74add171d7abcb38d0a --keystore ~/.starkli-wallets/deployer/keystore_2.json --account ~/.starkli-wallets/accounts/account_2.json --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/2qi3kpZwfw6DlnjQmzL8vUh5PlqZ0Dpv
+	starkli deploy 0x04652dc5b0d79659cfb92c13d3b3bbdbcbd8f480afedbed7d90834e3e14c4260 --keystore ~/.starkli-wallets/deployer/keystore_2.json --account ~/.starkli-wallets/accounts/account_2.json --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/2qi3kpZwfw6DlnjQmzL8vUh5PlqZ0Dpv 0x034773a6a6d5f9ee24c44aa99455e9e8a95d2ff13362e4038f2577c00a7c7ed5
 
 new-fund:
 	starkli invoke 0x0076d98b43b5ed1092dda81f2d52144e26323110ad87bd6fcf65a621409fcef6 --rpc https://starknet-sepolia.g.alchemy.com/starknet/version/rpc/v0_7/2qi3kpZwfw6DlnjQmzL8vUh5PlqZ0Dpv --keystore ~/.starkli-wallets/deployer/keystore_2.json --account ~/.starkli-wallets/accounts/account_2.json newFund 0x0388012BD4385aDf3b7afDE89774249D5179841cBaB06e9E5b4045F27B327CE8 0x5465737446756e64 0x5465737446756e64 200

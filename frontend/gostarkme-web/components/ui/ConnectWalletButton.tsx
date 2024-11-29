@@ -1,7 +1,7 @@
 "use client";
 import { ARGENT_WEBWALLET_URL, CHAIN_ID, provider } from "@/constants";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { connect, disconnect } from "starknetkit";
 
 export default function WalletConnector() {

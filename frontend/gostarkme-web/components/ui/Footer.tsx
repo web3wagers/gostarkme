@@ -9,7 +9,7 @@ const Footer = (): React.JSX.Element => {
       </aside>
       <nav>
         <div className="grid grid-flow-col gap-4">
-          <a className="mx-1" href="https://github.com/web3wagers/gostarkme">
+          <a className="mx-1" href="https://github.com/web3wagers/gostarkme" target="_blank" >
             <svg
               height="35"
               viewBox="0 0 24 24"
@@ -32,7 +32,7 @@ const Footer = (): React.JSX.Element => {
               </g>
             </svg>
           </a>
-          <a className="mx-1" href="https://x.com/undefined_org_">
+          <a className="mx-1" href="https://x.com/undefined_org_" target="_blank" >
             <svg
               height="35"
               viewBox="0 0 24 24"
@@ -47,7 +47,7 @@ const Footer = (): React.JSX.Element => {
               />
             </svg>
           </a>
-          <a className="mx-1" href="https://discord.gg/sEpnC6JB2U">
+          <a className="mx-1" href="https://discord.gg/sEpnC6JB2U" target="_blank" >
             <svg
               height="35"
               viewBox="0 0 24 24"

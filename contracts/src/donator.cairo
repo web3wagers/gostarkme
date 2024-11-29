@@ -2,11 +2,11 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 pub trait IDonator<TContractState> {
-    fn getOwner(self: @TContractState) -> ContractAddress;
-    fn getLevel(self: @TContractState) -> u32;
-    fn getTotalStarkDonations(self: @TContractState) -> u256;
-    fn getMaxStarkDonationsToNextLevel(self: @TContractState) -> u256;
-    fn updateDonatorValues(ref self: TContractState, donated_starks: u256);
+    fn get_owner(self: @TContractState) -> ContractAddress;
+    fn get_level(self: @TContractState) -> u32;
+    fn get_total_stark_donations(self: @TContractState) -> u256;
+    fn get_max_stark_donations_to_next_level(self: @TContractState) -> u256;
+    fn update_donator_values(ref self: TContractState, donated_starks: u256);
 }
 
 #[starknet::contract]
@@ -46,19 +46,19 @@ mod Donator {
     // *************************************************************************
     #[abi(embed_v0)]
     impl DonatorImpl of super::IDonator<ContractState> {
-        fn getOwner(self: @ContractState) -> ContractAddress {
+        fn get_owner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
         }
-        fn getLevel(self: @ContractState) -> u32 {
+        fn get_level(self: @ContractState) -> u32 {
             return self.level.read();
         }
-        fn getTotalStarkDonations(self: @ContractState) -> u256 {
+        fn get_total_stark_donations(self: @ContractState) -> u256 {
             return self.total_stark_donations.read();
         }
-        fn getMaxStarkDonationsToNextLevel(self: @ContractState) -> u256 {
+        fn get_max_stark_donations_to_next_level(self: @ContractState) -> u256 {
             return self.max_stark_donations_to_next_level.read();
         }
-        fn updateDonatorValues(ref self: ContractState, donated_starks: u256) {
+        fn update_donator_values(ref self: ContractState, donated_starks: u256) {
             let total_donator_pod = self.total_stark_donations.read() + donated_starks;
             self.total_stark_donations.write(total_donator_pod);
             if (total_donator_pod > self.max_stark_donations_to_next_level.read()) {
