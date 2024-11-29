@@ -78,7 +78,7 @@ jobs:
             NEXT_PUBLIC_APP_ROOT: ${{ vars.NEXT_PUBLIC_APP_ROOT }}
             NEXT_PUBLIC_CHAIN_ID: ${{ vars.NEXT_PUBLIC_CHAIN_ID }}
         run: |
-          echo "ROOT is ${{ vars.ROOT }}"
+          echo "Chain is ${{ vars.NEXT_PUBLIC_CHAIN_ID }}"
           ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
