@@ -66,7 +66,7 @@ const Stages = () => {
 
   async function newFund() {
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
-    fundManagerContract.newFund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription)
+    fundManagerContract.new_fund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription)
       .then(async (resp: InvokeFunctionResponse) => {
         setLatesTx({ txHash: resp.transaction_hash, type: "newfund" });
         setActualFund({id: 0, name: fundingName});

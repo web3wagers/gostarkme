@@ -42,7 +42,7 @@ export const fundManager = [
     "items": [
       {
         "type": "function",
-        "name": "newFund",
+        "name": "new_fund",
         "inputs": [
           {
             "name": "name",
@@ -70,7 +70,7 @@ export const fundManager = [
       },
       {
         "type": "function",
-        "name": "getCurrentId",
+        "name": "get_current_id",
         "inputs": [],
         "outputs": [
           {
@@ -81,7 +81,7 @@ export const fundManager = [
       },
       {
         "type": "function",
-        "name": "getFund",
+        "name": "get_fund",
         "inputs": [
           {
             "name": "id",
@@ -97,7 +97,7 @@ export const fundManager = [
       },
       {
         "type": "function",
-        "name": "getOwner",
+        "name": "get_owner",
         "inputs": [],
         "outputs": [
           {
@@ -108,7 +108,7 @@ export const fundManager = [
       },
       {
         "type": "function",
-        "name": "getFundClassHash",
+        "name": "get_fund_class_hash",
         "inputs": [],
         "outputs": [
           {

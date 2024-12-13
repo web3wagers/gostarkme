@@ -1,20 +1,17 @@
 'use client';
-import React, { useEffect } from "react";
+import React from "react";
 import CreationConfirmation from "./CreationConfirmation";
-import VoteConfirmation from "./VoteConfirmation";
 import DonationConfirmation from "./DonationConfirmation";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { latestTxAtom } from "@/state/latestTx";
 import Navbar from "@/components/ui/Navbar";
 import { navItems } from "@/constants";
 import { clickedFundState } from "@/state/nFunds";
-import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import WithdrawConfirmation from "./WithdrawConfirmation";
 
 const Confirmation = () => {
     const tx = useAtomValue(latestTxAtom);
     const actualFund = useAtomValue(clickedFundState);
-    const voteMessage = ` 🗳️ Just cast my vote for an amazing cause called ${actualFund?.name} on Go Stark Me! This fund needs more votes to start raising funds—every vote counts! Let’s support projects that make a difference at https://web3wagers.github.io/gostarkme/ @undefined_org_ 🙌💫 #GoStarkMe #Starknet #CommunityPower`;
     const donationMessage = `🙌 Proud to support ${actualFund?.name} on Go Stark Me! Donations make a difference. 💪 Go ahead and donate at https://web3wagers.github.io/gostarkme/ @undefined_org_ #Starknet #GoStarkMe #Web3Wagers`;
     const newFundMessage = `🚀 Just launched a new fund on Go Stark Me called ${actualFund?.name}! I’m raising support for an important cause, and every contribution makes a difference. Join me in making an impact at https://web3wagers.github.io/gostarkme/! 💪🌍 Check it out on @undefined_org_ #GoStarkMe #Starknet #BlockchainForGood`;
     const withdrawnMessage = `🎉 We did it! The goal for ${actualFund?.name} on Go Stark Me has been reached, and funds have been successfully withdrawn! 🙌 Huge thanks to everyone who contributed and made this possible. Let’s keep making an impact! 🌍💪 Check it out at https://web3wagers.github.io/gostarkme/ #GoStarkMe #Starknet #CommunitySuccess`;
@@ -42,10 +39,6 @@ const Confirmation = () => {
                     <h1 className="text-3xl font-extrabold">Success &#128640;</h1>
                     {tx?.type === "newfund" &&
                         <CreationConfirmation message={newFundMessage} txHash={tx.txHash} />
-                    }
-
-                    {tx?.type === "vote" &&
-                        <VoteConfirmation message={voteMessage} txHash={tx.txHash} />
                     }
 
                     {tx?.type === "donation" &&
