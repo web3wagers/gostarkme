@@ -27,7 +27,7 @@ export const FundVote = ({ name, upVotes, upVotesNeeded, addr, voted, setLoading
 
   const [progress, setProgress] = useState(calculatePorcentage(upVotes, upVotesNeeded));
   const [currentUpvotes, setCurrentUpvotes] = useState(upVotes);
-  const voteMessage = ` 🗳️ Just cast my vote for an amazing cause called ${name} on Go Stark Me! This fund needs more votes to start raising funds—every vote counts! Let’s support projects that make a difference at https://web3wagers.github.io/gostarkme/ @undefined_org_ 🙌💫 #GoStarkMe #Starknet #CommunityPower`;
+  const voteMessage = `🗳️ Voted for ${name} on Go Stark Me! Support now: https://web3wagers.github.io/gostarkme/ 🙌💫 @undefined_org_ @Starknet`;
 
   const [isVoting, setIsVoting] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
