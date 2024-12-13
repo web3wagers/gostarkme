@@ -19,28 +19,28 @@ const Dashboard = () => {
   async function getFunds() {
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR);
 
-    const id = await fundManagerContract.getCurrentId();
+    const id = await fundManagerContract.get_current_id();
     let fundings = [];
     for (let i = 1; i < id; i++) {
       // GET FUND ADDRESS
-      let fundaddr = await fundManagerContract.getFund(i);
+      let fundaddr = await fundManagerContract.get_fund(i);
       fundaddr = "0x" + fundaddr.toString(16);
       const fundContract = new Contract(fundAbi, fundaddr);
       // GET FUND STATE
-      let state = await fundContract.getState();
+      let state = await fundContract.get_state();
       if (state == 4 || state == 0) {
         continue;
       }
       // GET FUND NAME
-      let name = await fundContract.getName();
+      let name = await fundContract.get_name();
       // GET FUND DESCRIPTION
-      let desc = await fundContract.getReason();
+      let desc = await fundContract.get_reason();
       let desclen = desc.length;
       if (desclen > 50) {
         desc = desc.substring(0, 50) + "...";
       }
       // GET FUND ID
-      let fund_id = await fundContract.getId();
+      let fund_id = await fundContract.get_id();
       fundings.push({
         type: "Project",
         title: name,

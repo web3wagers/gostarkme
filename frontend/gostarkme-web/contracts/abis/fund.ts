@@ -42,7 +42,7 @@ export const fundAbi = [
     "items": [
       {
         "type": "function",
-        "name": "getId",
+        "name": "get_id",
         "inputs": [],
         "outputs": [
           {
@@ -53,7 +53,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getOwner",
+        "name": "get_owner",
         "inputs": [],
         "outputs": [
           {
@@ -64,7 +64,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setName",
+        "name": "set_name",
         "inputs": [
           {
             "name": "name",
@@ -76,7 +76,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getName",
+        "name": "get_name",
         "inputs": [],
         "outputs": [
           {
@@ -87,7 +87,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setReason",
+        "name": "set_reason",
         "inputs": [
           {
             "name": "reason",
@@ -99,7 +99,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getReason",
+        "name": "get_reason",
         "inputs": [],
         "outputs": [
           {
@@ -110,14 +110,14 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "receiveVote",
+        "name": "receive_vote",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
         "type": "function",
-        "name": "getUpVotes",
+        "name": "get_up_votes",
         "inputs": [],
         "outputs": [
           {
@@ -128,7 +128,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setGoal",
+        "name": "set_goal",
         "inputs": [
           {
             "name": "goal",
@@ -140,7 +140,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getGoal",
+        "name": "get_goal",
         "inputs": [],
         "outputs": [
           {
@@ -174,7 +174,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setState",
+        "name": "set_state",
         "inputs": [
           {
             "name": "state",
@@ -186,7 +186,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getState",
+        "name": "get_state",
         "inputs": [],
         "outputs": [
           {
@@ -197,8 +197,13 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getVoter",
-        "inputs": [],
+        "name": "get_voter",
+        "inputs": [
+          {
+            "name": "user",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
         "outputs": [
           {
             "type": "core::integer::u32"

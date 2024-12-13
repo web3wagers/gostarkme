@@ -16,7 +16,7 @@ pub trait IFund<TContractState> {
     fn get_current_goal_state(self: @TContractState) -> u256;
     fn set_state(ref self: TContractState, state: u8);
     fn get_state(self: @TContractState) -> u8;
-    fn get_voter(self: @TContractState) -> u32;
+    fn get_voter(self: @TContractState, user: ContractAddress) -> u32;
     fn withdraw(ref self: TContractState);
     fn set_evidence_link(ref self: TContractState, evidence: ByteArray);
     fn get_evidence_link(self: @TContractState) -> ByteArray;
@@ -226,8 +226,9 @@ pub mod Fund {
         fn get_state(self: @ContractState) -> u8 {
             return self.state.read();
         }
-        fn get_voter(self: @ContractState) -> u32 {
-            return self.voters.read(get_caller_address());
+        fn get_voter(self: @ContractState, user: ContractAddress) -> u32 {
+            let voter = self.voters.read(user);
+            return voter;
         }
         fn withdraw(ref self: ContractState) {
             let caller = get_caller_address();
