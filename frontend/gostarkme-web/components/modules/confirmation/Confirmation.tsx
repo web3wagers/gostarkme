@@ -12,9 +12,9 @@ import WithdrawConfirmation from "./WithdrawConfirmation";
 const Confirmation = () => {
     const tx = useAtomValue(latestTxAtom);
     const actualFund = useAtomValue(clickedFundState);
-    const donationMessage = `🙌 Proud to support ${actualFund?.name} on Go Stark Me! Donations make a difference. 💪 Go ahead and donate at https://web3wagers.github.io/gostarkme/ @undefined_org_ #Starknet #GoStarkMe #Web3Wagers`;
-    const newFundMessage = `🚀 Just launched a new fund on Go Stark Me called ${actualFund?.name}! I’m raising support for an important cause, and every contribution makes a difference. Join me in making an impact at https://web3wagers.github.io/gostarkme/! 💪🌍 Check it out on @undefined_org_ #GoStarkMe #Starknet #BlockchainForGood`;
-    const withdrawnMessage = `🎉 We did it! The goal for ${actualFund?.name} on Go Stark Me has been reached, and funds have been successfully withdrawn! 🙌 Huge thanks to everyone who contributed and made this possible. Let’s keep making an impact! 🌍💪 Check it out at https://web3wagers.github.io/gostarkme/ #GoStarkMe #Starknet #CommunitySuccess`;
+    const donationMessage = `🙌 Supporting ${actualFund?.name} on Go Stark Me! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`;
+    const newFundMessage = `🚀 Launched a new fund on Go Stark Me: ${actualFund?.name}! Support this cause and make a difference: https://web3wagers.github.io/gostarkme/ 💪🌍 @undefined_org_ @Starknet`;
+    const withdrawnMessage = `🎉 Goal reached for ${actualFund?.name} on Go Stark Me! Funds successfully withdrawn—thank you to all who contributed! 🌍💪 https://web3wagers.github.io/gostarkme/ @undefined_org_ @Starknet`;
 
     return (
         <>
