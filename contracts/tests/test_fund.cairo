@@ -16,9 +16,10 @@ use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTr
 use gostarkme::fund::Fund;
 use gostarkme::fund::IFundDispatcher;
 use gostarkme::fund::IFundDispatcherTrait;
-use gostarkme::constants::{funds::{fund_manager_constants::FundManagerConstants},};
-use gostarkme::constants::{funds::{state_constants::FundStates},};
-use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
+use gostarkme::constants::{fund_manager::{fund_manager_constants::FundManagerConstants},};
+use gostarkme::constants::{funds::{fund_constants::FundStates},};
+use gostarkme::constants::{funds::{fund_constants::FundTypeConstants},};
+use gostarkme::constants::{starknet::{starknet_constants::StarknetConstants},};
 
 const ONE_E18: u256 = 1000000000000000000_u256;
 fn ID() -> u128 {
@@ -73,6 +74,8 @@ fn _setup_() -> ContractAddress {
     calldata.append_serde(EVIDENCE_LINK_1());
     calldata.append_serde(CONTACT_HANDLE_1());
     calldata.append_serde(REASON_1());
+    calldata.append_serde(FundTypeConstants::PROJECT);
+
     let (contract_address, _) = contract.deploy(@calldata).unwrap();
     contract_address
 }
@@ -223,12 +226,12 @@ fn test_set_goal_unauthorized() {
 fn test_receive_vote_successful() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
+    start_cheat_caller_address_global(OTHER_USER());
     dispatcher.receive_vote();
-    let me = dispatcher.get_voter();
-    // Owner vote, fund have one vote
-    assert(me == 1, 'Owner is not in the voters');
-    let votes = dispatcher.get_up_votes();
-    assert(votes == 1, 'Vote unuseccessful');
+    let other_user_votes = dispatcher.get_voter(OTHER_USER());
+    assert(other_user_votes == 1, 'Other user is not in the voters');
+    let fund_votes = dispatcher.get_up_votes();
+    assert(fund_votes == 1, 'Vote unuseccessful');
 }
 
 #[test]
@@ -236,13 +239,14 @@ fn test_receive_vote_successful() {
 fn test_receive_vote_unsuccessful_double_vote() {
     let contract_address = _setup_();
     let dispatcher = IFundDispatcher { contract_address };
+    start_cheat_caller_address_global(OTHER_USER());
     dispatcher.receive_vote();
-    let me = dispatcher.get_voter();
-    // Owner vote, fund have one vote
-    assert(me == 1, 'Owner is not in the voters');
+    let other_user_votes = dispatcher.get_voter(OTHER_USER());
+    // User vote, fund have one vote
+    assert(other_user_votes == 1, 'Owner is not in the voters');
     let votes = dispatcher.get_up_votes();
     assert(votes == 1, 'Vote unuseccessful');
-    // Owner vote, second time
+    // User vote, second time
     dispatcher.receive_vote();
 }
 
@@ -602,3 +606,18 @@ fn test_set_contact_handle_success() {
     assert(reverted_contact_handle == CONTACT_HANDLE_1(), ' revert ')
 }
 
+#[test]
+fn test_set_type() {
+    let contract_address = _setup_();
+    let dispatcher = IFundDispatcher { contract_address };
+    let current_type = dispatcher.get_type();
+    assert(current_type == FundTypeConstants::PROJECT, 'Invalid type');
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_1());
+    dispatcher.set_type(FundTypeConstants::CHARITY);
+    let new_type = dispatcher.get_type();
+    assert(new_type == FundTypeConstants::CHARITY, 'Set type method not working');
+    start_cheat_caller_address(contract_address, VALID_ADDRESS_2());
+    dispatcher.set_type(FundTypeConstants::PROJECT);
+    let new_type = dispatcher.get_type();
+    assert(new_type == FundTypeConstants::PROJECT, 'Set type method not working');
+}

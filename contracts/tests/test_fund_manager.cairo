@@ -12,9 +12,10 @@ use snforge_std::{
 
 use openzeppelin::utils::serde::SerializedAppend;
 
-use gostarkme::fundManager::IFundManagerDispatcher;
-use gostarkme::fundManager::IFundManagerDispatcherTrait;
-use gostarkme::fundManager::FundManager;
+use gostarkme::fund_manager::IFundManagerDispatcher;
+use gostarkme::fund_manager::IFundManagerDispatcherTrait;
+use gostarkme::fund_manager::FundManager;
+use gostarkme::constants::{funds::{fund_constants::FundTypeConstants},};
 
 fn ID() -> u128 {
     1
@@ -54,6 +55,7 @@ fn _setup_() -> (ContractAddress, ClassHash) {
     fund_calldata.append_serde(EVIDENCE_LINK());
     fund_calldata.append_serde(CONTACT_HANDLE());
     fund_calldata.append_serde(REASON());
+    fund_calldata.append_serde(FundTypeConstants::PROJECT);
 
     let (fund_contract_address, _) = fund.deploy(@fund_calldata).unwrap();
     let fund_class_hash = get_class_hash(fund_contract_address);
@@ -87,7 +89,7 @@ fn test_new_fund() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, fund_class_hash) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON(),FundTypeConstants::PROJECT);
     let expected_fund_class_hash = get_class_hash(fund_manager_contract.get_fund(1));
     let current_id = fund_manager_contract.get_current_id();
     assert(expected_fund_class_hash == fund_class_hash, 'Invalid fund address');
@@ -100,7 +102,7 @@ fn test_new_fund_bad_goal() {
     start_cheat_caller_address_global(OWNER());
     let (contract_address, _) = _setup_();
     let fund_manager_contract = IFundManagerDispatcher { contract_address };
-    fund_manager_contract.new_fund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    fund_manager_contract.new_fund(NAME(), BAD_GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON(),FundTypeConstants::PROJECT);
 }
 
 #[test]
@@ -113,7 +115,7 @@ fn test_fund_deployed_event() {
     let mut spy = spy_events();
 
     let current_id = fund_manager_contract.get_current_id();
-    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON());
+    fund_manager_contract.new_fund(NAME(), GOAL(), EVIDENCE_LINK(), CONTACT_HANDLE(), REASON(),FundTypeConstants::PROJECT);
 
     let expected_fund_class_hash = fund_manager_contract.get_fund(1);
 
