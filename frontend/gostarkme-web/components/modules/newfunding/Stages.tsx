@@ -16,9 +16,10 @@ const Stages = () => {
   const [fundingName, setFundingName] = useState("");
   const [goal, setGoal] = useState("");
   const [fundingDescription, setFundingDescription] = useState("");
-  const [errors, setErrors] = useState({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" });
+  const [errors, setErrors] = useState({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" ,type:""});
   const [evidenceLink, setEvidenceLink] = useState("");
   const [contactHandle, setContactHandle] = useState("");
+  const [type, setType] = useState("");
   const setLatesTx = useSetAtom(latestTxAtom);
   const setActualFund = useSetAtom(clickedFundState);
 
@@ -27,7 +28,7 @@ const Stages = () => {
 
   const handleNextStep = () => {
     // Reset errors
-    setErrors({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" });
+    setErrors({ fundingName: "", goal: "", evidenceLink: "", contactHandle: "" ,type:""});
 
     // Validate fields
     let hasErrors = false;
@@ -48,6 +49,10 @@ const Stages = () => {
         setErrors((prev) => ({ ...prev, contactHandle: "The contact handle is required." }));
         hasErrors = true;
       }
+      if (!type) {
+        setErrors((prev) => ({ ...prev, type: "The type is required." }));
+        hasErrors = true;
+      }
     }
 
     // If there are no errors, proceed to the next step
@@ -65,8 +70,9 @@ const Stages = () => {
   };
 
   async function newFund() {
+    
     const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account);
-    fundManagerContract.new_fund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription)
+    fundManagerContract.new_fund(fundingName, cairo.uint256(Number(goal) * Number(10) ** Number(18) ) , evidenceLink, contactHandle, fundingDescription, Number(type) )
       .then(async (resp: InvokeFunctionResponse) => {
         setLatesTx({ txHash: resp.transaction_hash, type: "newfund" });
         setActualFund({id: 0, name: fundingName});
@@ -88,6 +94,8 @@ const Stages = () => {
           setEvidenceLink={setEvidenceLink}
           contactHandle={contactHandle}
           setContactHandle={setContactHandle}
+          type={type}
+          setType={setType}
           errors={errors} // Pass errors down
           setErrors={setErrors} // Pass setErrors down,
         />

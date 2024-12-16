@@ -9,8 +9,10 @@ interface FundingStepProps {
   setEvidenceLink: (name: string) => void;
   contactHandle: string;
   setContactHandle: (name: string) => void;
-  errors: { fundingName: string; goal: string ;evidenceLink: string; contactHandle: string }; // Expecting errors as props
-  setErrors: React.Dispatch<React.SetStateAction<{ fundingName: string; goal: string ;evidenceLink: string; contactHandle: string }>>; // Specify the type for setErrors
+  type: string;
+  setType: (name: string) => void;
+  errors: { fundingName: string; goal: string ;evidenceLink: string; contactHandle: string; type: string}; 
+  setErrors: React.Dispatch<React.SetStateAction<{ fundingName: string; goal: string ;evidenceLink: string; contactHandle: string; type:string }>>;
 }
 
 const FundingStep: React.FC<FundingStepProps> = ({
@@ -22,6 +24,8 @@ const FundingStep: React.FC<FundingStepProps> = ({
   setEvidenceLink,
   contactHandle,
   setContactHandle,
+  type,
+  setType,
   errors,
   setErrors,
 }) => {
@@ -67,9 +71,19 @@ const FundingStep: React.FC<FundingStepProps> = ({
     const newValue = e.target.value;
     setContactHandle(newValue);
     if (!newValue) {
-      setErrors((prev) => ({ ...prev, evidenceLink: 'Contact handle is required.' }));
+      setErrors((prev) => ({ ...prev, contactHandle: 'Contact handle is required.' }));
     } else {
-      setErrors((prev) => ({ ...prev, evidenceLink: '' })); 
+      setErrors((prev) => ({ ...prev, contactHandle: '' })); 
+    }
+  };
+
+  const handleType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setType(newValue);
+    if (!newValue) {
+      setErrors((prev) => ({ ...prev, type: 'Type is required.' }));
+    } else {
+      setErrors((prev) => ({ ...prev, type: '' })); 
     }
   };
 
@@ -108,6 +122,16 @@ const FundingStep: React.FC<FundingStepProps> = ({
         className={`mt-4 p-2 pl-4 border rounded w-full placeholder:text-base ${errors.contactHandle ? 'border-red-500' : 'border-black'}`}
         required
       />
+      <select
+        className={`mt-4 p-2 pl-4 border rounded w-full text-base ${errors.type ? 'border-red-500' : 'border-black'}`}
+        value={type}
+        onChange={handleType}
+        required
+      >
+        <option value="" disabled>Select the fund type</option>
+        <option value="1">Project</option>
+        <option value="2">Charity</option>
+      </select>
 
       {/* Error Messages */}
       {errors.fundingName && (
@@ -121,6 +145,9 @@ const FundingStep: React.FC<FundingStepProps> = ({
       )}
       {errors.contactHandle && (
         <p className="mt-5 text-red-500 text-center mb-4">{errors.contactHandle}</p>
+      )}
+      {errors.type && (
+        <p className="mt-5 text-red-500 text-center mb-4">{errors.type}</p>
       )}
     </div>
   );
