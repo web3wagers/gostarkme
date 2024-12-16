@@ -76,3 +76,4 @@ fn test_update_donator_values() {
     assert(total_stark_donations == 11, 'Invalid total stark donations');
     assert(max_stark_donations_to_next_level == 20, 'Invalid total stark donations');
 }
+

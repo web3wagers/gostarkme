@@ -1,7 +1,7 @@
 pub mod constants;
 //  FUND
 pub mod fund;
-pub mod fundManager;
+pub mod fund_manager;
 //  DONATOR
-pub mod donatorManager;
+pub mod donator_manager;
 pub mod donator;

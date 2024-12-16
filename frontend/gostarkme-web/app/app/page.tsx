@@ -41,8 +41,10 @@ const Dashboard = () => {
       }
       // GET FUND ID
       let fund_id = await fundContract.get_id();
+      // GET FUND TYPE
+      let fund_type = await fundContract.get_type();
       fundings.push({
-        type: "Project",
+        type: Number(BigInt(fund_type)) === 1 ? "Project" : "Charity",
         title: name,
         description: desc,
         fund_id: fund_id.toString(),

@@ -22,6 +22,8 @@ pub trait IFund<TContractState> {
     fn get_evidence_link(self: @TContractState) -> ByteArray;
     fn set_contact_handle(ref self: TContractState, contact_handle: ByteArray);
     fn get_contact_handle(self: @TContractState) -> ByteArray;
+    fn set_type(ref self: TContractState, fund_type: u8);
+    fn get_type(self: @TContractState) -> u8;
 }
 
 #[starknet::contract]
@@ -34,11 +36,10 @@ pub mod Fund {
     use starknet::contract_address_const;
     use starknet::get_contract_address;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
-    use gostarkme::constants::{funds::{state_constants::FundStates},};
-    use gostarkme::constants::{
-        funds::{fund_constants::FundConstants, fund_manager_constants::FundManagerConstants},
-    };
-    use gostarkme::constants::{funds::{starknet_constants::StarknetConstants},};
+    use gostarkme::constants::{funds::{fund_constants::FundStates},};
+    use gostarkme::constants::{funds::{fund_constants::FundConstants},};
+    use gostarkme::constants::{fund_manager::{fund_manager_constants::FundManagerConstants},};
+    use gostarkme::constants::{starknet::{starknet_constants::StarknetConstants},};
 
     // *************************************************************************
     //                            EVENTS
@@ -89,7 +90,8 @@ pub mod Fund {
         goal: u256,
         state: u8,
         evidence_link: ByteArray,
-        contact_handle: ByteArray
+        contact_handle: ByteArray,
+        fund_type: u8,
     }
 
     // *************************************************************************
@@ -104,7 +106,8 @@ pub mod Fund {
         goal: u256,
         evidence_link: ByteArray,
         contact_handle: ByteArray,
-        reason: ByteArray
+        reason: ByteArray,
+        fund_type: u8,
     ) {
         self.id.write(id);
         self.owner.write(owner);
@@ -115,6 +118,7 @@ pub mod Fund {
         self.state.write(FundStates::RECOLLECTING_VOTES);
         self.evidence_link.write(evidence_link);
         self.contact_handle.write(contact_handle);
+        self.fund_type.write(fund_type);
     }
 
     // *************************************************************************
@@ -282,6 +286,19 @@ pub mod Fund {
         }
         fn get_contact_handle(self: @ContractState) -> ByteArray {
             return self.contact_handle.read();
+        }
+        fn set_type(ref self: ContractState, fund_type: u8) {
+            let caller = get_caller_address();
+            let valid_address_1 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_1>();
+            let valid_address_2 = contract_address_const::<FundManagerConstants::VALID_ADDRESS_2>();
+            assert!(
+                valid_address_1 == caller || valid_address_2 == caller,
+                "Only Admins can change the fund type."
+            );
+            self.fund_type.write(fund_type);
+        }
+        fn get_type(self: @ContractState) -> u8 {
+            return self.fund_type.read();
         }
     }
     // *************************************************************************
