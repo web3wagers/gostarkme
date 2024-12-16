@@ -12,7 +12,6 @@ import WithdrawConfirmation from "./WithdrawConfirmation";
 const Confirmation = () => {
     const tx = useAtomValue(latestTxAtom);
     const actualFund = useAtomValue(clickedFundState);
-    const donationMessage = `🙌 Supporting ${actualFund?.name} on Go Stark Me! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`;
     const newFundMessage = `🚀 Launched a new fund on Go Stark Me: ${actualFund?.name}! Support this cause and make a difference: https://web3wagers.github.io/gostarkme/ 💪🌍 @undefined_org_ @Starknet`;
     const withdrawnMessage = `🎉 Goal reached for ${actualFund?.name} on Go Stark Me! Funds successfully withdrawn—thank you to all who contributed! 🌍💪 https://web3wagers.github.io/gostarkme/ @undefined_org_ @Starknet`;
 
@@ -39,10 +38,6 @@ const Confirmation = () => {
                     <h1 className="text-3xl font-extrabold">Success &#128640;</h1>
                     {tx?.type === "newfund" &&
                         <CreationConfirmation message={newFundMessage} txHash={tx.txHash} />
-                    }
-
-                    {tx?.type === "donation" &&
-                        <DonationConfirmation message={donationMessage} txHash={tx.txHash} />
                     }
 
                     {tx?.type === "withdrawn" &&
