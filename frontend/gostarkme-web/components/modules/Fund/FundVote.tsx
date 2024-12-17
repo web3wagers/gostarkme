@@ -10,6 +10,7 @@ import { useState } from "react";
 import ShareXButton from "@/components/ui/ShareOnX";
 import { provider } from "@/constants";
 import { CallData } from "starknet";
+import { activeChainId } from "@/state/activeChain";
 
 interface FundVoteProps {
   name: String,
@@ -22,7 +23,7 @@ interface FundVoteProps {
 
 export const FundVote = ({ name, upVotes, upVotesNeeded, addr, voted, setLoading }: FundVoteProps) => {
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-  const [network, setNetwork] = useState(wallet?.chainId);
+  const chainId = useAtomValue(activeChainId);
   const networkEnvironment = process.env.NEXT_PUBLIC_CHAIN_ID;
 
   const [progress, setProgress] = useState(calculatePorcentage(upVotes, upVotesNeeded));
@@ -33,11 +34,6 @@ export const FundVote = ({ name, upVotes, upVotesNeeded, addr, voted, setLoading
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [latestTx, setLatestTx] = useAtom(latestTxAtom);
   const [canVote, setCanVote] = useState((voted != BigInt(0) ? false : true));
-
-  const handleNetwork = (chainId?: string, accounts?: string[]) => {
-    setNetwork(wallet?.chainId);
-  };
-  wallet?.on('networkChanged', handleNetwork);
 
   const waitForTransaction = async (hash: string) => {
     try {
@@ -117,12 +113,12 @@ export const FundVote = ({ name, upVotes, upVotesNeeded, addr, voted, setLoading
           <div className="text-center">
             <button
               onClick={handleVoteClick}
-              disabled={isVoting || network !== networkEnvironment}
+              disabled={isVoting || chainId !== networkEnvironment}
               className={`self-center bg-darkblue text-white py-2 px-6 md:py-3 md:px-10 rounded-md
                 text-xs md:text-sm shadow-xl hover:bg-starkorange active:bg-darkblue ease-in-out
-                duration-500 active:duration-0 shadow-gray-400 ${network !== networkEnvironment ? "opacity-50 cursor-not-allowed" : ""}`}
+                duration-500 active:duration-0 shadow-gray-400 ${chainId !== networkEnvironment ? "opacity-50 cursor-not-allowed" : ""}`}
             >Vote</button>
-            {network !== networkEnvironment && (
+            {chainId !== networkEnvironment && (
               <p className="text-sm text-gray-500 mt-2">
                 Your wallet is currently connected to the wrong network. Please
                 switch to {networkEnvironment} to continue.
