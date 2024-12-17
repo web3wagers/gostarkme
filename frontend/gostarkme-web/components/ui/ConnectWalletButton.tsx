@@ -1,11 +1,18 @@
 "use client";
 import { ARGENT_WEBWALLET_URL, CHAIN_ID, provider } from "@/constants";
+import { activeChainId } from "@/state/activeChain";
 import { walletStarknetkitLatestAtom } from "@/state/connectedWallet";
 import { useAtom, useSetAtom } from "jotai";
 import { connect, disconnect } from "starknetkit";
 
 export default function WalletConnector() {
   const [wallet, setWallet] = useAtom(walletStarknetkitLatestAtom)
+  const [activeChain, setActiveChain] = useAtom(activeChainId);
+
+  const handleNetwork = (chainId?: string, accounts?: string[]) => {
+    setActiveChain(wallet?.chainId);
+  };
+  wallet?.on('networkChanged', handleNetwork);
 
   const handleConnect = async (event:any) => {
     try {
@@ -21,7 +28,8 @@ export default function WalletConnector() {
         },
       })
 
-      setWallet(wallet)
+      setWallet(wallet);
+      setActiveChain(wallet?.chainId);
     } catch (e) {
       console.error(e)
       alert((e as any).message)

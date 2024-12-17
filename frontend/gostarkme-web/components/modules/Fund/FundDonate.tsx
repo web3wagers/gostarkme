@@ -5,6 +5,7 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import ShareXButton from "@/components/ui/ShareOnX";
 import { provider } from "@/constants";
 import { addrSTRK } from "@/contracts/addresses";
+import { activeChainId } from "@/state/activeChain";
 import {
   walletStarknetkitLatestAtom,
 } from "@/state/connectedWallet";
@@ -31,16 +32,11 @@ const FundDonate = ({ currentBalance, goal, addr, name, icon }: FundDonateProps)
   const [latestTx, setLatestTx] = useAtom(latestTxAtom);
   const [isDonating, setIsDonating] = useState(false);
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-  const [network, setNetwork] = useState(wallet?.chainId);
+  const chainId = useAtomValue(activeChainId);
   const networkEnvironment = process.env.NEXT_PUBLIC_CHAIN_ID;
   const progress = calculatePorcentage(localBalance, goal);
 
   const donationMessage = `🙌 Supporting ${name} on Go Stark Me! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`;
-
-  const handleNetwork = (chainId?: string, accounts?: string[]) => {
-    setNetwork(wallet?.chainId);
-  };
-  wallet?.on('networkChanged', handleNetwork);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : Number(e.target.value);
@@ -149,15 +145,15 @@ const FundDonate = ({ currentBalance, goal, addr, name, icon }: FundDonateProps)
       )}
       <div className="text-center">
         <button
-          disabled={network !== networkEnvironment || !wallet || isDonating}
+          disabled={chainId !== networkEnvironment || !wallet || isDonating}
           onClick={handleDonateClick}
           className={`self-center bg-darkblue text-white py-2 px-6 md:py-3 md:px-10 rounded-md
           text-xs md:text-sm shadow-xl hover:bg-starkorange active:bg-darkblue ease-in-out
-          duration-500 active:duration-0 shadow-gray-400 ${network !== networkEnvironment || isDonating ? "opacity-50 cursor-not-allowed" : ""}`}
+          duration-500 active:duration-0 shadow-gray-400 ${chainId !== networkEnvironment || isDonating ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           {isDonating === true ? "Donating..." : "Donate"}
         </button>
-        {wallet && network !== networkEnvironment && (
+        {wallet && chainId !== networkEnvironment && (
           <p className="text-sm text-gray-500 mt-2">
             Your wallet is currently connected to the wrong network. Please
             switch to {networkEnvironment} to continue.
