@@ -51,7 +51,7 @@ const Fund = () => {
       const owner = (await fundContract.get_owner()).toString();
       setIsOwner(owner.toLowerCase() === wallet?.account?.address.toLowerCase());
       // USER VOTED?
-      let voted = await fundContract.get_voter(wallet?.account.address);
+      let voted = await fundContract.get_voter(wallet != undefined ? wallet?.account.address : "0x0000000000");
 
       setFund({
         name: name,
@@ -118,6 +118,7 @@ const Fund = () => {
                   currentBalance={fund.currentBalance}
                   goal={fund.goal}
                   addr={fund.addr}
+                  name={fund.name} 
                   icon={starknetlogo}
                 />
               )}
