@@ -4,6 +4,7 @@ use starknet::ContractAddress;
 pub trait IFund<TContractState> {
     fn get_id(self: @TContractState) -> u128;
     fn get_owner(self: @TContractState) -> ContractAddress;
+    fn is_owner(self: @TContractState) -> bool;
     fn set_name(ref self: TContractState, name: ByteArray);
     fn get_name(self: @TContractState) -> ByteArray;
     fn set_reason(ref self: TContractState, reason: ByteArray);
@@ -131,6 +132,9 @@ pub mod Fund {
         }
         fn get_owner(self: @ContractState) -> ContractAddress {
             return self.owner.read();
+        }
+        fn is_owner(self: @ContractState) -> bool {
+            return (self.owner.read() == get_caller_address());
         }
         fn set_name(ref self: ContractState, name: ByteArray) {
             let caller = get_caller_address();
