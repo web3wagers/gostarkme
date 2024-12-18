@@ -79,7 +79,12 @@ export const fundAbi = [
       {
         "type": "function",
         "name": "is_owner",
-        "inputs": [],
+        "inputs": [
+          {
+            "name": "caller",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
         "outputs": [
           {
             "type": "core::bool"
