@@ -48,8 +48,9 @@ const Fund = () => {
       let evidenceLink = await fundContract.get_evidence_link();
       let contactHandle = await fundContract.get_contact_handle();
       // Fetch owner
-      const owner = (await fundContract.get_owner()).toString();
-      setIsOwner(owner.toLowerCase() === wallet?.account?.address.toLowerCase());
+      const ownerDecimal = (await fundContract.get_owner()).toString();
+      const ownerHex = "0x"+BigInt(ownerDecimal).toString(16);
+      setIsOwner(ownerHex.toLowerCase() === wallet?.account?.address.toLowerCase());
       // USER VOTED?
       let voted = await fundContract.get_voter(wallet != undefined ? wallet?.account.address : "0x0000000000");
 
@@ -113,7 +114,6 @@ const Fund = () => {
           )}
           {Number(fund.state) === 2 && (
             <>
-              {!isOwner && (
                 <FundDonate
                   currentBalance={fund.currentBalance}
                   goal={fund.goal}
@@ -121,7 +121,6 @@ const Fund = () => {
                   name={fund.name} 
                   icon={starknetlogo}
                 />
-              )}
             </>
           )}
           {Number(fund.state) === 3 && isOwner && (
