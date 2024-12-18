@@ -28,7 +28,7 @@ export const ARGENT_WEBWALLET_URL =
   process.env.NEXT_PUBLIC_ARGENT_WEBWALLET_URL || "https://web.argent.xyz"
 
 export const FUND_MANAGER_ADDR = 
-  "0x04e75cce044fcb8012eacd7532dee521925a468301d58d09b866ccc43580e84a"
+  process.env.NEXT_PUBLIC_FUND_MANAGER_ADDR || "";
 
 export const navItems = [
     // { label: 'My Profile', href: '/app/myprofile' },
