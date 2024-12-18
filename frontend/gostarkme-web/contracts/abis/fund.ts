@@ -1,12 +1,26 @@
 export const fundAbi = [
   {
-    "name": "FundImpl",
     "type": "impl",
+    "name": "FundImpl",
     "interface_name": "gostarkme::fund::IFund"
   },
   {
-    "name": "core::byte_array::ByteArray",
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
     "type": "struct",
+    "name": "core::byte_array::ByteArray",
     "members": [
       {
         "name": "data",
@@ -23,8 +37,8 @@ export const fundAbi = [
     ]
   },
   {
-    "name": "core::integer::u256",
     "type": "struct",
+    "name": "core::integer::u256",
     "members": [
       {
         "name": "low",
@@ -37,12 +51,12 @@ export const fundAbi = [
     ]
   },
   {
-    "name": "gostarkme::fund::IFund",
     "type": "interface",
+    "name": "gostarkme::fund::IFund",
     "items": [
       {
-        "name": "get_id",
         "type": "function",
+        "name": "get_id",
         "inputs": [],
         "outputs": [
           {
@@ -52,8 +66,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "get_owner",
         "type": "function",
+        "name": "get_owner",
         "inputs": [],
         "outputs": [
           {
@@ -63,8 +77,24 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_name",
         "type": "function",
+        "name": "is_owner",
+        "inputs": [
+          {
+            "name": "caller",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "set_name",
         "inputs": [
           {
             "name": "name",
@@ -75,8 +105,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_name",
         "type": "function",
+        "name": "get_name",
         "inputs": [],
         "outputs": [
           {
@@ -86,8 +116,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_reason",
         "type": "function",
+        "name": "set_reason",
         "inputs": [
           {
             "name": "reason",
@@ -98,8 +128,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_reason",
         "type": "function",
+        "name": "get_reason",
         "inputs": [],
         "outputs": [
           {
@@ -109,15 +139,15 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "receive_vote",
         "type": "function",
+        "name": "receive_vote",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
-        "name": "get_up_votes",
         "type": "function",
+        "name": "get_up_votes",
         "inputs": [],
         "outputs": [
           {
@@ -127,8 +157,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_goal",
         "type": "function",
+        "name": "set_goal",
         "inputs": [
           {
             "name": "goal",
@@ -139,8 +169,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_goal",
         "type": "function",
+        "name": "get_goal",
         "inputs": [],
         "outputs": [
           {
@@ -150,8 +180,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "update_receive_donation",
         "type": "function",
+        "name": "update_receive_donation",
         "inputs": [
           {
             "name": "strks",
@@ -162,8 +192,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_current_goal_state",
         "type": "function",
+        "name": "get_current_goal_state",
         "inputs": [],
         "outputs": [
           {
@@ -173,8 +203,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_state",
         "type": "function",
+        "name": "set_state",
         "inputs": [
           {
             "name": "state",
@@ -185,8 +215,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_state",
         "type": "function",
+        "name": "get_state",
         "inputs": [],
         "outputs": [
           {
@@ -196,8 +226,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "get_voter",
         "type": "function",
+        "name": "get_voter",
         "inputs": [
           {
             "name": "user",
@@ -212,15 +242,15 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "withdraw",
         "type": "function",
+        "name": "withdraw",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
-        "name": "set_evidence_link",
         "type": "function",
+        "name": "set_evidence_link",
         "inputs": [
           {
             "name": "evidence",
@@ -231,8 +261,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_evidence_link",
         "type": "function",
+        "name": "get_evidence_link",
         "inputs": [],
         "outputs": [
           {
@@ -242,8 +272,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_contact_handle",
         "type": "function",
+        "name": "set_contact_handle",
         "inputs": [
           {
             "name": "contact_handle",
@@ -254,8 +284,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_contact_handle",
         "type": "function",
+        "name": "get_contact_handle",
         "inputs": [],
         "outputs": [
           {
@@ -265,8 +295,8 @@ export const fundAbi = [
         "state_mutability": "view"
       },
       {
-        "name": "set_type",
         "type": "function",
+        "name": "set_type",
         "inputs": [
           {
             "name": "fund_type",
@@ -277,8 +307,8 @@ export const fundAbi = [
         "state_mutability": "external"
       },
       {
-        "name": "get_type",
         "type": "function",
+        "name": "get_type",
         "inputs": [],
         "outputs": [
           {
@@ -290,8 +320,8 @@ export const fundAbi = [
     ]
   },
   {
-    "name": "constructor",
     "type": "constructor",
+    "name": "constructor",
     "inputs": [
       {
         "name": "id",
@@ -328,95 +358,95 @@ export const fundAbi = [
     ]
   },
   {
-    "kind": "struct",
+    "type": "event",
     "name": "gostarkme::fund::Fund::DonationWithdraw",
-    "type": "event",
+    "kind": "struct",
     "members": [
       {
-        "kind": "key",
         "name": "owner_address",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       },
       {
-        "kind": "data",
         "name": "fund_contract_address",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
       },
       {
-        "kind": "data",
         "name": "withdrawn_amount",
-        "type": "core::integer::u256"
+        "type": "core::integer::u256",
+        "kind": "data"
       }
     ]
   },
   {
-    "kind": "struct",
+    "type": "event",
     "name": "gostarkme::fund::Fund::NewVoteReceived",
-    "type": "event",
-    "members": [
-      {
-        "kind": "key",
-        "name": "voter",
-        "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "kind": "data",
-        "name": "fund",
-        "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "kind": "data",
-        "name": "votes",
-        "type": "core::integer::u32"
-      }
-    ]
-  },
-  {
     "kind": "struct",
-    "name": "gostarkme::fund::Fund::DonationReceived",
-    "type": "event",
     "members": [
       {
-        "kind": "key",
-        "name": "donator_address",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "name": "voter",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
       },
       {
-        "kind": "data",
-        "name": "current_balance",
-        "type": "core::integer::u256"
+        "name": "fund",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
       },
       {
-        "kind": "data",
-        "name": "donated_strks",
-        "type": "core::integer::u256"
-      },
-      {
-        "kind": "data",
-        "name": "fund_contract_address",
-        "type": "core::starknet::contract_address::ContractAddress"
+        "name": "votes",
+        "type": "core::integer::u32",
+        "kind": "data"
       }
     ]
   },
   {
-    "kind": "enum",
-    "name": "gostarkme::fund::Fund::Event",
     "type": "event",
+    "name": "gostarkme::fund::Fund::DonationReceived",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "donator_address",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      },
+      {
+        "name": "current_balance",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "donated_strks",
+        "type": "core::integer::u256",
+        "kind": "data"
+      },
+      {
+        "name": "fund_contract_address",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "gostarkme::fund::Fund::Event",
+    "kind": "enum",
     "variants": [
       {
-        "kind": "nested",
         "name": "DonationWithdraw",
-        "type": "gostarkme::fund::Fund::DonationWithdraw"
+        "type": "gostarkme::fund::Fund::DonationWithdraw",
+        "kind": "nested"
       },
       {
-        "kind": "nested",
         "name": "NewVoteReceived",
-        "type": "gostarkme::fund::Fund::NewVoteReceived"
+        "type": "gostarkme::fund::Fund::NewVoteReceived",
+        "kind": "nested"
       },
       {
-        "kind": "nested",
         "name": "DonationReceived",
-        "type": "gostarkme::fund::Fund::DonationReceived"
+        "type": "gostarkme::fund::Fund::DonationReceived",
+        "kind": "nested"
       }
     ]
   }
