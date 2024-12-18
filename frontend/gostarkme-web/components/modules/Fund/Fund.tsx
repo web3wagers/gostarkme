@@ -48,7 +48,6 @@ const Fund = () => {
       let evidenceLink = await fundContract.get_evidence_link();
       let contactHandle = await fundContract.get_contact_handle();
       // Fetch owner
-      console.log(await fundContract.is_owner(wallet?.account.address));
       setIsOwner(await fundContract.is_owner(wallet?.account.address));
       // USER VOTED?
       let voted = await fundContract.get_voter(wallet != undefined ? wallet?.account.address : "0x0000000000");
