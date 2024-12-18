@@ -29,29 +29,28 @@ const Fund = () => {
   const clickedFund = useAtomValue(clickedFundState);
 
   async function getDetails() {
-    let addr = await fundManagerContract.getFund(clickedFund?.id);
+    let addr = await fundManagerContract.get_fund(clickedFund?.id);
     addr = "0x" + addr.toString(16);
     const fundContract = new Contract(fundAbi, addr, wallet?.account);
     try {
       // Fetch fund details
-      let name = await fundContract.getName();
-      let desc = await fundContract.getReason();
+      let name = await fundContract.get_name();
+      let desc = await fundContract.get_reason();
       if (desc == " ") {
         desc = "No description provided";
       }
-      let state = await fundContract.getState();
+      let state = await fundContract.get_state();
       let currentBalance = await fundContract.get_current_goal_state();
       currentBalance = BigInt(currentBalance) / BigInt(10 ** 18);
-      let goal = await fundContract.getGoal();
+      let goal = await fundContract.get_goal();
       goal = BigInt(goal) / BigInt(10 ** 18);
-      let upVotes = await fundContract.getUpVotes();
+      let upVotes = await fundContract.get_up_votes();
       let evidenceLink = await fundContract.get_evidence_link();
       let contactHandle = await fundContract.get_contact_handle();
-
-      console.log(wallet?.account?.address.toLowerCase());
       // Fetch owner
-      const owner = (await fundContract.getOwner()).toString();
-      setIsOwner(owner.toLowerCase() === wallet?.account?.address.toLowerCase());
+      setIsOwner(await fundContract.is_owner(wallet?.account.address));
+      // USER VOTED?
+      let voted = await fundContract.get_voter(wallet != undefined ? wallet?.account.address : "0x0000000000");
 
       setFund({
         name: name,
@@ -63,6 +62,7 @@ const Fund = () => {
         addr: addr,
         evidenceLink: evidenceLink,
         contactHandle: contactHandle,
+        voted: voted
       });
     } catch (error) {
       console.error("Error fetching fund details:", error);
@@ -102,23 +102,23 @@ const Fund = () => {
           {Number(fund.state) === 0 && <p>Fund is currently inactive.</p>}
           {Number(fund.state) === 1 && (
             <FundVote
+              name={fund.name}
               upVotes={fund.upVotes}
               upVotesNeeded={upVotesNeeded}
               addr={fund.addr}
               setLoading={setLoading}
-              getDetails={getDetails}
+              voted={fund.voted}
             />
           )}
           {Number(fund.state) === 2 && (
             <>
-              {!isOwner && (
                 <FundDonate
                   currentBalance={fund.currentBalance}
                   goal={fund.goal}
                   addr={fund.addr}
+                  name={fund.name} 
                   icon={starknetlogo}
                 />
-              )}
             </>
           )}
           {Number(fund.state) === 3 && isOwner && (

@@ -5,6 +5,20 @@ export const fundAbi = [
     "interface_name": "gostarkme::fund::IFund"
   },
   {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
+      }
+    ]
+  },
+  {
     "type": "struct",
     "name": "core::byte_array::ByteArray",
     "members": [
@@ -42,7 +56,7 @@ export const fundAbi = [
     "items": [
       {
         "type": "function",
-        "name": "getId",
+        "name": "get_id",
         "inputs": [],
         "outputs": [
           {
@@ -53,7 +67,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getOwner",
+        "name": "get_owner",
         "inputs": [],
         "outputs": [
           {
@@ -64,7 +78,23 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setName",
+        "name": "is_owner",
+        "inputs": [
+          {
+            "name": "caller",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "set_name",
         "inputs": [
           {
             "name": "name",
@@ -76,7 +106,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getName",
+        "name": "get_name",
         "inputs": [],
         "outputs": [
           {
@@ -87,7 +117,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setReason",
+        "name": "set_reason",
         "inputs": [
           {
             "name": "reason",
@@ -99,7 +129,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getReason",
+        "name": "get_reason",
         "inputs": [],
         "outputs": [
           {
@@ -110,14 +140,14 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "receiveVote",
+        "name": "receive_vote",
         "inputs": [],
         "outputs": [],
         "state_mutability": "external"
       },
       {
         "type": "function",
-        "name": "getUpVotes",
+        "name": "get_up_votes",
         "inputs": [],
         "outputs": [
           {
@@ -128,7 +158,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setGoal",
+        "name": "set_goal",
         "inputs": [
           {
             "name": "goal",
@@ -140,7 +170,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getGoal",
+        "name": "get_goal",
         "inputs": [],
         "outputs": [
           {
@@ -174,7 +204,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "setState",
+        "name": "set_state",
         "inputs": [
           {
             "name": "state",
@@ -186,7 +216,7 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getState",
+        "name": "get_state",
         "inputs": [],
         "outputs": [
           {
@@ -197,8 +227,13 @@ export const fundAbi = [
       },
       {
         "type": "function",
-        "name": "getVoter",
-        "inputs": [],
+        "name": "get_voter",
+        "inputs": [
+          {
+            "name": "user",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
         "outputs": [
           {
             "type": "core::integer::u32"
@@ -258,6 +293,29 @@ export const fundAbi = [
           }
         ],
         "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "set_type",
+        "inputs": [
+          {
+            "name": "fund_type",
+            "type": "core::integer::u8"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "get_type",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view"
       }
     ]
   },
@@ -292,6 +350,10 @@ export const fundAbi = [
       {
         "name": "reason",
         "type": "core::byte_array::ByteArray"
+      },
+      {
+        "name": "fund_type",
+        "type": "core::integer::u8"
       }
     ]
   },

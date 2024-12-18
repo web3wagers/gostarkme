@@ -1,6 +1,13 @@
 #!/bin/bash
 
 set -e
+# First, attempt to compile everything
+echo "::group::Compilation"
+if ! (cd contracts && scarb build); then
+    echo "::error::Compilation failed"
+    exit 1
+fi
+echo "::endgroup::"
 
 tests_output=$(cd contracts && scarb run test || true)
 

@@ -12,7 +12,7 @@ use snforge_std::{
 
 use openzeppelin::utils::serde::SerializedAppend;
 
-use gostarkme::donatorManager::{
+use gostarkme::donator_manager::{
     DonatorManager, IDonatorManagerDispatcher, IDonatorManagerDispatcherTrait
 };
 

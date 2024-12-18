@@ -2,12 +2,15 @@
 
 import { calculatePorcentage } from "@/app/utils";
 import ProgressBar from "@/components/ui/ProgressBar";
+import ShareXButton from "@/components/ui/ShareOnX";
 import { provider } from "@/constants";
 import { addrSTRK } from "@/contracts/addresses";
+import { activeChainId } from "@/state/activeChain";
 import {
   walletStarknetkitLatestAtom,
 } from "@/state/connectedWallet";
-import { useAtomValue } from "jotai";
+import { latestTxAtom } from "@/state/latestTx";
+import { useAtom, useAtomValue } from "jotai";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
 import { CallData, cairo } from "starknet";
@@ -16,23 +19,23 @@ interface FundDonateProps {
   currentBalance: number;
   goal: number;
   addr: string;
+  name: string;
   icon?: StaticImageData;
 }
 
-const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
+const FundDonate = ({ currentBalance, goal, addr, name, icon }: FundDonateProps) => {
   const [amount, setAmount] = useState<number | "">("");
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [localBalance, setLocalBalance] = useState<number>(currentBalance);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [latestTx, setLatestTx] = useAtom(latestTxAtom);
+  const [isDonating, setIsDonating] = useState(false);
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-  const [network, setNetwork] = useState(wallet?.chainId);
+  const chainId = useAtomValue(activeChainId);
   const networkEnvironment = process.env.NEXT_PUBLIC_CHAIN_ID;
   const progress = calculatePorcentage(localBalance, goal);
-
-  const handleNetwork = (chainId?: string, accounts?: string[]) => {
-    setNetwork(wallet?.chainId);
-  };
-  wallet?.on('networkChanged', handleNetwork);
+  const [donationMessage, setDonationMessage] = useState('');
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : Number(e.target.value);
@@ -65,6 +68,7 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
 
     setError("");
     setIsLoading(true);
+    setIsDonating(true);
 
     try {
       const tx = await wallet?.account.execute([
@@ -92,7 +96,10 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
           if (typeof amount === 'number') {
             setLocalBalance(prev => Number(prev) + amount);
           }
+          setDonationMessage(`🙌 Supporting ${name} on Go Stark Me with ${amount} $STRK! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`);
           setAmount("");
+          setLatestTx(tx.transaction_hash);
+          setShowSuccessPopup(true);
           setError("Transaction successful!");
           setTimeout(() => {
             setError("");
@@ -103,8 +110,11 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
       }
     } catch (error: any) {
       setError(error.message || "Transaction failed. Please try again.");
+      setIsLoading(false);
+      setIsDonating(false);
     } finally {
       setIsLoading(false);
+      setIsDonating(false);
     }
   };
 
@@ -135,15 +145,15 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
       )}
       <div className="text-center">
         <button
-          disabled={network !== networkEnvironment || !wallet}
+          disabled={chainId !== networkEnvironment || !wallet || isDonating}
           onClick={handleDonateClick}
           className={`self-center bg-darkblue text-white py-2 px-6 md:py-3 md:px-10 rounded-md
           text-xs md:text-sm shadow-xl hover:bg-starkorange active:bg-darkblue ease-in-out
-          duration-500 active:duration-0 shadow-gray-400 ${network !== networkEnvironment ? "opacity-50 cursor-not-allowed" : ""}`}
+          duration-500 active:duration-0 shadow-gray-400 ${chainId !== networkEnvironment || isDonating ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Donate
+          {isDonating === true ? "Donating..." : "Donate"}
         </button>
-        {wallet && network !== networkEnvironment && (
+        {wallet && chainId !== networkEnvironment && (
           <p className="text-sm text-gray-500 mt-2">
             Your wallet is currently connected to the wrong network. Please
             switch to {networkEnvironment} to continue.
@@ -155,6 +165,28 @@ const FundDonate = ({ currentBalance, goal, addr, icon }: FundDonateProps) => {
           </p>
         )}
       </div>
+
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm flex justify-center items-center">
+          <div className="w-[600px] rounded-md flex flex-col items-center justify-center gap-4 text-center bg-white drop-shadow p-7">
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSuccessPopup(false);
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h1 className="text-xl">Success</h1>
+            <p className="text-l font-light m-5">Your donation was received, take a look at the transaction <a className="text-blue-600" target="_blank" href={"https://sepolia.voyager.online/tx/" + latestTx}>here.</a></p>
+            <p className="text-l font-light m-5">Share your contribution via X to tell everyone how cool you are</p>
+            <ShareXButton message={donationMessage} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

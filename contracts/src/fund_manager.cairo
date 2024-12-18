@@ -9,7 +9,8 @@ pub trait IFundManager<TContractState> {
         goal: u256,
         evidence_link: ByteArray,
         contact_handle: ByteArray,
-        reason: ByteArray
+        reason: ByteArray,
+        fund_type: u8,
     );
     fn get_current_id(self: @TContractState) -> u128;
     fn get_fund(self: @TContractState, id: u128) -> ContractAddress;
@@ -85,6 +86,7 @@ pub mod FundManager {
             evidence_link: ByteArray,
             contact_handle: ByteArray,
             reason: ByteArray,
+            fund_type: u8
         ) {
             assert(goal >= FundConstants::MINIMUM_GOAL, 'Goal must be at least 500');
             let mut call_data: Array<felt252> = array![];
@@ -95,6 +97,7 @@ pub mod FundManager {
             Serde::serialize(@evidence_link, ref call_data);
             Serde::serialize(@contact_handle, ref call_data);
             Serde::serialize(@reason, ref call_data);
+            Serde::serialize(@fund_type, ref call_data);
             let (new_fund_address, _) = deploy_syscall(
                 self.fund_class_hash.read(), 12345, call_data.span(), false
             )

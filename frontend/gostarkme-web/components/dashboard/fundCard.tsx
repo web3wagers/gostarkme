@@ -11,7 +11,7 @@ interface FundCardProps {
     type: string;
     title: string;
     description: string;
-    fund_id: string
+    fund_id: string;
   };
   index: number;
 }
