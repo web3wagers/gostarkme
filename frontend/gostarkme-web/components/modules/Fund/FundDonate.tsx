@@ -35,8 +35,7 @@ const FundDonate = ({ currentBalance, goal, addr, name, icon }: FundDonateProps)
   const chainId = useAtomValue(activeChainId);
   const networkEnvironment = process.env.NEXT_PUBLIC_CHAIN_ID;
   const progress = calculatePorcentage(localBalance, goal);
-
-  const donationMessage = `🙌 Supporting ${name} on Go Stark Me! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`;
+  const [donationMessage, setDonationMessage] = useState('');
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value === "" ? "" : Number(e.target.value);
@@ -97,6 +96,7 @@ const FundDonate = ({ currentBalance, goal, addr, name, icon }: FundDonateProps)
           if (typeof amount === 'number') {
             setLocalBalance(prev => Number(prev) + amount);
           }
+          setDonationMessage(`🙌 Supporting ${name} on Go Stark Me with ${amount} $STRK! Donate now: https://web3wagers.github.io/gostarkme/ 💪 @undefined_org_ @Starknet`);
           setAmount("");
           setLatestTx(tx.transaction_hash);
           setShowSuccessPopup(true);
