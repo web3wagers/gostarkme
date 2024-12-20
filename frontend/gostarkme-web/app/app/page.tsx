@@ -2,7 +2,7 @@
 import FundCards from "@/components/dashboard/fundCard";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
-import { FUND_MANAGER_ADDR } from "@/constants";
+import { FUND_MANAGER_ADDR, provider } from "@/constants";
 import { fundAbi } from "@/contracts/abis/fund";
 import { fundManager } from "@/contracts/abis/fundManager";
 import React, { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   async function getFunds() {
-    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR);
+    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, provider);
 
     const id = await fundManagerContract.get_current_id();
     let fundings = [];
@@ -25,7 +25,7 @@ const Dashboard = () => {
       // GET FUND ADDRESS
       let fundaddr = await fundManagerContract.get_fund(i);
       fundaddr = "0x" + fundaddr.toString(16);
-      const fundContract = new Contract(fundAbi, fundaddr);
+      const fundContract = new Contract(fundAbi, fundaddr, provider);
       // GET FUND STATE
       let state = await fundContract.get_state();
       if (state == 4 || state == 0) {
