@@ -7,6 +7,7 @@ import { latestTxAtom } from "@/state/latestTx";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Contract, InvokeFunctionResponse } from "starknet";
 import { useRouter } from "next/navigation";
+import { provider } from "@/constants";
 
 interface FundWithdrawProps {
   addr: string,
