@@ -5,7 +5,7 @@ import starknetlogo from "@/public/icons/starklogo.png";
 import { FundVote } from "./FundVote";
 
 import { useEffect, useState } from "react";
-import { FUND_MANAGER_ADDR, upVotesNeeded } from "@/constants";
+import { FUND_MANAGER_ADDR, provider, upVotesNeeded } from "@/constants";
 import Divider from "@/components/ui/Divider";
 import { fundAbi } from "@/contracts/abis/fund";
 import { fundManager } from "@/contracts/abis/fundManager";
@@ -18,9 +18,6 @@ import { FundWithdraw } from "./FundWithdraw";
 
 const Fund = () => {
   const wallet = useAtomValue(walletStarknetkitLatestAtom);
-  const [fundManagerContract, _setFundManagerContract] = useState<Contract>(
-    new Contract(fundManager, FUND_MANAGER_ADDR, wallet?.account)
-  );
 
   const [fund, setFund] = useState<any>({});
   const [loading, setLoading] = useState(true);
@@ -29,9 +26,10 @@ const Fund = () => {
   const clickedFund = useAtomValue(clickedFundState);
 
   async function getDetails() {
+    const fundManagerContract = new Contract(fundManager, FUND_MANAGER_ADDR, provider);
     let addr = await fundManagerContract.get_fund(clickedFund?.id);
     addr = "0x" + addr.toString(16);
-    const fundContract = new Contract(fundAbi, addr, wallet?.account);
+    const fundContract = new Contract(fundAbi, addr, provider);
     try {
       // Fetch fund details
       let name = await fundContract.get_name();
