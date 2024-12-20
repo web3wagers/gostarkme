@@ -25,11 +25,6 @@ const DescriptionStep: React.FC<DescriptionStepProps> = ({
       href=""
       className="absolute right-[-270px] top-[-205px]" 
     >
-      <img 
-        src="/icons/arrow-right.png" 
-        alt="Back Arrow"
-        className="h-8 w-8"
-      />
     </a>
   </div>
 );
