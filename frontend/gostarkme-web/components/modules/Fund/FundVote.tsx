@@ -154,7 +154,7 @@ export const FundVote = ({ name, upVotes, upVotesNeeded, addr, voted, setLoading
               </svg>
             </button>
             <h1 className="text-xl">Success</h1>
-            <p className="text-l font-light m-5">Your vote was submitted, take a look at the transaction <a className="text-blue-600" target="_blank" href={"https://sepolia.voyager.online/tx/" + latestTx}>here.</a></p>
+            <p className="text-l font-light m-5">Your vote was submitted, take a look at the transaction <a className="text-blue-600" target="_blank" href={"https://voyager.online/tx/" + latestTx}>here.</a></p>
             <p className="text-l font-light m-5">Share your contribution via X to tell everyone how cool you are</p>
             <ShareXButton message={voteMessage} />
           </div>

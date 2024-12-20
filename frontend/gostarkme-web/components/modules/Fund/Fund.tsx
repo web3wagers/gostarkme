@@ -73,7 +73,7 @@ const Fund = () => {
 
   useEffect(() => {
     getDetails();
-  }, []);
+  });
 
   return (
     <>
@@ -112,13 +112,13 @@ const Fund = () => {
           )}
           {Number(fund.state) === 2 && (
             <>
-                <FundDonate
-                  currentBalance={fund.currentBalance}
-                  goal={fund.goal}
-                  addr={fund.addr}
-                  name={fund.name} 
-                  icon={starknetlogo}
-                />
+              <FundDonate
+                currentBalance={fund.currentBalance}
+                goal={fund.goal}
+                addr={fund.addr}
+                name={fund.name}
+                icon={starknetlogo}
+              />
             </>
           )}
           {Number(fund.state) === 3 && isOwner && (
@@ -131,7 +131,9 @@ const Fund = () => {
             />
           )}
           {Number(fund.state) === 3 && !isOwner && (
-            <p>Funds are ready for withdrawal by the owner.</p>
+            <p className="mt-10 self-center text-xl text-gray-500">
+              The goal has been reached and funds are ready to be withdrawn by the owner.
+            </p>
           )}
           {Number(fund.state) === 4 && <p>Fund was already withdrawn.</p>}
         </section>
