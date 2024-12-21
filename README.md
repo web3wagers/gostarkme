@@ -8,7 +8,7 @@ Go Stark Me is a modern platform designed to make fundraising for important caus
 - **Easy to Use**: Intuitive design and straightforward processes make it simple for projects to set up and manage their fundraising campaigns.
 - **Efficient and Scalable**: Utilizing Cairo and Starknet's L2 technology, Go Stark Me offers a fast and scalable solution for fundraising needs.
 
-Join us on Go Stark Me and make a difference by supporting meaningful projects in a secure and efficient manner.
+Join us on Go Stark Me and make a difference by supporting meaningful projects in a secure and efficient manner. 
 
 ## Our Vision for UI
 
